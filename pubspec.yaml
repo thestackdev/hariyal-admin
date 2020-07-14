@@ -1,0 +1,39 @@
+name: superuser
+description: A product by shanmukeshwar
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons:
+  firebase_auth:
+  cloud_firestore:
+  material_design_icons_flutter:
+  permission_handler:
+  multi_image_picker:
+  flutter_phoenix:
+  firebase_storage:
+  path_provider:
+  flutter_absolute_path:
+  date_time_format:
+  image:
+  font_awesome_flutter:
+  email_validator:
+  fluttertoast:
+  catcher:
+  cached_network_image:
+  photo_view:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
