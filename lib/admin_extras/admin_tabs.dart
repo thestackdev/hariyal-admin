@@ -1,108 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:superuser/superuser/product_details.dart';
+import 'package:superuser/services/view_products.dart';
+import 'package:superuser/utils.dart';
 
 class AdminExtras extends StatefulWidget {
   final uid;
 
   const AdminExtras({Key key, this.uid}) : super(key: key);
+
   @override
   _AdminExtrasState createState() => _AdminExtrasState();
 }
 
 class _AdminExtrasState extends State<AdminExtras> {
+  Utils utils = Utils();
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Admin Extras'),
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                text: 'Products',
-              ),
-              Tab(
-                text: 'Privileges',
-              )
+        backgroundColor: Colors.red,
+        appBar: utils.getAppbar(
+          'Admin Extras',
+          boottom: TabBar(
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+            indicatorColor: Colors.transparent,
+            tabs: [Tab(text: 'Products'), Tab(text: 'Privileges')],
+          ),
+        ),
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: utils.getBoxDecoration(),
+          child: TabBarView(
+            children: <Widget>[
+              getViewProducts(widget.uid),
+              getPrivilages(),
             ],
           ),
         ),
-        body: TabBarView(
-          children: <Widget>[
-            getProducts(),
-            getPrivilages(),
-          ],
-        ),
       ),
-    );
-  }
-
-  getProducts() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
-          .collection('admin')
-          .document(widget.uid)
-          .collection('products')
-          .orderBy('dateTime', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data.documents.length,
-            itemBuilder: (context, index) {
-              return Card(
-                margin: EdgeInsets.all(12),
-                elevation: 4,
-                shadowColor: Colors.deepPurple,
-                child: Padding(
-                  padding: EdgeInsets.all(6),
-                  child: StreamBuilder<DocumentSnapshot>(
-                      stream: Firestore.instance
-                          .collection('products')
-                          .document(snapshot.data.documents[index].documentID)
-                          .snapshots(),
-                      builder: (context, productSnap) {
-                        if (productSnap.hasData) {
-                          return ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ProductDetails(
-                                    productSnap.data,
-                                    widget.uid,
-                                  ),
-                                ),
-                              );
-                            },
-                            leading: Image.network(
-                              productSnap.data['images'][0],
-                              height: 90,
-                              width: 90,
-                            ),
-                            title: Text('${productSnap.data['title']}'),
-                            subtitle:
-                                Text('${productSnap.data['description']}'),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      }),
-                ),
-              );
-            },
-          );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
     );
   }
 
@@ -120,11 +62,12 @@ class _AdminExtrasState extends State<AdminExtras> {
               Container(
                 margin: EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
-                    color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(9),
+                  color: Colors.grey.shade100,
+                ),
                 child: SwitchListTile(
                   title: Text('Admin'),
-                  onChanged: (bool value) {
+                  onChanged: (value) {
                     snapshot.data.reference.updateData({
                       'isAdmin': !snapshot.data['isAdmin'],
                     });
@@ -135,11 +78,12 @@ class _AdminExtrasState extends State<AdminExtras> {
               Container(
                 margin: EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
-                    color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(9),
+                  color: Colors.grey.shade100,
+                ),
                 child: SwitchListTile(
                   title: Text('Superuser'),
-                  onChanged: (bool value) {
+                  onChanged: (value) {
                     snapshot.data.reference.updateData({
                       'isSuperuser': !snapshot.data['isSuperuser'],
                     });
@@ -150,9 +94,7 @@ class _AdminExtrasState extends State<AdminExtras> {
             ],
           );
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return utils.getLoadingIndicator();
         }
       },
     );

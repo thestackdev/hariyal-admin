@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 
 class IntrestInfo extends StatefulWidget {
@@ -14,108 +15,120 @@ class IntrestInfo extends StatefulWidget {
 }
 
 class _InterestInfoState extends State<IntrestInfo> {
-  @override
-  void initState() {
-    initGetData();
-    super.initState();
-  }
-
-  Future initGetData() async {}
+  Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: utils.getAppbar('Details'),
       body: Container(
-        margin: EdgeInsets.all(12),
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              children: <Widget>[
-                Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    width: MediaQuery.of(context).size.width,
-                    child: ImageSliderWidget(
-                      dotPosition: 20,
-                      onTap: () {
-                        /*Navigator.push(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: utils.getBoxDecoration(),
+        child: ListView(
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.all(9),
+                height: MediaQuery.of(context).size.height / 2,
+                width: MediaQuery.of(context).size.width,
+                child: ImageSliderWidget(
+                  dotPosition: 20,
+                  onTap: () {
+                    /* Navigator.push(
                       context,
                       PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 500),
-                          pageBuilder: (_, __, ___) => FullScreenView(
-                              productModel.images, productModel.id)));*/
-                      },
-                      imageHeight: MediaQuery.of(context).size.height / 1.5,
-                      tag: widget.productsnap.documentID,
-                      imageUrls: widget.productsnap.data['images'],
-                      fit: BoxFit.contain,
-                    )),
-                Container(
-                  padding: EdgeInsets.all(6),
-                  child: Expanded(
-                    child: ListTile(
-                      title: Text(
-                        '${widget.productsnap.data['title']}',
-                        style: TextStyle(
-                            fontSize: 32, fontWeight: FontWeight.bold),
+                        transitionDuration: Duration(milliseconds: 500),
+                        pageBuilder: (_, __, ___) =>
+                            FullScreenView(widget.productsnap['images']),
                       ),
-                      subtitle: Row(
-                        children: <Widget>[
-                          Text(
-                            '${widget.productsnap.data['price']} Rs',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Spacer(),
-                          Text(
-                            '${widget.productsnap.documentID}',
-                            textScaleFactor: 1.2,
-                          )
-                        ],
-                      ),
-                    ),
+                    ); */
+                  },
+                  imageHeight: MediaQuery.of(context).size.height / 1.5,
+                  tag: widget.productsnap.documentID,
+                  imageUrls: widget.productsnap.data['images'],
+                  fit: BoxFit.contain,
+                )),
+            Container(
+              child: ListTile(
+                title: Text(
+                  '${widget.productsnap.data['title']}',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 12),
-                  alignment: FractionalOffset.topLeft,
-                  child: Text(
-                    'User Information',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                Column(
+                subtitle: Row(
                   children: <Widget>[
-                    ...ListTile.divideTiles(color: Colors.grey, tiles: [
-                      ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        leading: Icon(Icons.person),
-                        title: Text("Name"),
-                        subtitle: Text(widget.usersnap.data['name']),
-                      ),
-                      ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        leading: Icon(Icons.email),
-                        title: Text("E-mail"),
-                        subtitle: Text(widget.usersnap.data['email']),
-                      ),
-                      ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        leading: Icon(Icons.phone),
-                        title: Text("Phone"),
-                        subtitle: Text(widget.usersnap.data['phoneNumber']),
-                      ),
-                    ])
+                    Text(
+                      '${widget.productsnap.data['price']} Rs',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Spacer(),
+                    Text(
+                      '${widget.productsnap.documentID}',
+                      textScaleFactor: 1.2,
+                    )
                   ],
                 ),
-                SizedBox(),
-              ],
+              ),
             ),
-          ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 12),
+              alignment: FractionalOffset.topLeft,
+              child: Text(
+                'User Information',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            ...ListTile.divideTiles(color: Colors.grey, tiles: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  leading: Icon(Icons.person_outline),
+                  title: Text("Name"),
+                  subtitle: Text(
+                    widget.usersnap.data['name'] == null
+                        ? '-'
+                        : widget.usersnap.data['name'],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  leading: Icon(Icons.email),
+                  title: Text("E-mail"),
+                  subtitle: Text(
+                    widget.usersnap.data['email'] == null
+                        ? '-'
+                        : widget.usersnap.data['email'],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  leading: Icon(Icons.phone),
+                  title: Text("Phone"),
+                  subtitle: Text(
+                    widget.usersnap.data['phone'] == null
+                        ? '-'
+                        : widget.usersnap.data['phone'],
+                  ),
+                ),
+              ),
+            ]),
+            SizedBox(),
+          ],
         ),
       ),
     );

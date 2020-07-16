@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:superuser/utils.dart';
 
 class Showrooms extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class _ShowroomsState extends State<Showrooms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red,
       appBar: AppBar(
         title: Text('Showrooms'),
         centerTitle: true,
@@ -27,108 +29,126 @@ class _ShowroomsState extends State<Showrooms> {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('showrooms').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.all(9),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9),
-                    color: Colors.grey.shade100,
-                  ),
-                  child: Dismissible(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        color: Colors.red,
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          MdiIcons.deleteOffOutline,
-                          color: Colors.white,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: Utils().getBoxDecoration(),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('showrooms').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      color: Colors.grey.shade100,
+                    ),
+                    child: Dismissible(
+                      background: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(9),
+                          color: Colors.red,
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            MdiIcons.deleteOffOutline,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    secondaryBackground: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        color: Colors.blue,
-                      ),
-                      child: ListTile(
-                        trailing: Icon(
-                          MdiIcons.pencilOutline,
-                          color: Colors.white,
+                      secondaryBackground: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(9),
+                          color: Colors.blue,
+                        ),
+                        child: ListTile(
+                          trailing: Icon(
+                            MdiIcons.pencilOutline,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    confirmDismiss: (direction) async {
-                      if (direction == DismissDirection.startToEnd) {
-                        return await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              elevation: 9,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(9),
-                              ),
-                              title: const Text("Confirm"),
-                              content: Text(
-                                "Are you sure you wish to delete this Showroom?",
-                              ),
-                              actions: <Widget>[
-                                FlatButton(
-                                    onPressed: () async {
-                                      Firestore.instance
-                                          .collection('showrooms')
-                                          .document(snapshot
-                                              .data.documents[index].documentID)
-                                          .delete();
-                                      Navigator.of(context).pop(true);
-                                    },
-                                    child: const Text("DELETE")),
-                                FlatButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                  child: const Text("CANCEL"),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
+                          return await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                elevation: 9,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(9),
                                 ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        return await addshowRoom(
-                          title: snapshot.data.documents[index]['name'],
-                          adress: snapshot.data.documents[index]['adress'],
-                          latitude: snapshot.data.documents[index]['latitude'],
-                          longitude: snapshot.data.documents[index]
-                              ['longitude'],
-                          document: snapshot.data.documents[index].documentID,
-                        );
-                      }
-                    },
-                    key: UniqueKey(),
-                    child: ListTile(
-                      title: Text(
-                        'Name : ${snapshot.data.documents[index]['name']}',
-                      ),
-                      subtitle: Text(
-                        'Adress : ${snapshot.data.documents[index]['adress']}',
+                                title: const Text("Confirm"),
+                                content: Text(
+                                  "Are you sure you wish to delete this Showroom?",
+                                ),
+                                actions: <Widget>[
+                                  FlatButton(
+                                      onPressed: () async {
+                                        Firestore.instance
+                                            .collection('showrooms')
+                                            .document(snapshot.data
+                                                .documents[index].documentID)
+                                            .delete();
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: const Text("DELETE")),
+                                  FlatButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text("CANCEL"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          return await addshowRoom(
+                            title: snapshot.data.documents[index]['name'],
+                            adress: snapshot.data.documents[index]['adress'],
+                            latitude: snapshot.data.documents[index]
+                                ['latitude'],
+                            longitude: snapshot.data.documents[index]
+                                ['longitude'],
+                            document: snapshot.data.documents[index].documentID,
+                          );
+                        }
+                      },
+                      key: UniqueKey(),
+                      child: ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            '${snapshot.data.documents[index]['name'].toUpperCase()}',
+                            style: TextStyle(
+                              color: Colors.red.shade300,
+                            ),
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1.2,
+                          ),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            'Adress : ${snapshot.data.documents[index]['adress']}',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+                  );
+                },
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -225,7 +245,12 @@ class _ShowroomsState extends State<Showrooms> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: Text('Add Showroom'),
+              child: Text(
+                'Add Showroom',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
               color: Colors.red.shade300,
             ),
           )

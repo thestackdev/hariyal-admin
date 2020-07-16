@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:superuser/admin/admin_home.dart';
 import 'package:superuser/superuser/authenticate.dart';
 import 'package:superuser/superuser/superuser_home.dart';
@@ -36,8 +37,14 @@ class AuthServices {
                     return AdminAuthenticate();
                   }
                 } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                  return Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: SpinKitRing(
+                        color: Colors.red.shade300,
+                        lineWidth: 5,
+                      ),
+                    ),
                   );
                 }
               });

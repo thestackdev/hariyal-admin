@@ -25,11 +25,12 @@ dependencies:
   date_time_format:
   image:
   font_awesome_flutter:
-  email_validator:
   fluttertoast:
   catcher:
   cached_network_image:
   photo_view:
+  flutter_spinkit:
+  splashscreen:
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/hariyal_logo.jpg

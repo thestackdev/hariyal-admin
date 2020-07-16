@@ -17,89 +17,88 @@ class _CustomerdetailsState extends State<Customerdetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Customer Details'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        children: <Widget>[
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['name'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(label: 'Name', iconData: null),
+      appBar: utils.getAppbar('Customer Details'),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: utils.getBoxDecoration(),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['name'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Name'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['phoneNumber'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(label: 'Phone', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['phone'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Phone'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['email'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(label: 'Email', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['email'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Email'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['gender'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(label: 'Gender', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['gender'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Gender'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['alternatePhoneNumber'],
-              readOnly: true,
-              maxLines: null,
-              decoration:
-                  utils.getDecoration(label: 'Alternate Phone', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['alternatePhoneNumber'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Alternate Phone'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['permanentAddress'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(
-                  label: 'Permanent Address', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['permanentAddress'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'Permanent Address'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['location']['cityDistrict'],
-              readOnly: true,
-              maxLines: null,
-              decoration:
-                  utils.getDecoration(label: 'City/District', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['location']['cityDistrict'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'City/District'),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: TextFormField(
-              initialValue: widget.docsnap['location']['state'],
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.getDecoration(label: 'State', iconData: null),
+            Padding(
+              padding: const EdgeInsets.all(9),
+              child: TextFormField(
+                initialValue: widget.docsnap['location']['state'],
+                readOnly: true,
+                maxLines: null,
+                decoration: utils.getDecoration(label: 'State'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

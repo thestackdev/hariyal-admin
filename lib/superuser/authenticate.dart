@@ -12,23 +12,35 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool loading = false;
+  Utils utils = Utils();
+
   @override
   Widget build(BuildContext context) {
     final titleStyle = TextStyle(
-        color: Colors.grey.shade700, fontSize: 30, fontWeight: FontWeight.bold);
+      color: Colors.grey.shade700,
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+    );
     final contentStyle = TextStyle(
-        color: Colors.grey, fontSize: 18, fontWeight: FontWeight.normal);
-    return SafeArea(
-      child: Scaffold(
-        body: loading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
+      color: Colors.grey,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+    );
+    return Scaffold(
+      appBar: utils.getAppbar('Hariyal'),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: utils.getBoxDecoration(),
+        child: loading
+            ? utils.getLoadingIndicator()
             : ListView(
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 70),
-                    child: Center(child: Text('//TODO Logo')),
+                    child: Center(
+                        //  child: Image.asset('assets/hariyal_logo.jpg'),
+                        ),
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 9, horizontal: 27),
@@ -40,7 +52,7 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 9, horizontal: 27),
                     child: Text(
-                      'Hi Admin !',
+                      'Hey Admin !',
                       style: contentStyle,
                     ),
                   ),
@@ -48,11 +60,12 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
                     child: TextField(
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                       controller: emailController,
                       maxLines: 1,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: Utils().getDecoration(
-                        label: 'email',
+                      decoration: utils.getDecoration(
+                        label: 'Email',
                         iconData: MdiIcons.emailOutline,
                       ),
                     ),
@@ -61,23 +74,33 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
                     child: TextField(
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                       controller: passwordController,
                       maxLines: 1,
                       keyboardType: TextInputType.visiblePassword,
-                      decoration: Utils().getDecoration(
-                        label: 'password',
+                      decoration: utils.getDecoration(
+                        label: 'Password',
                         iconData: MdiIcons.lockOutline,
                       ),
                     ),
                   ),
-                  Center(
-                    child: RaisedButton(
-                      padding: EdgeInsets.symmetric(horizontal: 30),
-                      elevation: 0,
-                      onPressed: () {
-                        login();
-                      },
-                      shape: RoundedRectangleBorder(
+            SizedBox(height: 18),
+            Center(
+              child: RaisedButton(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 12,
+                ),
+                elevation: 0,
+                onPressed: () {
+                  if (emailController.text.length > 0 &&
+                      passwordController.text.length > 0) {
+                    login();
+                  } else {
+                    utils.getToast('Invalid Credintials');
+                  }
+                },
+                shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(9),
                       ),
                       color: Colors.red.shade300,
@@ -98,15 +121,19 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
   }
 
   login() async {
-    setState(() {
-      loading = true;
-    });
+    handleSetState();
 
     final result = await AuthServices()
         .superuserLogin(emailController.text, passwordController.text);
     if (result == false) {
+      handleSetState();
+    }
+  }
+
+  handleSetState() {
+    if (mounted) {
       setState(() {
-        loading = false;
+        loading = !loading;
       });
     }
   }
