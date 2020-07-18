@@ -12,145 +12,84 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  final textstyle = TextStyle(color: Colors.grey.shade700);
+  Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
-      appBar: AppBar(
-        elevation: 0,
-        title: Text('Settings'),
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: Utils().getBoxDecoration(),
+      appBar: utils.getAppbar('Settings'),
+      body: utils.getContainer(
         child: ListView(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
+            utils.listTile(
+              title: 'Add Admin',
+              leading: Icon(
+                MdiIcons.humanChild,
+                color: Colors.red.shade300,
               ),
-              child: ListTile(
-                leading: Icon(
-                  MdiIcons.humanChild,
-                  color: Colors.red.shade300,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddAdmin(),
                 ),
-                trailing: Icon(
-                  MdiIcons.chevronRight,
-                  color: Colors.red.shade300,
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddAdmin(),
-                  ),
-                ),
-                title: Text('Add Admin', style: textstyle),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
+            utils.listTile(
+              title: 'Categories',
+              leading: Icon(
+                MdiIcons.cartArrowRight,
+                color: Colors.red.shade300,
               ),
-              child: ListTile(
-                leading: Icon(
-                  MdiIcons.notificationClearAll,
-                  color: Colors.red.shade300,
-                ),
-                trailing: Icon(
-                  MdiIcons.chevronRight,
-                  color: Colors.red.shade300,
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExtraIdentifier(
-                      identifier: 'category',
-                    ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExtraIdentifier(
+                    identifier: 'category',
                   ),
                 ),
-                title: Text('Categories', style: textstyle),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
+            utils.listTile(
+              title: 'States',
+              leading: Icon(
+                MdiIcons.locationExit,
+                color: Colors.red.shade300,
               ),
-              child: ListTile(
-                leading: Icon(
-                  MdiIcons.mapMarker,
-                  color: Colors.red.shade300,
-                ),
-                trailing: Icon(
-                  MdiIcons.chevronRight,
-                  color: Colors.red.shade300,
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExtraIdentifier(
-                      identifier: 'states',
-                    ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExtraIdentifier(
+                    identifier: 'states',
                   ),
                 ),
-                title: Text('States', style: textstyle),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
+            utils.listTile(
+              title: 'Areas',
+              leading: Icon(
+                MdiIcons.locationExit,
+                color: Colors.red.shade300,
               ),
-              child: ListTile(
-                leading: Icon(
-                  MdiIcons.mapMarker,
-                  color: Colors.red.shade300,
-                ),
-                trailing: Icon(
-                  MdiIcons.chevronRight,
-                  color: Colors.red.shade300,
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExtraIdentifier(
-                      identifier: 'areas',
-                    ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExtraIdentifier(
+                    identifier: 'areas',
                   ),
                 ),
-                title: Text('Areas', style: textstyle),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
+            utils.listTile(
+              title: 'Showrooms',
+              leading: Icon(
+                MdiIcons.mapMarkerOutline,
+                color: Colors.red.shade300,
               ),
-              child: ListTile(
-                leading: Icon(
-                  MdiIcons.shoppingOutline,
-                  color: Colors.red.shade300,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Showrooms(),
                 ),
-                trailing: Icon(
-                  MdiIcons.chevronRight,
-                  color: Colors.red.shade300,
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Showrooms(),
-                  ),
-                ),
-                title: Text('Showrooms', style: textstyle),
               ),
             ),
           ],

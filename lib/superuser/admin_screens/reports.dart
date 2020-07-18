@@ -12,10 +12,7 @@ class _ReportsState extends State<Reports> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: utils.getBoxDecoration(),
+    return utils.getContainer(
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('reports').snapshots(),
         builder: (context, snapshot) {

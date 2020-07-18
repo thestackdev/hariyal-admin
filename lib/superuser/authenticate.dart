@@ -1,66 +1,57 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:superuser/services/auth_services.dart';
 import 'package:superuser/utils.dart';
 
-class AdminAuthenticate extends StatefulWidget {
+class Authenticate extends StatefulWidget {
   @override
-  _AdminAuthenticateState createState() => _AdminAuthenticateState();
+  _AuthenticateState createState() => _AuthenticateState();
 }
 
-class _AdminAuthenticateState extends State<AdminAuthenticate> {
+class _AuthenticateState extends State<Authenticate> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final titleStyle = TextStyle(
+    color: Colors.grey.shade700,
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+  );
+  final contentStyle = TextStyle(
+    color: Colors.grey,
+    fontSize: 18,
+    fontWeight: FontWeight.normal,
+  );
+  final textstyle = TextStyle(color: Colors.grey.shade700, fontSize: 16);
   bool loading = false;
   Utils utils = Utils();
+  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = TextStyle(
-      color: Colors.grey.shade700,
-      fontSize: 30,
-      fontWeight: FontWeight.bold,
-    );
-    final contentStyle = TextStyle(
-      color: Colors.grey,
-      fontSize: 18,
-      fontWeight: FontWeight.normal,
-    );
     return Scaffold(
+      key: key,
       appBar: utils.getAppbar('Hariyal'),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: loading
             ? utils.getLoadingIndicator()
             : ListView(
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 70),
-                    child: Center(
-                        //  child: Image.asset('assets/hariyal_logo.jpg'),
-                        ),
+                  SizedBox(height: 90),
+                  utils.getTextInputPadding(
+                    child: Text('Login', style: titleStyle),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 9, horizontal: 27),
-                    child: Text(
-                      'Login',
-                      style: titleStyle,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 9, horizontal: 27),
-                    child: Text(
-                      'Hey Admin !',
-                      style: contentStyle,
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+                  utils.getTextInputPadding(
+                      child: Text('Hey Admin !', style: contentStyle)),
+                  utils.getTextInputPadding(
                     child: TextField(
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      style: textstyle,
                       controller: emailController,
                       maxLines: 1,
                       keyboardType: TextInputType.emailAddress,
@@ -70,11 +61,9 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+                  utils.getTextInputPadding(
                     child: TextField(
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      style: textstyle,
                       controller: passwordController,
                       maxLines: 1,
                       keyboardType: TextInputType.visiblePassword,
@@ -84,36 +73,19 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
                       ),
                     ),
                   ),
-            SizedBox(height: 18),
-            Center(
-              child: RaisedButton(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 12,
-                ),
-                elevation: 0,
-                onPressed: () {
-                  if (emailController.text.length > 0 &&
-                      passwordController.text.length > 0) {
-                    login();
-                  } else {
-                    utils.getToast('Invalid Credintials');
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      color: Colors.red.shade300,
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                  SizedBox(height: 18),
+                  utils.getRaisedButton(
+                    title: 'Login',
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      if (emailController.text.length > 0 &&
+                          passwordController.text.length > 0) {
+                        login();
+                      } else {
+                        utils.getSnackbar(key, 'Invalid Credintials');
+                      }
+                    },
+                  )
                 ],
               ),
       ),
@@ -121,20 +93,24 @@ class _AdminAuthenticateState extends State<AdminAuthenticate> {
   }
 
   login() async {
+    loading = true;
     handleSetState();
 
-    final result = await AuthServices()
-        .superuserLogin(emailController.text, passwordController.text);
-    if (result == false) {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+    } catch (e) {
+      loading = false;
       handleSetState();
+      utils.getSnackbar(key, e.toString());
+      return false;
     }
   }
 
   handleSetState() {
     if (mounted) {
-      setState(() {
-        loading = !loading;
-      });
+      setState(() {});
     }
   }
 }

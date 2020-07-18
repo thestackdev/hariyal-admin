@@ -16,6 +16,7 @@ class AdminHome extends StatefulWidget {
 
 class _AdminHomeState extends State<AdminHome>
     with SingleTickerProviderStateMixin {
+  GlobalKey<ScaffoldState> scaffolfkey = GlobalKey<ScaffoldState>();
   TabController tabController;
   Utils utils = Utils();
 
@@ -28,6 +29,7 @@ class _AdminHomeState extends State<AdminHome>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffolfkey,
       appBar: utils.getAppbar(
         'Admin Console',
         boottom: TabBar(
@@ -45,52 +47,16 @@ class _AdminHomeState extends State<AdminHome>
           if (tabController.index == 0) {
             return await showDialog(
               context: context,
-              child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                title: Text(
-                  'Are you sure ?',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                content: Text(
-                  'Do you want to exiti',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                      child: Text(
-                        'Yes',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        return true;
-                      }),
-                  FlatButton(
-                    child: Text(
-                      'No',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      return false;
-                    },
-                  ),
-                ],
-              ),
+              child: utils.alertDialog(
+                  content: 'Exit ?',
+                  yesPressed: () {
+                    Navigator.pop(context);
+                    return true;
+                  },
+                  noPressed: () {
+                    Navigator.pop(context);
+                    return false;
+                  }),
             );
           } else {
             tabController.animateTo(0);
@@ -103,11 +69,9 @@ class _AdminHomeState extends State<AdminHome>
           children: [
             PushData(
               uid: widget.uid,
+              scaffoldkey: scaffolfkey,
             ),
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: utils.getBoxDecoration(),
+            utils.getContainer(
               child: getViewProducts(widget.uid),
             ),
             AdminExtras()

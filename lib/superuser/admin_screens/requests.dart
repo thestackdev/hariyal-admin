@@ -12,16 +12,13 @@ class _RequestsState extends State<Requests> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: utils.getBoxDecoration(),
+    return utils.getContainer(
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('reuests').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.documents.length == 0) {
-              return utils.getNullWidget('No Pending Requests Yet !');
+              return utils.getNullWidget('No Orders Yet !');
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/superuser/admin_screens/intrest_info.dart';
 import 'package:superuser/utils.dart';
+import 'package:superuser/widgets/network_image.dart';
 
 class UserIntrests extends StatefulWidget {
   @override
@@ -10,60 +12,65 @@ class UserIntrests extends StatefulWidget {
 
 class _UserIntrestsState extends State<UserIntrests> {
   Utils utils = Utils();
+  Firestore firestore = Firestore.instance;
+  Stream interestsStream;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: utils.getAppbar('Interests'),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('interested').snapshots(),
+          stream: firestore.collection('interested').snapshots(),
           builder: (context, interestsnap) {
             if (interestsnap.hasData) {
               if (interestsnap.data.documents.length == 0) {
-                return utils.getNullWidget('No interests found');
-              }
-              return ListView.builder(
-                itemCount: interestsnap.data.documents.length,
-                itemBuilder: (BuildContext context, int interestindex) {
-                  return StreamBuilder<DocumentSnapshot>(
-                      stream: Firestore.instance
-                          .collection('customers')
-                          .document(
-                            interestsnap
-                                .data.documents[interestindex].documentID,
-                          )
-                          .snapshots(),
-                      builder: (context, customersnap) {
-                        if (customersnap.hasData) {
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: interestsnap.data
-                                .documents[interestindex]['interested'].length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return StreamBuilder<DocumentSnapshot>(
-                                  stream: Firestore.instance
-                                      .collection('products')
-                                      .document(
-                                        interestsnap
-                                                .data.documents[interestindex]
-                                            ['interested'][index],
-                                      )
-                                      .snapshots(),
-                                  builder: (context, productsnap) {
-                                    if (productsnap.hasData) {
-                                      try {
-                                        return Container(
-                                          margin: EdgeInsets.all(9),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(9),
-                                            color: Colors.grey.shade100,
-                                          ),
-                                          child: ListTile(
+                return utils.getNullWidget('No interests found !');
+              } else {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: ScrollPhysics(),
+                  itemCount: interestsnap.data.documents.length,
+                  itemBuilder: (BuildContext context, int interestindex) {
+                    return StreamBuilder<DocumentSnapshot>(
+                        stream: firestore
+                            .collection('customers')
+                            .document(interestsnap
+                                .data.documents[interestindex].documentID)
+                            .snapshots(),
+                        builder: (context, customersnap) {
+                          if (customersnap.hasData) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: interestsnap
+                                  .data
+                                  .documents[interestindex]['interested']
+                                  .length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return StreamBuilder<DocumentSnapshot>(
+                                    stream: firestore
+                                        .collection('products')
+                                        .document(
+                                          interestsnap
+                                                  .data.documents[interestindex]
+                                              ['interested'][index],
+                                        )
+                                        .snapshots(),
+                                    builder: (context, productsnap) {
+                                      if (productsnap.hasData) {
+                                        Map dataMap = productsnap.data.data;
+                                        try {
+                                          return utils.listTile(
+                                            title:
+                                                '${customersnap.data['name']} is interested in ${dataMap['title']}',
+                                            leading: SizedBox(
+                                              width: 70,
+                                              child: PNetworkImage(
+                                                productsnap.data['images'][0],
+                                                fit: BoxFit.fitHeight,
+                                              ),
+                                            ),
                                             onTap: () {
                                               Navigator.push(
                                                 context,
@@ -76,38 +83,31 @@ class _UserIntrestsState extends State<UserIntrests> {
                                                 ),
                                               );
                                             },
-                                            title: Text(
-                                              '${customersnap.data['name']} is interested in ${productsnap.data['title']}',
+                                          );
+                                        } catch (e) {
+                                          return utils.listTile(
+                                            leading: SizedBox(
+                                              width: 70,
+                                              child: Icon(MdiIcons.alertOutline,
+                                                  color: Colors.red),
                                             ),
-                                          ),
-                                        );
-                                      } catch (e) {
-                                        return Container(
-                                          margin: EdgeInsets.all(9),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(9),
-                                            color: Colors.grey.shade100,
-                                          ),
-                                          child: ListTile(
-                                            title: utils.getNullWidget(
-                                              '404 Product not found !',
-                                            ),
-                                          ),
-                                        );
+                                            title: '404 Product Not Found !',
+                                            isTrailingNull: true,
+                                          );
+                                        }
+                                      } else {
+                                        return SizedBox();
                                       }
-                                    } else {
-                                      return SizedBox();
-                                    }
-                                  });
-                            },
-                          );
-                        } else {
-                          return SizedBox();
-                        }
-                      });
-                },
-              );
+                                    });
+                              },
+                            );
+                          } else {
+                            return SizedBox();
+                          }
+                        });
+                  },
+                );
+              }
             } else {
               return utils.getLoadingIndicator();
             }

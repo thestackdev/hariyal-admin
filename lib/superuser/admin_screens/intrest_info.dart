@@ -21,10 +21,7 @@ class _InterestInfoState extends State<IntrestInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: utils.getAppbar('Details'),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: ListView(
           children: <Widget>[
             Container(

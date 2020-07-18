@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/superuser/admin_screens/settings.dart';
+import 'package:superuser/utils.dart';
 
 import 'admin_screens/extras.dart';
 import 'admin_screens/reports.dart';
@@ -18,6 +19,8 @@ class SuperuserHome extends StatefulWidget {
 }
 
 class _SuperuserHomeState extends State<SuperuserHome> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  Utils utils = Utils();
   String uid;
   int currentScreen = 0;
   List screenList = [];
@@ -34,11 +37,9 @@ class _SuperuserHomeState extends State<SuperuserHome> {
     screenList = [
       Requests(),
       SoldItems(),
-      PushData(
-        uid: widget.uid,
-      ),
+      PushData(uid: widget.uid, scaffoldkey: scaffoldKey),
       Reports(),
-      Extras(),
+      Extras(uid: widget.uid),
     ];
     super.initState();
   }
@@ -46,8 +47,9 @@ class _SuperuserHomeState extends State<SuperuserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
-      appBar: AppBar(
+      key: scaffoldKey,
+      appBar: utils.getAppbar(
+        titleList[currentScreen],
         leading: Visibility(
           visible: currentScreen == 0 ? false : true,
           child: IconButton(
@@ -72,16 +74,6 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           ),
           SizedBox(width: 9)
         ],
-        title: Text(
-          titleList[currentScreen],
-          style: TextStyle(
-            letterSpacing: 1.0,
-            fontSize: 23,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
@@ -92,30 +84,25 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         elevation: 18,
         type: BottomNavigationBarType.fixed,
         items: [
-          BottomNavigationBarItem(
-            activeIcon: Icon(MdiIcons.humanGreeting),
-            icon: Icon(MdiIcons.humanGreeting),
-            title: Text('Requests'),
+          bottomNavigationBar(
+            title: 'Orders',
+            icon: MdiIcons.humanGreeting,
           ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(MdiIcons.cashUsdOutline),
-            icon: Icon(MdiIcons.cashUsdOutline),
-            title: Text('Sold Items'),
+          bottomNavigationBar(
+            title: 'Sold Items',
+            icon: MdiIcons.cashUsdOutline,
           ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(MdiIcons.plusCircleOutline),
-            icon: Icon(MdiIcons.plusCircleOutline),
-            title: Text('Add Items'),
+          bottomNavigationBar(
+            title: 'Add Items',
+            icon: MdiIcons.plusCircleOutline,
           ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(MdiIcons.receipt),
-            icon: Icon(MdiIcons.receipt),
-            title: Text('Reports'),
+          bottomNavigationBar(
+            title: 'Reports',
+            icon: MdiIcons.receipt,
           ),
-          BottomNavigationBarItem(
-            activeIcon: Icon(MdiIcons.more),
-            icon: Icon(MdiIcons.more),
-            title: Text('Extras'),
+          bottomNavigationBar(
+            title: 'Extras',
+            icon: MdiIcons.more,
           ),
         ],
       ),
@@ -125,51 +112,16 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           if (currentScreen == 0) {
             return await showDialog(
               context: context,
-              child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                title: Text(
-                  'Are you sure ?',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                content: Text(
-                  'Do you want to exiti',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                      child: Text(
-                        'Yes',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        return true;
-                      }),
-                  FlatButton(
-                    child: Text(
-                      'No',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      return false;
-                    },
-                  ),
-                ],
+              child: utils.alertDialog(
+                content: 'Exit ?',
+                yesPressed: () {
+                  Navigator.pop(context);
+                  return true;
+                },
+                noPressed: () {
+                  Navigator.pop(context);
+                  return false;
+                },
               ),
             );
           } else {
@@ -179,6 +131,13 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           }
         },
       ),
+    );
+  }
+
+  BottomNavigationBarItem bottomNavigationBar({String title, IconData icon}) {
+    return BottomNavigationBarItem(
+      icon: Icon(icon),
+      title: Text(title),
     );
   }
 

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/utils.dart';
 
@@ -10,29 +9,27 @@ class Showrooms extends StatefulWidget {
 }
 
 class _ShowroomsState extends State<Showrooms> {
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  Utils utils = Utils();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
-      appBar: AppBar(
-        title: Text('Showrooms'),
-        centerTitle: true,
-        elevation: 0,
+      key: scaffoldKey,
+      appBar: utils.getAppbar(
+        'Showrooms',
         actions: <Widget>[
           Center(
             child: IconButton(
               icon: Icon(MdiIcons.plusOutline),
               onPressed: () {
-                addshowRoom(title: '', adress: '', latitude: '', longitude: '');
+                addshowRoom();
               },
             ),
           ),
         ],
       ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: Utils().getBoxDecoration(),
+      body: utils.getContainer(
         child: StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('showrooms').snapshots(),
           builder: (context, snapshot) {
@@ -110,9 +107,9 @@ class _ShowroomsState extends State<Showrooms> {
                             title: snapshot.data.documents[index]['name'],
                             adress: snapshot.data.documents[index]['adress'],
                             latitude: snapshot.data.documents[index]
-                                ['latitude'],
+                            ['latitude'],
                             longitude: snapshot.data.documents[index]
-                                ['longitude'],
+                            ['longitude'],
                             document: snapshot.data.documents[index].documentID,
                           );
                         }
@@ -153,7 +150,13 @@ class _ShowroomsState extends State<Showrooms> {
     );
   }
 
-  addshowRoom({title, adress, latitude, longitude, document}) {
+  addshowRoom({
+    title = '',
+    adress = '',
+    latitude = '',
+    longitude = '',
+    document = '',
+  }) {
     final titleController = TextEditingController();
     final adressController = TextEditingController();
     final latitudeController = TextEditingController();
@@ -201,7 +204,7 @@ class _ShowroomsState extends State<Showrooms> {
               controller: latitudeController,
               maxLines: 1,
               keyboardType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
+              TextInputType.numberWithOptions(signed: true, decimal: true),
               decoration: getDecoration('latitude'),
             ),
           ),
@@ -211,7 +214,7 @@ class _ShowroomsState extends State<Showrooms> {
               controller: longitudeController,
               maxLines: 1,
               keyboardType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
+              TextInputType.numberWithOptions(signed: true, decimal: true),
               decoration: getDecoration('longitude'),
             ),
           ),
@@ -221,7 +224,7 @@ class _ShowroomsState extends State<Showrooms> {
           Center(
             child: RaisedButton(
               onPressed: () async {
-                Fluttertoast.showToast(msg: 'Pushing data...');
+                utils.getSnackbar(scaffoldKey, 'Pushing data...');
 
                 if (titleController.text.length > 0 &&
                     adressController.text.length > 0 &&
@@ -237,9 +240,9 @@ class _ShowroomsState extends State<Showrooms> {
                     'latitude': latitudeController.text,
                     'longitude': longitudeController.text,
                   });
-                  Fluttertoast.showToast(msg: 'Done !');
+                  utils.getSnackbar(scaffoldKey, 'Showroom Added');
                 } else {
-                  Fluttertoast.showToast(msg: 'Invalid entries !');
+                  utils.getSnackbar(scaffoldKey, 'Invalid Entries');
                 }
               },
               shape: RoundedRectangleBorder(

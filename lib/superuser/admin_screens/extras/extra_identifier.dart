@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:strings/strings.dart';
 import 'package:superuser/utils.dart';
 
 class ExtraIdentifier extends StatefulWidget {
@@ -15,6 +15,7 @@ class ExtraIdentifier extends StatefulWidget {
 }
 
 class _ExtraIdentifierState extends State<ExtraIdentifier> {
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Utils utils = Utils();
 
   @override
@@ -27,13 +28,9 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            backgroundColor: Colors.red,
-            appBar: AppBar(
-              title: Text(
-                widget.identifier.toUpperCase(),
-              ),
-              centerTitle: true,
-              elevation: 0,
+            key: scaffoldKey,
+            appBar: utils.getAppbar(
+              capitalize(widget.identifier),
               actions: <Widget>[
                 Center(
                   child: IconButton(
@@ -51,10 +48,7 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                 )
               ],
             ),
-            body: Container(
-              height: double.infinity,
-              width: double.infinity,
-              decoration: Utils().getBoxDecoration(),
+            body: utils.getContainer(
               child: ListView.builder(
                 itemCount: snapshot.data.data == null
                     ? 0
@@ -144,11 +138,11 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                                               .updateData(
                                             {
                                               '${widget.identifier}_array':
-                                                  FieldValue.arrayRemove(
+                                              FieldValue.arrayRemove(
                                                 [
                                                   snapshot.data.data[
-                                                          '${widget.identifier}_array']
-                                                      [index],
+                                                  '${widget.identifier}_array']
+                                                  [index],
                                                 ],
                                               )
                                             },
@@ -159,7 +153,7 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                                               .setData(
                                             {
                                               '${widget.identifier}_array':
-                                                  FieldValue.arrayUnion(
+                                              FieldValue.arrayUnion(
                                                 [
                                                   textController.text
                                                       .toLowerCase()
@@ -172,9 +166,8 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                                           Navigator.of(context).pop(false);
                                         } else {
                                           Navigator.of(context).pop(false);
-                                          Fluttertoast.showToast(
-                                              msg:
-                                                  'Invalid Arguments or field is alreay present');
+                                          utils.getSnackbar(scaffoldKey,
+                                              'Invalid Arguments or field is alreay present');
                                         }
                                       },
                                     ),
@@ -204,11 +197,11 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                                           .updateData(
                                         {
                                           '${widget.identifier}_array':
-                                              FieldValue.arrayRemove(
+                                          FieldValue.arrayRemove(
                                             [
                                               snapshot.data.data[
-                                                      '${widget.identifier}_array']
-                                                  [index]
+                                              '${widget.identifier}_array']
+                                              [index]
                                             ],
                                           ),
                                         },
@@ -321,9 +314,8 @@ class _ExtraIdentifierState extends State<ExtraIdentifier> {
                     }, merge: true);
                     Navigator.pop(context);
                   } else {
-                    Fluttertoast.showToast(
-                      msg: 'Invalid Arguments or field is alreay present',
-                    );
+                    utils.getSnackbar(scaffoldKey,
+                        'Invalid Arguments or field is alreay present');
                   }
                 },
               ),

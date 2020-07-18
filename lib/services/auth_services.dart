@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:superuser/admin/admin_home.dart';
 import 'package:superuser/superuser/authenticate.dart';
 import 'package:superuser/superuser/superuser_home.dart';
@@ -34,7 +33,7 @@ class AuthServices {
                     );
                   } else {
                     logout();
-                    return AdminAuthenticate();
+                    return Authenticate();
                   }
                 } else {
                   return Container(
@@ -49,19 +48,32 @@ class AuthServices {
                 }
               });
         } else {
-          return AdminAuthenticate();
+          return Authenticate();
         }
       },
     );
   }
 
-  superuserLogin(email, password) async {
-    Fluttertoast.showToast(msg: 'Authenticating...');
+  Future addAdmin(email, password, name, context) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await _db.collection('admin').document(result.user.uid).setData(
+        {
+          'since': DateTime.now().millisecondsSinceEpoch,
+          'name': name,
+          'isSuperuser': false,
+          'isAdmin': true,
+        },
+      );
+      int count = 0;
+      Navigator.of(context).popUntil((_) => count++ >= 2);
+      _auth.signOut();
+      return true;
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-      return false;
+      return e.toString();
     }
   }
 

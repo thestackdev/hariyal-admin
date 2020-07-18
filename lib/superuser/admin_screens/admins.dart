@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/material.dart';
-import 'package:superuser/admin_extras/admin_tabs.dart';
+import 'package:strings/strings.dart';
+import 'package:superuser/admin_extras/admin_extras.dart';
 import 'package:superuser/utils.dart';
 
 class Admins extends StatefulWidget {
+  final uid;
+
+  const Admins({Key key, this.uid}) : super(key: key);
+
   @override
   _AdminsState createState() => _AdminsState();
 }
@@ -16,10 +21,7 @@ class _AdminsState extends State<Admins> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: utils.getAppbar('Admins'),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('admin').snapshots(),
           builder: (context, snapshot) {
@@ -43,12 +45,13 @@ class _AdminsState extends State<Admins> {
                             MaterialPageRoute(
                               builder: (_) => AdminExtras(
                                 uid: snapshot.data.documents[index].documentID,
+                                myUid: widget.uid,
                               ),
                             ),
                           );
                         },
                         title: Text(
-                          snapshot.data.documents[index]['name'],
+                          capitalize(snapshot.data.documents[index]['name']),
                           style: TextStyle(
                             color: Colors.red.shade300,
                           ),

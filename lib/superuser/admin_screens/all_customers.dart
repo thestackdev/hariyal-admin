@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/admin_extras/customer_details.dart';
 import 'package:superuser/utils.dart';
@@ -12,39 +14,16 @@ class AllCustomers extends StatefulWidget {
 class _AllCustomersState extends State<AllCustomers> {
   bool isSearchActive = false;
   final queryConroller = TextEditingController();
-  ScrollController _scrollController = ScrollController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
   Utils utils = Utils();
-
   int count = 30;
-
-  _scrollListener() {
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
-      setState(() {
-        count += 30;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
       appBar: utils.getAppbar('Customers'),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: Column(
           children: <Widget>[
             Padding(
@@ -60,56 +39,48 @@ class _AllCustomersState extends State<AllCustomers> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: isQueryActive
                     ? firestore
-                    .collection('customers')
-                    .where('name', isEqualTo: queryConroller.text)
-                    .limit(count)
-                    .snapshots()
+                        .collection('customers')
+                        .where('name', isEqualTo: queryConroller.text)
+                        .limit(count)
+                        .snapshots()
                     : firestore
-                    .collection('customers')
-                    .limit(count)
-                    .snapshots(),
+                        .collection('customers')
+                        .limit(count)
+                        .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.documents.length == 0) {
                       return utils.getNullWidget('No customers found !');
                     } else {
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.all(9),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(9),
-                              color: Colors.grey.shade100,
-                            ),
-                            child: ListTile(
+                      return LazyLoadScrollView(
+                        onEndOfPage: () {
+                          count += 30;
+                          handleState();
+                        },
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (context, index) {
+                            return utils.listTile(
+                              leading: CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider(
+                                    snapshot.data.documents[index]['image']),
+                              ),
+                              title:
+                                  '${snapshot.data.documents[index]['name']}',
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        Customerdetails(
-                                          docsnap: snapshot.data
-                                              .documents[index],
-                                        ),
+                                    builder: (_) => Customerdetails(
+                                      docsnap: snapshot.data.documents[index],
+                                    ),
                                   ),
                                 );
                               },
-                              title: Text(
-                                '${snapshot.data.documents[index]['name']}',
-                                style: TextStyle(
-                                  color: Colors.red.shade300,
-                                ),
-                                textScaleFactor: 1.2,
-                              ),
-                              subtitle: Text(
-                                  'Phone : ${snapshot.data
-                                      .documents[index]['phone']}'),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       );
                     }
                   } else {
@@ -150,15 +121,15 @@ class _AllCustomersState extends State<AllCustomers> {
           ),
           isQueryActive
               ? IconButton(
-                  icon: Icon(MdiIcons.closeOutline),
-                  onPressed: () {
-                    if (isQueryActive) {
-                      FocusScope.of(context).unfocus();
-                      queryConroller.clear();
-                      isQueryActive = false;
-                      handleState();
-                    }
-                  },
+            icon: Icon(MdiIcons.closeOutline),
+            onPressed: () {
+              if (isQueryActive) {
+                FocusScope.of(context).unfocus();
+                queryConroller.clear();
+                isQueryActive = false;
+                handleState();
+              }
+            },
           )
               : SizedBox()
         ],

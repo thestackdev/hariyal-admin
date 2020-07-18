@@ -25,12 +25,13 @@ dependencies:
   date_time_format:
   image:
   font_awesome_flutter:
-  fluttertoast:
-  catcher:
   cached_network_image:
   photo_view:
   flutter_spinkit:
   splashscreen:
+  strings:
+  lazy_load_scrollview:
+  google_fonts:
 
 dev_dependencies:
   flutter_test:

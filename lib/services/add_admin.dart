@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:superuser/services/auth_services.dart';
 import 'package:superuser/utils.dart';
 
 class AddAdmin extends StatefulWidget {
@@ -10,28 +9,34 @@ class AddAdmin extends StatefulWidget {
 }
 
 class _AddAdminState extends State<AddAdmin> {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  Firestore _db = Firestore.instance;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   final email = TextEditingController();
   final password = TextEditingController();
   final name = TextEditingController();
   Utils utils = Utils();
   bool loading = false;
+  bool checkBoxValue = false;
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    name.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: utils.getAppbar('Add Admin'),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: utils.getBoxDecoration(),
+      body: utils.getContainer(
         child: loading
             ? utils.getLoadingIndicator()
             : ListView(
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+                  utils.getTextInputPadding(
                     child: TextField(
                       controller: name,
                       maxLines: null,
@@ -42,8 +47,7 @@ class _AddAdminState extends State<AddAdmin> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+                  utils.getTextInputPadding(
                     child: TextField(
                       controller: email,
                       maxLines: null,
@@ -54,8 +58,7 @@ class _AddAdminState extends State<AddAdmin> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+                  utils.getTextInputPadding(
                     child: TextField(
                       controller: password,
                       maxLines: 1,
@@ -67,46 +70,62 @@ class _AddAdminState extends State<AddAdmin> {
                     ),
                   ),
                   SizedBox(height: 18),
+                  Container(
+                    margin: EdgeInsets.all(9),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Checkbox(
+                          onChanged: (value) {
+                            checkBoxValue = value;
+                            handleState();
+                          },
+                          value: checkBoxValue,
+                        ),
+                        Flexible(
+                          child: Text(
+                            'As of now when you try to create a new Admin you\'ll get logged out on successfull creation of Admin.',
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   utils.getRaisedButton(
-                    title: 'Confirm',
-                    onPressed: addAdmin,
-                  )
+                    title: 'Add Admin',
+                    onPressed: checkBoxValue
+                        ? () async {
+                            FocusScope.of(context).unfocus();
+                            if (email.text.length > 0 &&
+                                password.text.length > 0 &&
+                                name.text.length > 0) {
+                              loading = true;
+                              handleState();
+                              final result = await AuthServices().addAdmin(
+                                  email.text.trim(),
+                                  password.text.trim(),
+                                  name.text.toLowerCase().trim(),
+                                  context);
+
+                              if (result == true) {
+                                loading = false;
+                                handleState();
+                              } else {
+                                loading = false;
+                                handleState();
+                                utils.getSnackbar(scaffoldKey, result);
+                              }
+                            } else {
+                              utils.getSnackbar(scaffoldKey, 'Invalid entries');
+                            }
+                          }
+                        : null,
+                  ),
                 ],
               ),
       ),
     );
-  }
-
-  addAdmin() async {
-    if (email.text.length > 0 &&
-        password.text.length > 0 &&
-        name.text.length > 0) {
-      loading = true;
-      handleState();
-      try {
-        final result = await _auth.createUserWithEmailAndPassword(
-          email: email.text,
-          password: password.text,
-        );
-
-        await _db.collection('admin').document(result.user.uid).setData(
-          {
-            'since': DateTime.now().millisecondsSinceEpoch,
-            'name': name.text,
-            'isSuperuser': false,
-            'isAdmin': true,
-          },
-        );
-        handleState();
-        utils.getToast('Admin Successfully Added!');
-      } catch (e) {
-        loading = false;
-        utils.getToast(e.toString());
-        handleState();
-      }
-    } else {
-      utils.getToast('Invalid entries');
-    }
   }
 
   handleState() {
