@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/services/add_admin.dart';
-import 'package:superuser/services/auth_services.dart';
 import 'package:superuser/utils.dart';
 
 class AdminExtras extends StatefulWidget {
@@ -14,7 +14,7 @@ class _AdminExtrasState extends State<AdminExtras> {
 
   @override
   Widget build(BuildContext context) {
-    return utils.getContainer(
+    return utils.container(
       child: ListView(
         children: <Widget>[
           utils.listTile(
@@ -37,7 +37,7 @@ class _AdminExtrasState extends State<AdminExtras> {
                   content: 'Signout ?',
                   yesPressed: () {
                     Navigator.pop(context);
-                    AuthServices().logout();
+                    FirebaseAuth.instance.signOut();
                   },
                   noPressed: () {
                     Navigator.pop(context);

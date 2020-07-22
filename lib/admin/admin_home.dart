@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/view_products.dart';
 import 'package:superuser/utils.dart';
@@ -6,19 +7,13 @@ import 'package:superuser/utils.dart';
 import 'admin_extras.dart';
 
 class AdminHome extends StatefulWidget {
-  final uid;
-
-  const AdminHome({Key key, this.uid}) : super(key: key);
-
   @override
   _AdminHomeState createState() => _AdminHomeState();
 }
 
 class _AdminHomeState extends State<AdminHome>
     with SingleTickerProviderStateMixin {
-  GlobalKey<ScaffoldState> scaffolfkey = GlobalKey<ScaffoldState>();
   TabController tabController;
-  Utils utils = Utils();
 
   @override
   void initState() {
@@ -28,9 +23,9 @@ class _AdminHomeState extends State<AdminHome>
 
   @override
   Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
     return Scaffold(
-      key: scaffolfkey,
-      appBar: utils.getAppbar(
+      appBar: utils.appbar(
         'Admin Console',
         boottom: TabBar(
           controller: tabController,
@@ -66,16 +61,7 @@ class _AdminHomeState extends State<AdminHome>
         },
         child: TabBarView(
           controller: tabController,
-          children: [
-            PushData(
-              uid: widget.uid,
-              scaffoldkey: scaffolfkey,
-            ),
-            utils.getContainer(
-              child: getViewProducts(widget.uid),
-            ),
-            AdminExtras()
-          ],
+          children: [PushData(), ViewMyProducts(), AdminExtras()],
         ),
       ),
     );

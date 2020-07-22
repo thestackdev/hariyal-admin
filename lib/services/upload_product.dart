@@ -1,27 +1,25 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_absolute_path/flutter_absolute_path.dart';
-import 'package:image/image.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PushProduct {
   List imageUrls = [];
   final _storage = FirebaseStorage.instance.ref().child('products');
   Firestore _reference = Firestore.instance;
 
-  uploadProduct(
-    images,
+  uploadProduct({
+    List<Asset> images,
     category,
+    subCategory,
     state,
     area,
+    adressID,
     price,
     title,
     description,
+    specifications,
     uid,
-    adressID,
-  ) async {
+  }) async {
     imageUrls.clear();
     await Future.forEach(images, (element) async {
       imageUrls.add(await uploadProductImages(element));
@@ -33,15 +31,15 @@ class PushProduct {
       'title': title,
       'description': description,
       'images': imageUrls,
-      'location': {
-        'state': state.toLowerCase(),
-        'area': area.toLowerCase(),
-      },
-      'category': category.toLowerCase(),
+      'location': {'state': state, 'area': area},
+      'category': {'category': category, 'subCategory': subCategory},
       'author': uid,
       'adress': adressID,
       'price': price,
+      'specifications': specifications,
       'isSold': false,
+      'soldTo': null,
+      'soldReason': null,
     });
     await _reference
         .collection('admin')
@@ -63,8 +61,9 @@ class PushProduct {
     price,
     title,
     description,
-    uid,
     adressID,
+    subCategory,
+    specifications,
   }) async {
     imageUrls.clear();
     if (oldImages == null || oldImages.length <= 0) {
@@ -88,29 +87,23 @@ class PushProduct {
         'state': state.toLowerCase(),
         'area': area.toLowerCase(),
       },
-      'category': category.toLowerCase(),
-      'author': uid,
+      'category': {'category': category, 'subCategory': subCategory},
       'adress': adressID,
       'price': price,
-      'isSold': false,
+      'specifications': specifications,
     });
   }
 
-  uploadProductImages(images) async {
-    Image file = decodeImage(
-        File(await FlutterAbsolutePath.getAbsolutePath(images.identifier))
-            .readAsBytesSync());
-
-    final filePath = await getTemporaryDirectory();
-
-    var compressedImage =
-        File('${filePath.path}/${DateTime.now().millisecondsSinceEpoch}.jpg')
-          ..writeAsBytesSync(encodeJpg(file, quality: 50));
-
+  uploadProductImages(Asset images) async {
     try {
       return _storage
-          .child(DateTime.now().microsecondsSinceEpoch.toString())
-          .putFile(File(compressedImage.path))
+          .child(DateTime
+          .now()
+          .microsecondsSinceEpoch
+          .toString())
+          .putData(await images
+          .getByteData(quality: 75)
+          .then((value) => value.buffer.asUint8List()))
           .onComplete
           .then((value) {
         return value.ref.getDownloadURL();

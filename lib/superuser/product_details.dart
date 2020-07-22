@@ -1,221 +1,185 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
+import 'package:get/get.dart';
 import 'package:superuser/superuser/admin_screens/edit_data_screen.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
+import 'package:superuser/widgets/image_view.dart';
 
 class ProductDetails extends StatefulWidget {
-  final DocumentSnapshot productSnap;
-  final uid;
+  final docID;
 
-  ProductDetails(this.productSnap, this.uid);
+  const ProductDetails({Key key, this.docID}) : super(key: key);
 
   @override
   _ProductDetailsState createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Utils utils = Utils();
   bool loading = false;
   FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   Firestore firestore = Firestore.instance;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      appBar: utils.getAppbar('Product Details'),
-      body: utils.getContainer(
+      appBar: utils.appbar('Product Details'),
+      body: utils.container(
         child: loading
-            ? utils.getLoadingIndicator()
-            : Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  ListView(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(12),
-                        child: ImageSliderWidget(
-                          fit: BoxFit.contain,
-                          imageHeight: MediaQuery.of(context).size.height / 2,
-                          imageUrls: widget.productSnap.data['images'],
-                          tag: widget.productSnap.documentID,
-                          dotPosition: 20,
-                        ),
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-                        child: Text(
-                          widget.productSnap.data['title'],
-                          style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ? utils.progressIndicator()
+            : DataStreamBuilder<DocumentSnapshot>(
+                errorBuilder: (context, error) => utils.nullWidget(error),
+                loadingBuilder: (context) => utils.progressIndicator(),
+                stream: firestore
+                    .collection('products')
+                    .document(widget.docID)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  return Stack(
+                    children: [
+                      ListView(
+                        padding: EdgeInsets.all(9),
                         children: <Widget>[
-                          Expanded(
-                              child: Row(
+                          ImageSliderWidget(
+                            onTap: () => Get.to(
+                              HariyalImageView(
+                                imageUrls: snapshot.data['images'],
+                              ),
+                            ),
+                            fit: BoxFit.contain,
+                            imageHeight: MediaQuery.of(context).size.height / 2,
+                            imageUrls: snapshot.data['images'],
+                            tag: snapshot.documentID,
+                            dotPosition: 20,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            snapshot.data['title'],
+                            style: TextStyle(
+                              fontSize: 26.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 9),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              SizedBox(
-                                width: 20.0,
+                              SelectableText(
+                                snapshot.documentID,
+                                style: utils.textStyle(
+                                  color: Colors.grey.shade700,
+                                ),
                               ),
                               Text(
-                                widget.productSnap.documentID,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              SizedBox(
-                                width: 5.0,
+                                '${snapshot.data['price']} Rs',
+                                style: TextStyle(
+                                    color: Colors.red, fontSize: 26.0),
                               ),
                             ],
-                          )),
-                          Text('${widget.productSnap.data['price']} Rs',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 26.0,
-                              )),
-                          SizedBox(
-                            width: 20.0,
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        child: Text(
-                          "Description",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(
-                            left: 20.0, right: 20.0, bottom: 10.0),
-                        child: Text(
-                          widget.productSnap.data['description'],
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 18),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      AppBar(
-                        iconTheme: IconThemeData(color: Colors.black),
-                        brightness: Brightness.light,
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Expanded(
-                            child: MaterialButton(
-                              color: Colors.deepOrange,
-                              elevation: 0,
-                              onPressed: () async {
-                                loading = true;
-                                handleState();
-                                await Future.forEach(
-                                    widget.productSnap.data['images'],
-                                    (element) async {
-                                  try {
-                                    StorageReference ref = await firebaseStorage
-                                        .getReferenceFromUrl(element);
-                                    await ref.delete();
-                                  } catch (e) {
-                                    utils.getSnackbar(
-                                        scaffoldKey, e.toString());
-                                  }
-                                });
-                                await firestore
-                                    .collection('products')
-                                    .document(widget.productSnap.documentID)
-                                    .delete();
-                                await firestore
-                                    .collection('admin')
-                                    .document(widget.uid)
-                                    .collection('products')
-                                    .document(widget.productSnap.documentID)
-                                    .delete();
-                                Navigator.of(context).pop();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(15.0),
-                                child: Text(
-                                  "Delete",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
+                          SizedBox(height: 18),
+                          Text(
+                            "Description",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Expanded(
-                            child: MaterialButton(
-                              color: Colors.black54,
-                              elevation: 0,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => EditDataScreen(
-                                      uid: widget.uid,
-                                      productSnap: widget.productSnap,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(15.0),
-                                child: Text(
-                                  "Edit",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
+                          SizedBox(height: 9),
+                          Text(
+                            '${snapshot.data['description']}',
+                            textAlign: TextAlign.justify,
+                            style: utils.inputTextStyle(),
+                          ),
+                          SizedBox(height: 9),
+                          Container(
+                            margin: EdgeInsets.all(9),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(9),
+                              color: Colors.grey.shade100,
+                            ),
+                            child: SwitchListTile(
+                              title: Text(
+                                snapshot.data['isSold']
+                                    ? 'Mark as Available'
+                                    : 'Mark as sold',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              value: snapshot.data['isSold'],
+                              onChanged: (value) {
+                                snapshot.reference
+                                    .updateData({'isSold': value});
+                              },
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      Positioned(
+                        bottom: -1,
+                        right: 0,
+                        left: 0,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Expanded(
+                              child: utils.materialButton(
+                                color: Colors.red.shade500,
+                                title: 'Delete',
+                                onPressed: () => deleteProduct(snapshot),
+                              ),
+                            ),
+                            Expanded(
+                              child: utils.materialButton(
+                                color: Colors.grey.shade500,
+                                title: 'Edit',
+                                onPressed: () => editProduct(snapshot),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
-                  )
-                ],
-              ),
+                  );
+                }),
       ),
     );
   }
 
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
+  deleteProduct(snapshot) async {
+    loading = true;
+    handleState();
+    await Future.forEach(snapshot.data.data['images'], (element) async {
+      try {
+        StorageReference ref =
+            await firebaseStorage.getReferenceFromUrl(element);
+        await ref.delete();
+      } catch (e) {
+        utils.showSnackbar(e.toString());
+      }
+    });
+    await firestore
+        .collection('products')
+        .document(snapshot.data.documentID)
+        .delete();
+    await firestore
+        .collection('admin')
+        .document(snapshot.data.data['author'])
+        .collection('products')
+        .document(snapshot.data.documentID)
+        .delete();
+    Get.back();
   }
+
+  editProduct(snapshot) {
+    Get.to(EditDataScreen(productSnap: snapshot.data));
+  }
+
+  handleState() => (mounted) ? setState(() => null) : null;
 }

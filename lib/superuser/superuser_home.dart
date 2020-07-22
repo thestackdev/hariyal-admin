@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/superuser/admin_screens/settings.dart';
 import 'package:superuser/utils.dart';
@@ -10,20 +13,19 @@ import 'admin_screens/requests.dart';
 import 'admin_screens/sold_items.dart';
 
 class SuperuserHome extends StatefulWidget {
-  final uid;
-
-  const SuperuserHome({Key key, this.uid}) : super(key: key);
-
   @override
   _SuperuserHomeState createState() => _SuperuserHomeState();
 }
 
 class _SuperuserHomeState extends State<SuperuserHome> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  Utils utils = Utils();
-  String uid;
   int currentScreen = 0;
-  List screenList = [];
+  List screenList = [
+    Requests(),
+    SoldItems(),
+    PushData(),
+    Reports(),
+    Extras(),
+  ];
   final titleList = [
     'Requests',
     'Sold Items',
@@ -33,22 +35,10 @@ class _SuperuserHomeState extends State<SuperuserHome> {
   ];
 
   @override
-  void initState() {
-    screenList = [
-      Requests(),
-      SoldItems(),
-      PushData(uid: widget.uid, scaffoldkey: scaffoldKey),
-      Reports(),
-      Extras(uid: widget.uid),
-    ];
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
     return Scaffold(
-      key: scaffoldKey,
-      appBar: utils.getAppbar(
+      appBar: utils.appbar(
         titleList[currentScreen],
         leading: Visibility(
           visible: currentScreen == 0 ? false : true,
@@ -63,14 +53,8 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         actions: <Widget>[
           Center(
             child: IconButton(
-              icon: Icon(MdiIcons.cogOutline),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => Settings(),
-                ),
-              ),
-            ),
+                icon: Icon(MdiIcons.cogOutline),
+                onPressed: () => Get.to(Settings())),
           ),
           SizedBox(width: 9)
         ],
@@ -112,17 +96,14 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           if (currentScreen == 0) {
             return await showDialog(
               context: context,
-              child: utils.alertDialog(
-                content: 'Exit ?',
-                yesPressed: () {
-                  Navigator.pop(context);
-                  return true;
-                },
-                noPressed: () {
-                  Navigator.pop(context);
-                  return false;
-                },
-              ),
+              builder: (context) {
+                return utils.alertDialog(
+                  content: 'Exit ?',
+                  yesPressed: () => SystemChannels.platform
+                      .invokeMethod('SystemNavigator.pop'),
+                  noPressed: () => Navigator.of(context).pop(false),
+                );
+              },
             );
           } else {
             currentScreen = 0;

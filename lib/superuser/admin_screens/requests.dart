@@ -12,13 +12,13 @@ class _RequestsState extends State<Requests> {
 
   @override
   Widget build(BuildContext context) {
-    return utils.getContainer(
+    return utils.container(
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('reuests').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.documents.length == 0) {
-              return utils.getNullWidget('No Orders Yet !');
+              return utils.nullWidget('No Orders Yet !');
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,
@@ -28,7 +28,7 @@ class _RequestsState extends State<Requests> {
               );
             }
           } else {
-            return utils.getLoadingIndicator();
+            return utils.progressIndicator();
           }
         },
       ),

@@ -12,13 +12,13 @@ class _ReportsState extends State<Reports> {
 
   @override
   Widget build(BuildContext context) {
-    return utils.getContainer(
+    return utils.container(
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('reports').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.documents.length == 0) {
-              return utils.getNullWidget('No Reports Generated Yet !');
+              return utils.nullWidget('No Reports Generated Yet !');
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,
@@ -28,7 +28,7 @@ class _ReportsState extends State<Reports> {
               );
             }
           } else {
-            return utils.getLoadingIndicator();
+            return utils.progressIndicator();
           }
         },
       ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:superuser/services/add_admin.dart';
+import 'package:superuser/superuser/categories.dart';
 
 import '../../utils.dart';
-import 'extras/extra_identifier.dart';
-import 'extras/shorooms.dart';
+import '../shorooms.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -12,13 +14,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  Utils utils = Utils();
-
   @override
   Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
     return Scaffold(
-      appBar: utils.getAppbar('Settings'),
-      body: utils.getContainer(
+      appBar: utils.appbar('Settings'),
+      body: utils.container(
         child: ListView(
           children: <Widget>[
             utils.listTile(
@@ -27,12 +28,7 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.humanChild,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddAdmin(),
-                ),
-              ),
+              onTap: () => Get.to(AddAdmin()),
             ),
             utils.listTile(
               title: 'Categories',
@@ -40,44 +36,20 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.cartArrowRight,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ExtraIdentifier(
-                    identifier: 'category',
-                  ),
-                ),
+              onTap: () => Get.to(
+                CategoriesScreen(type: 'category'),
               ),
             ),
             utils.listTile(
-              title: 'States',
+              title: 'Locations',
               leading: Icon(
                 MdiIcons.locationExit,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ExtraIdentifier(
-                    identifier: 'states',
+              onTap: () =>
+                  Get.to(
+                    CategoriesScreen(type: 'locations'),
                   ),
-                ),
-              ),
-            ),
-            utils.listTile(
-              title: 'Areas',
-              leading: Icon(
-                MdiIcons.locationExit,
-                color: Colors.red.shade300,
-              ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ExtraIdentifier(
-                    identifier: 'areas',
-                  ),
-                ),
-              ),
             ),
             utils.listTile(
               title: 'Showrooms',
@@ -85,12 +57,7 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.mapMarkerOutline,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Showrooms(),
-                ),
-              ),
+              onTap: () => Get.to(Showrooms()),
             ),
           ],
         ),

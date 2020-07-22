@@ -1,16 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:superuser/services/auth_services.dart';
+import 'package:superuser/services/all_products.dart';
 import 'package:superuser/superuser/admin_screens/admins.dart';
-import 'package:superuser/superuser/admin_screens/all_customers.dart';
-import 'package:superuser/superuser/admin_screens/user_intrests.dart';
+import 'package:superuser/superuser/admin_screens/customers.dart';
 import 'package:superuser/utils.dart';
 
 class Extras extends StatefulWidget {
-  final uid;
-
-  const Extras({Key key, this.uid}) : super(key: key);
-
   @override
   _ExtrasState createState() => _ExtrasState();
 }
@@ -20,16 +16,16 @@ class _ExtrasState extends State<Extras> {
 
   @override
   Widget build(BuildContext context) {
-    return utils.getContainer(
+    return utils.container(
       child: ListView(
         children: <Widget>[
           utils.listTile(
-            title: 'Intrests',
-            leading: Icon(MdiIcons.informationOutline, color: Colors.red),
+            title: 'My Products',
+            leading: Icon(MdiIcons.cartOutline, color: Colors.red),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => UserIntrests(),
+                builder: (_) => AllProducts(),
               ),
             ),
           ),
@@ -49,7 +45,7 @@ class _ExtrasState extends State<Extras> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => Admins(uid: widget.uid),
+                builder: (_) => Admins(),
               ),
             ),
           ),
@@ -59,16 +55,18 @@ class _ExtrasState extends State<Extras> {
             onTap: () async {
               showDialog(
                 context: context,
-                child: utils.alertDialog(
-                  content: 'Logout ?',
-                  yesPressed: () {
-                    Navigator.pop(context);
-                    AuthServices().logout();
-                  },
-                  noPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
+                builder: (context) {
+                  return utils.alertDialog(
+                    content: 'Logout ?',
+                    yesPressed: () {
+                      Navigator.pop(context);
+                      FirebaseAuth.instance.signOut();
+                    },
+                    noPressed: () {
+                      Navigator.pop(context);
+                    },
+                  );
+                },
               );
             },
           ),

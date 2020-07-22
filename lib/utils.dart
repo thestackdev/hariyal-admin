@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:strings/strings.dart';
 
 class Utils {
   textStyle({Color color, double fontSize}) {
@@ -12,11 +15,136 @@ class Utils {
     );
   }
 
-  getDecoration({label, iconData}) {
+  simpleDialouge({
+    String label,
+    Function yesPressed,
+    Function noPressed,
+    Widget content,
+  }) {
+    return Get.defaultDialog(
+      title: capitalize(label),
+      content: content,
+      cancel: FlatButton(
+        child: Text('Cancel', style: textStyle()),
+        onPressed: noPressed,
+      ),
+      confirm: FlatButton(
+        child: Text('Confirm', style: textStyle()),
+        onPressed: yesPressed,
+      ),
+    );
+  }
+
+  Widget productInputDropDown({
+    String label,
+    List items,
+    Function onChanged,
+    String value,
+    bool isShowroom = false,
+    String Function(dynamic) validator,
+  }) {
+    return textInputPadding(
+      child: DropdownButtonFormField(
+        validator: (value) => value == null ? 'Field can\'t be empty' : null,
+        value: value,
+        decoration: inputDecoration(label: label),
+        isExpanded: true,
+        iconEnabledColor: Colors.grey,
+        style: inputTextStyle(),
+        iconSize: 30,
+        elevation: 9,
+        onChanged: onChanged,
+        items: items.map((e) {
+          return DropdownMenuItem(
+            value: isShowroom ? e.data['name'] : e,
+            child: Text(isShowroom ? e.data['name'] : e),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget productInputText({
+    TextEditingController controller,
+    String label,
+    TextInputType textInputType = TextInputType.text,
+    TextInputAction textInputAction = TextInputAction.done,
+    bool readOnly = false,
+  }) {
+    return textInputPadding(
+      child: TextFormField(
+        style: inputTextStyle(),
+        readOnly: readOnly,
+        maxLines: null,
+        controller: controller,
+        keyboardType: textInputType,
+        decoration: inputDecoration(label: label),
+        textInputAction: textInputAction,
+      ),
+    );
+  }
+
+  Widget productCard({
+    String title,
+    String description,
+    String imageUrl,
+    Function onTap,
+  }) {
+    return Card(
+      margin: EdgeInsets.all(12),
+      elevation: 3,
+      shadowColor: Colors.deepPurple,
+      child: ListTile(
+        onTap: onTap,
+        leading: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 90,
+          width: 90,
+          filterQuality: FilterQuality.low,
+        ),
+        title: Text(capitalize(title)),
+        subtitle: Text(description),
+      ),
+    );
+  }
+
+  Widget errorListTile() {
+    return Container(
+      margin: EdgeInsets.all(9),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(9),
+        color: Colors.grey.shade100,
+      ),
+      child: ListTile(
+        title: nullWidget('404 Product not found !'),
+      ),
+    );
+  }
+
+  TabBar tabDecoration(String title1, String title2) {
+    return TabBar(
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 18,
+      ),
+      indicatorColor: Colors.transparent,
+      tabs: [Tab(text: title1), Tab(text: title2)],
+    );
+  }
+
+  TextStyle inputTextStyle() {
+    return TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 18,
+      color: Colors.grey.shade700,
+    );
+  }
+
+  inputDecoration({label, iconData}) {
     return InputDecoration(
       labelText: label,
       isDense: true,
-      labelStyle: textStyle(),
+      labelStyle: textStyle(color: Colors.red),
       contentPadding: EdgeInsets.all(16),
       border: InputBorder.none,
       fillColor: Colors.grey.shade100,
@@ -41,12 +169,12 @@ class Utils {
       ),
       prefix: iconData != null
           ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(
-                  iconData,
-                  color: Colors.red.shade300,
-                  size: 18,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(
+            iconData,
+            color: Colors.red.shade300,
+            size: 18,
                 ),
                 SizedBox(
                   width: 5,
@@ -57,7 +185,20 @@ class Utils {
     );
   }
 
-  getSnackbar(GlobalKey<ScaffoldState> key, message) {
+  void showSnackbar(String message) {
+    Get.snackbar(
+      'Alert',
+      message,
+      colorText: Colors.white,
+      instantInit: true,
+      margin: EdgeInsets.zero,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      snackStyle: SnackStyle.GROUNDED,
+    );
+  }
+
+  snackBar(GlobalKey<ScaffoldState> key, message) {
     key.currentState.removeCurrentSnackBar();
     key.currentState.showSnackBar(
       SnackBar(
@@ -68,7 +209,7 @@ class Utils {
     );
   }
 
-  getContainer({Widget child}) {
+  container({Widget child}) {
     return ClipRRect(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(30),
@@ -89,8 +230,7 @@ class Utils {
     );
   }
 
-  Widget getAppbar(label,
-      {Widget boottom, Widget leading, List<Widget> actions}) {
+  Widget appbar(label, {Widget boottom, Widget leading, List<Widget> actions}) {
     return AppBar(
       leading: leading,
       actions: actions,
@@ -104,7 +244,7 @@ class Utils {
     );
   }
 
-  getNullWidget(label) {
+  Widget nullWidget(label) {
     return Center(
       child: Text(
         label,
@@ -115,7 +255,7 @@ class Utils {
     );
   }
 
-  getLoadingIndicator() {
+  progressIndicator() {
     return Center(
       child: SpinKitRing(color: Colors.red.shade300, lineWidth: 5),
     );
@@ -139,15 +279,14 @@ class Utils {
     );
   }
 
-  Widget getTextInputPadding({child}) {
+  Widget textInputPadding({child}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
       child: child,
     );
   }
 
-  Widget alertDialog(
-      {String content, Function yesPressed, Function noPressed}) {
+  Widget alertDialog({String content, Function yesPressed, Function noPressed}) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
@@ -184,5 +323,51 @@ class Utils {
         title: Text(title, style: TextStyle(color: Colors.grey.shade700)),
       ),
     );
+  }
+
+  Widget materialButton({Function onPressed, String title, Color color}) {
+    return MaterialButton(
+      height: 45,
+      color: color,
+      onPressed: onPressed,
+      child: Text(
+        title,
+        style: textStyle(
+          color: Colors.white,
+          fontSize: 18,
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(3),
+      ),
+    );
+  }
+
+  String errorMessageHelper(String error) {
+    switch (error) {
+      case "ERROR_EMAIL_ALREADY_IN_USE":
+        return "Your emai address is already in use";
+
+      case "ERROR_INVALID_EMAIL":
+        return "Email address appears to be malformed.";
+
+      case "ERROR_WRONG_PASSWORD":
+        return "Wrong Password";
+
+      case "ERROR_USER_NOT_FOUND":
+        return "User with this email doesn't exist.";
+
+      case "ERROR_USER_DISABLED":
+        return "Your Credintials are disabled , please contect Admin !";
+
+      case "ERROR_TOO_MANY_REQUESTS":
+        return "Too many requests, Try again later.";
+
+      case "ERROR_OPERATION_NOT_ALLOWED":
+        return "Signing in with Email and Password is not enabled.";
+
+      default:
+        return "Something went wrong , Try again later.";
+    }
   }
 }

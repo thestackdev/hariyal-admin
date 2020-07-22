@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:photo_view/photo_view.dart';
 
 import 'dot_indicator.dart';
@@ -123,7 +124,10 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
       heroAttributes: PhotoViewHeroAttributes(tag: key),
       imageProvider: CachedNetworkImageProvider(imgUrl),
       loadingBuilder: (context, event) => Center(
-        child: CircularProgressIndicator(),
+        child: SpinKitRing(
+          color: Colors.red.shade300,
+          lineWidth: 5,
+        ),
       ),
     );
   }
