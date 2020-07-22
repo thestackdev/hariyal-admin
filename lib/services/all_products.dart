@@ -6,6 +6,7 @@ import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
+import 'package:provider/provider.dart';
 
 class AllProducts extends StatefulWidget {
   @override
@@ -17,11 +18,18 @@ class _AllProductsState extends State<AllProducts> {
   final queryConroller = TextEditingController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
-  Utils utils = Utils();
+  Utils utils;
   int count = 30;
 
   @override
+  void dispose() {
+    queryConroller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    utils = context.watch<Utils>();
     return Scaffold(
       appBar: utils.appbar('All Products'),
       body: utils.container(
@@ -31,7 +39,7 @@ class _AllProductsState extends State<AllProducts> {
               color: Colors.red,
               padding: const EdgeInsets.all(9),
               child: TextField(
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: utils.inputTextStyle(),
                 maxLines: null,
                 controller: queryConroller,
                 decoration: getDecoration(),
@@ -46,6 +54,8 @@ class _AllProductsState extends State<AllProducts> {
 
   finterProducts() {
     return DataStreamBuilder(
+      errorBuilder: (context, error) => utils.nullWidget(error),
+      loadingBuilder: (context) => utils.progressIndicator(),
       stream: firestore
           .collection('products')
           .document(queryConroller.text)
@@ -60,12 +70,9 @@ class _AllProductsState extends State<AllProducts> {
             imageUrl: snapshot.data['images'][0],
             onTap: () {
               FocusScope.of(context).unfocus();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ProductDetails(
-                    docID: snapshot.data.documentID,
-                  ),
+              Get.to(
+                ProductDetails(
+                  docID: snapshot.data.documentID,
                 ),
               );
             },
@@ -77,54 +84,40 @@ class _AllProductsState extends State<AllProducts> {
 
   allProducts() {
     return Expanded(
-      child: StreamBuilder(
+      child: DataStreamBuilder<QuerySnapshot>(
+        errorBuilder: (context, error) => utils.nullWidget(error),
+        loadingBuilder: (context) => utils.progressIndicator(),
         stream: firestore.collection('products').limit(count).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.documents.length == 0) {
-              return utils.nullWidget('No products found !');
-            } else {
-              return LazyLoadScrollView(
-                onEndOfPage: () {
-                  count += 30;
-                  handleState();
-                },
-                child: ListView.builder(
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index) {
-                    try {
-                      return StreamBuilder<DocumentSnapshot>(
-                        stream: firestore
-                            .collection('products')
-                            .document(snapshot.data.documents[index].documentID)
-                            .snapshots(),
-                        builder: (context, productSnap) {
-                          if (productSnap.hasData) {
-                            return utils.productCard(
-                              title: productSnap.data['title'],
-                              description: productSnap.data['description'],
-                              imageUrl: productSnap.data['images'][0],
-                              onTap: () => Get.to(
-                                ProductDetails(
-                                  docID:
-                                      snapshot.data.documents[index].documentID,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return SizedBox.shrink();
-                          }
-                        },
-                      );
-                    } catch (e) {
-                      return utils.errorListTile();
-                    }
-                  },
-                ),
-              );
-            }
+          if (snapshot.documents.length == 0) {
+            return utils.nullWidget('No products found !');
           } else {
-            return utils.progressIndicator();
+            return LazyLoadScrollView(
+              onEndOfPage: () {
+                count += 30;
+                handleState();
+              },
+              child: ListView.builder(
+                itemCount: snapshot.documents.length,
+                itemBuilder: (context, index) {
+                  try {
+                    return utils.productCard(
+                      title: snapshot.documents[index].data['title'],
+                      description:
+                          snapshot.documents[index].data['description'],
+                      imageUrl: snapshot.documents[index].data['images'][0],
+                      onTap: () => Get.to(
+                        ProductDetails(
+                          docID: snapshot.documents[index].documentID,
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    return utils.errorListTile();
+                  }
+                },
+              ),
+            );
           }
         },
       ),

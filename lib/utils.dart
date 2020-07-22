@@ -24,6 +24,7 @@ class Utils {
     return Get.defaultDialog(
       title: capitalize(label),
       content: content,
+      middleText: '',
       cancel: FlatButton(
         child: Text('Cancel', style: textStyle()),
         onPressed: noPressed,
@@ -169,12 +170,12 @@ class Utils {
       ),
       prefix: iconData != null
           ? Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(
-            iconData,
-            color: Colors.red.shade300,
-            size: 18,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  iconData,
+                  color: Colors.red.shade300,
+                  size: 18,
                 ),
                 SizedBox(
                   width: 5,
@@ -286,7 +287,8 @@ class Utils {
     );
   }
 
-  Widget alertDialog({String content, Function yesPressed, Function noPressed}) {
+  Widget alertDialog(
+      {String content, Function yesPressed, Function noPressed}) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
@@ -301,10 +303,13 @@ class Utils {
     );
   }
 
-  Widget listTile({String title,
+  Widget listTile({
+    String title,
     Function onTap,
     Widget leading,
-    bool isTrailingNull = false}) {
+    bool isTrailingNull = false,
+    String subtitle,
+  }) {
     return Container(
       margin: EdgeInsets.all(9),
       decoration: BoxDecoration(
@@ -320,7 +325,19 @@ class Utils {
           color: Colors.red,
         ),
         onTap: onTap,
-        title: Text(title, style: TextStyle(color: Colors.grey.shade700)),
+        title: Text(
+          capitalize(title),
+          style: TextStyle(color: Colors.red),
+          textScaleFactor: 1.2,
+        ),
+        subtitle: subtitle == null
+            ? null
+            : Text(
+          capitalize(subtitle),
+          style: TextStyle(
+            color: Colors.grey.shade700,
+          ),
+        ),
       ),
     );
   }

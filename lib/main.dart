@@ -60,6 +60,7 @@ class AuthenticationChecker extends StatelessWidget {
                 Provider<String>.value(value: snapshot.documentID),
                 Provider<Utils>.value(value: utils),
                 StreamProvider<QuerySnapshot>.value(
+                  initialData: null,
                   value: _db.collection('extras').snapshots(),
                 ),
               ],

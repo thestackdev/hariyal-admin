@@ -41,14 +41,6 @@ class PushProduct {
       'soldTo': null,
       'soldReason': null,
     });
-    await _reference
-        .collection('admin')
-        .document(uid)
-        .collection('products')
-        .document(docID)
-        .setData({
-      'dateTime': docID,
-    });
   }
 
   updateProduct({
@@ -97,10 +89,7 @@ class PushProduct {
   uploadProductImages(Asset images) async {
     try {
       return _storage
-          .child(DateTime
-          .now()
-          .microsecondsSinceEpoch
-          .toString())
+          .child(DateTime.now().microsecondsSinceEpoch.toString())
           .putData(await images
           .getByteData(quality: 75)
           .then((value) => value.buffer.asUint8List()))

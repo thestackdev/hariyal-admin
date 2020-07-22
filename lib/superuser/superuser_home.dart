@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -19,20 +18,8 @@ class SuperuserHome extends StatefulWidget {
 
 class _SuperuserHomeState extends State<SuperuserHome> {
   int currentScreen = 0;
-  List screenList = [
-    Requests(),
-    SoldItems(),
-    PushData(),
-    Reports(),
-    Extras(),
-  ];
-  final titleList = [
-    'Requests',
-    'Sold Items',
-    'Add Items',
-    'Reports',
-    'Extras',
-  ];
+  final screenList = [Requests(), SoldItems(), PushData(), Reports(), Extras()];
+  final titleList = ['Orders', 'Sold Items', 'Add Items', 'Reports', 'Extras'];
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +30,16 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         leading: Visibility(
           visible: currentScreen == 0 ? false : true,
           child: IconButton(
-            icon: Icon(MdiIcons.arrowLeft),
-            onPressed: () {
-              currentScreen = 0;
-              handleState();
-            },
-          ),
+              icon: Icon(MdiIcons.arrowLeft),
+              onPressed: () {
+                currentScreen = 0;
+                handleState();
+              }),
         ),
         actions: <Widget>[
-          Center(
-            child: IconButton(
-                icon: Icon(MdiIcons.cogOutline),
-                onPressed: () => Get.to(Settings())),
-          ),
-          SizedBox(width: 9)
+          IconButton(
+              icon: Icon(MdiIcons.cogOutline),
+              onPressed: () => Get.to(Settings())),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -69,23 +52,23 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         type: BottomNavigationBarType.fixed,
         items: [
           bottomNavigationBar(
-            title: 'Orders',
+            title: titleList[0],
             icon: MdiIcons.humanGreeting,
           ),
           bottomNavigationBar(
-            title: 'Sold Items',
+            title: titleList[1],
             icon: MdiIcons.cashUsdOutline,
           ),
           bottomNavigationBar(
-            title: 'Add Items',
+            title: titleList[2],
             icon: MdiIcons.plusCircleOutline,
           ),
           bottomNavigationBar(
-            title: 'Reports',
+            title: titleList[3],
             icon: MdiIcons.receipt,
           ),
           bottomNavigationBar(
-            title: 'Extras',
+            title: titleList[4],
             icon: MdiIcons.more,
           ),
         ],
@@ -94,17 +77,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         child: screenList[currentScreen],
         onWillPop: () async {
           if (currentScreen == 0) {
-            return await showDialog(
-              context: context,
-              builder: (context) {
-                return utils.alertDialog(
-                  content: 'Exit ?',
-                  yesPressed: () => SystemChannels.platform
-                      .invokeMethod('SystemNavigator.pop'),
-                  noPressed: () => Navigator.of(context).pop(false),
-                );
-              },
-            );
+            return true;
           } else {
             currentScreen = 0;
             handleState();
@@ -122,9 +95,5 @@ class _SuperuserHomeState extends State<SuperuserHome> {
     );
   }
 
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  handleState() => (mounted) ? setState(() => null) : null;
 }

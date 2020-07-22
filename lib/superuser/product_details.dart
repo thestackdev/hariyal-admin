@@ -168,12 +168,6 @@ class _ProductDetailsState extends State<ProductDetails> {
         .collection('products')
         .document(snapshot.data.documentID)
         .delete();
-    await firestore
-        .collection('admin')
-        .document(snapshot.data.data['author'])
-        .collection('products')
-        .document(snapshot.data.documentID)
-        .delete();
     Get.back();
   }
 

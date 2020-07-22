@@ -68,18 +68,20 @@ class _PushDataState extends State<PushData> {
     utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
 
-    for (var map in extras.documents) {
-      if (map.documentID == 'category') {
-        categoryMap.addAll(map.data);
-      } else if (map.documentID == 'locations') {
-        locationsMap.addAll(map.data);
+    if (extras != null) {
+      for (var map in extras.documents) {
+        if (map.documentID == 'category') {
+          categoryMap.addAll(map.data);
+        } else if (map.documentID == 'locations') {
+          locationsMap.addAll(map.data);
+        }
       }
-    }
-    if (selectedCategory != null) {
-      subCategory = categoryMap[selectedCategory];
-    }
-    if (selectedState != null) {
-      areasList = locationsMap[selectedState];
+      if (selectedCategory != null) {
+        subCategory = categoryMap[selectedCategory];
+      }
+      if (selectedState != null) {
+        areasList = locationsMap[selectedState];
+      }
     }
 
     return utils.container(
@@ -134,17 +136,17 @@ class _PushDataState extends State<PushData> {
                         ),
                       );
                     }
-              return Padding(
-                padding: EdgeInsets.all(9),
-                child: AssetThumb(
-                  spinner: utils.progressIndicator(),
-                  asset: images[index],
-                  quality: 50,
-                  width: 270,
-                  height: 270,
-                ),
-              );
-            }),
+                    return Padding(
+                      padding: EdgeInsets.all(9),
+                      child: AssetThumb(
+                        spinner: utils.progressIndicator(),
+                        asset: images[index],
+                        quality: 50,
+                        width: 270,
+                        height: 270,
+                      ),
+                    );
+                  }),
           ),
           Form(
             key: globalKey,

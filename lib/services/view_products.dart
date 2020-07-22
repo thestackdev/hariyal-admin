@@ -16,12 +16,9 @@ class ViewMyProducts extends StatefulWidget {
 }
 
 class _ViewMyProductsState extends State<ViewMyProducts> {
-  Utils utils;
-  Firestore firestore = Firestore.instance;
-
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
+    final utils = context.watch<Utils>();
     return DataStreamBuilder<QuerySnapshot>(
       stream: widget.stream,
       errorBuilder: (context, error) => utils.nullWidget(error),
@@ -34,22 +31,12 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
             itemCount: snapshot.documents.length,
             itemBuilder: (context, index) {
               try {
-                return DataStreamBuilder<DocumentSnapshot>(
-                  errorBuilder: (context, error) => utils.nullWidget(error),
-                  loadingBuilder: (context) => utils.progressIndicator(),
-                  stream: firestore
-                      .collection('products')
-                      .document(snapshot.documents[index].documentID)
-                      .snapshots(),
-                  builder: (context, productSnap) {
-                    return utils.productCard(
-                      title: productSnap.data['title'],
-                      description: productSnap.data['description'],
-                      imageUrl: productSnap.data['images'][0],
-                      onTap: () => Get.to(ProductDetails(
-                          docID: snapshot.documents[index].documentID)),
-                    );
-                  },
+                return utils.productCard(
+                  title: snapshot.documents[index].data['title'],
+                  description: snapshot.documents[index].data['description'],
+                  imageUrl: snapshot.documents[index].data['images'][0],
+                  onTap: () => Get.to(ProductDetails(
+                      docID: snapshot.documents[index].documentID)),
                 );
               } catch (e) {
                 return utils.errorListTile();

@@ -31,7 +31,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         items.clear();
         snapshot = doc;
         items.addAll(doc.data.keys);
-        handleState();
         break;
       }
     }
@@ -77,6 +76,4 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
     );
   }
-
-  handleState() => (mounted) ?? setState(() => null);
 }

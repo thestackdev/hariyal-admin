@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
+import 'package:get/get.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/admin_extras/customer_tabs.dart';
 import 'package:superuser/utils.dart';
+import 'package:provider/provider.dart';
 
 class AllCustomers extends StatefulWidget {
   @override
@@ -16,27 +19,37 @@ class _AllCustomersState extends State<AllCustomers> {
   final queryConroller = TextEditingController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
-  Utils utils = Utils();
+  Utils utils;
   int count = 30;
 
   @override
+  void dispose() {
+    queryConroller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    utils = context.watch<Utils>();
     return Scaffold(
       appBar: utils.appbar('Customers'),
       body: utils.container(
         child: Column(
           children: <Widget>[
-            Padding(
+            Container(
               padding: const EdgeInsets.all(9),
+              color: Colors.red,
               child: TextField(
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: utils.inputTextStyle(),
                 maxLines: null,
                 controller: queryConroller,
                 decoration: getDecoration(),
               ),
             ),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
+              child: DataStreamBuilder<QuerySnapshot>(
+                errorBuilder: (context, error) => utils.nullWidget(error),
+                loadingBuilder: (context) => utils.progressIndicator(),
                 stream: isQueryActive
                     ? firestore
                         .collection('customers')
@@ -48,43 +61,35 @@ class _AllCustomersState extends State<AllCustomers> {
                         .limit(count)
                         .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.documents.length == 0) {
-                      return utils.nullWidget('No customers found !');
-                    } else {
-                      return LazyLoadScrollView(
-                        onEndOfPage: () {
-                          count += 30;
-                          handleState();
-                        },
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.documents.length,
-                          itemBuilder: (context, index) {
-                            return utils.listTile(
-                              leading: CircleAvatar(
-                                backgroundImage: CachedNetworkImageProvider(
-                                    snapshot.data.documents[index]['image']),
-                              ),
-                              title:
-                                  '${snapshot.data.documents[index]['name']}',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Customerdetails(
-                                      docsnap: snapshot.data.documents[index],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    }
+                  if (snapshot.documents.length == 0) {
+                    return utils.nullWidget('No customers found !');
                   } else {
-                    return utils.progressIndicator();
+                    return LazyLoadScrollView(
+                      onEndOfPage: () {
+                        count += 30;
+                        handleState();
+                      },
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: snapshot.documents.length,
+                        itemBuilder: (context, index) {
+                          return utils.listTile(
+                            leading: CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                snapshot.documents[index]['image'],
+                              ),
+                            ),
+                            title: '${snapshot.documents[index]['name']}',
+                            onTap: () =>
+                                Get.to(
+                                  Customerdetails(
+                                    docsnap: snapshot.documents[index],
+                                  ),
+                                ),
+                          );
+                        },
+                      ),
+                    );
                   }
                 },
               ),
@@ -159,9 +164,5 @@ class _AllCustomersState extends State<AllCustomers> {
     );
   }
 
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  handleState() => (mounted) ? setState(() => null) : null;
 }

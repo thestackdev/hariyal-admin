@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/view_products.dart';
 import 'package:superuser/utils.dart';
@@ -15,10 +16,14 @@ class AdminExtras extends StatefulWidget {
 }
 
 class _AdminExtrasState extends State<AdminExtras> {
-  Utils utils = Utils();
+  Utils utils;
+  Firestore firestore = Firestore.instance;
+  String uid;
 
   @override
   Widget build(BuildContext context) {
+    utils = context.watch<Utils>();
+    uid = context.watch<String>();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -30,11 +35,9 @@ class _AdminExtrasState extends State<AdminExtras> {
           child: TabBarView(
             children: <Widget>[
               ViewMyProducts(
-                stream: Firestore.instance
-                    .collection('admin')
-                    .document(widget.adminUid)
+                stream: firestore
                     .collection('products')
-                    .orderBy('dateTime', descending: true)
+                    .where('author', isEqualTo: uid)
                     .snapshots(),
               ),
               getPrivilages(),
@@ -46,58 +49,52 @@ class _AdminExtrasState extends State<AdminExtras> {
   }
 
   getPrivilages() {
-    final uid = Provider.of<String>(context);
-    return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance
-          .collection('admin')
-          .document(widget.adminUid)
-          .snapshots(),
+    return DataStreamBuilder<DocumentSnapshot>(
+      errorBuilder: (context, error) => utils.nullWidget(error),
+      loadingBuilder: (context) => utils.progressIndicator(),
+      stream:
+          firestore.collection('admin').document(widget.adminUid).snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(9),
-                  color: Colors.grey.shade100,
-                ),
-                child: SwitchListTile(
-                  title: Text('Admin'),
-                  onChanged: uid == widget.adminUid
-                      ? null
-                      : (value) {
-                          snapshot.data.reference.updateData({
-                            'isAdmin': !snapshot.data['isAdmin'],
-                          });
-                        },
-                  value: snapshot.data['isAdmin'],
-                ),
+        return ListView(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9),
+                color: Colors.grey.shade100,
               ),
-              Container(
-                margin: EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(9),
-                  color: Colors.grey.shade100,
-                ),
-                child: SwitchListTile(
-                  title: Text('Superuser'),
-                  onChanged: uid == widget.adminUid
-                      ? null
-                      : (value) {
-                          snapshot.data.reference.updateData({
-                            'isSuperuser': !snapshot.data['isSuperuser'],
-                          });
-                        },
-                  value: snapshot.data['isSuperuser'],
-                ),
+              child: SwitchListTile(
+                title: Text('Admin'),
+                onChanged: uid == widget.adminUid
+                    ? null
+                    : (value) {
+                        snapshot.reference.updateData({
+                          'isAdmin': !snapshot.data['isAdmin'],
+                        });
+                      },
+                value: snapshot.data['isAdmin'],
               ),
-            ],
-          );
-        } else {
-          return utils.progressIndicator();
-        }
+            ),
+            Container(
+              margin: EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9),
+                color: Colors.grey.shade100,
+              ),
+              child: SwitchListTile(
+                title: Text('Superuser'),
+                onChanged: uid == widget.adminUid
+                    ? null
+                    : (value) {
+                        snapshot.reference.updateData({
+                          'isSuperuser': !snapshot.data['isSuperuser'],
+                        });
+                      },
+                value: snapshot.data['isSuperuser'],
+              ),
+            ),
+          ],
+        );
       },
     );
   }
