@@ -71,7 +71,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                     icon: Icon(MdiIcons.phone),
                     onPressed: () {
                       if (widget.docsnap['phone'] != 'default') {
-                        makeAPhone('tel: + ${widget.docsnap['phone']}');
+                        makeAPhone('tel: ${widget.docsnap['phone']}');
                       }
                     }),
               ),
@@ -124,7 +124,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                     onPressed: () {
                       if (widget.docsnap['alternatePhoneNumber'] != 'defaut') {
                         makeAPhone(
-                            'tel: + ${widget.docsnap['alternatePhoneNumber']}');
+                            'tel: ${widget.docsnap['alternatePhoneNumber']}');
                       }
                     }),
               ),

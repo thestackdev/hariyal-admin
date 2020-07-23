@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +45,7 @@ class _ExtrasState extends State<Extras> {
               yesPressed: () {
                 Get.back();
                 FirebaseAuth.instance.signOut();
+                Phoenix.rebirth(context);
               },
               noPressed: () => Get.back(),
             ),

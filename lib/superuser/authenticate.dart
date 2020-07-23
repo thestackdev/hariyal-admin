@@ -21,10 +21,9 @@ class _AuthenticateState extends State<Authenticate> {
     fontSize: 18,
     fontWeight: FontWeight.normal,
   );
-  final textstyle = TextStyle(color: Colors.grey.shade700, fontSize: 16);
+
   bool loading = false;
   Utils utils = Utils();
-  final GlobalKey<ScaffoldState> key = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -36,7 +35,6 @@ class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: key,
       appBar: utils.appbar('Hariyal'),
       body: utils.container(
         child: loading
@@ -51,7 +49,7 @@ class _AuthenticateState extends State<Authenticate> {
                       child: Text('Hey Admin !', style: contentStyle)),
                   utils.textInputPadding(
                     child: TextField(
-                      style: textstyle,
+                      style: utils.inputTextStyle(),
                       controller: emailController,
                       maxLines: 1,
                       keyboardType: TextInputType.emailAddress,
@@ -61,17 +59,17 @@ class _AuthenticateState extends State<Authenticate> {
                       ),
                     ),
                   ),
-            utils.textInputPadding(
-              child: TextField(
-                style: textstyle,
-                controller: passwordController,
-                maxLines: 1,
-                keyboardType: TextInputType.visiblePassword,
-                decoration: utils.inputDecoration(
-                  label: 'Password',
-                  iconData: MdiIcons.lockOutline,
-                ),
-              ),
+                  utils.textInputPadding(
+                    child: TextField(
+                      style: utils.inputTextStyle(),
+                      controller: passwordController,
+                      maxLines: 1,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: utils.inputDecoration(
+                        label: 'Password',
+                        iconData: MdiIcons.lockOutline,
+                      ),
+                    ),
                   ),
                   SizedBox(height: 18),
                   utils.getRaisedButton(
@@ -82,7 +80,7 @@ class _AuthenticateState extends State<Authenticate> {
                           passwordController.text.length > 0) {
                         login();
                       } else {
-                        utils.snackBar(key, 'Invalid Credintials');
+                        utils.showSnackbar('Invalid Credintials');
                       }
                     },
                   )
@@ -103,7 +101,7 @@ class _AuthenticateState extends State<Authenticate> {
     } catch (e) {
       loading = false;
       handleSetState();
-      utils.snackBar(key, utils.errorMessageHelper(e.code));
+      utils.showSnackbar(utils.errorMessageHelper(e.code));
       return false;
     }
   }

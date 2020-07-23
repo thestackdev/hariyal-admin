@@ -171,18 +171,18 @@ class Utils {
       ),
       prefix: iconData != null
           ? Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(
-            iconData,
-            color: Colors.red.shade300,
-            size: 18,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-        ],
-      )
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  iconData,
+                  color: Colors.red.shade300,
+                  size: 18,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+              ],
+            )
           : SizedBox(),
     );
   }
@@ -197,17 +197,6 @@ class Utils {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
       snackStyle: SnackStyle.GROUNDED,
-    );
-  }
-
-  snackBar(GlobalKey<ScaffoldState> key, message) {
-    key.currentState.removeCurrentSnackBar();
-    key.currentState.showSnackBar(
-      SnackBar(
-        content: Text(message, style: textStyle()),
-        backgroundColor: Colors.red.shade300,
-        duration: Duration(seconds: 1),
-      ),
     );
   }
 

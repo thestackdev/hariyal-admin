@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/view_products.dart';
 import 'package:superuser/utils.dart';
-
 import 'admin_extras.dart';
 
 class AdminHome extends StatefulWidget {
@@ -22,17 +22,28 @@ class _AdminHomeState extends State<AdminHome>
   }
 
   @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
+    final textStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    );
     return Scaffold(
       appBar: utils.appbar(
         'Admin Console',
         boottom: TabBar(
+          labelStyle: textStyle,
           controller: tabController,
           indicatorColor: Colors.transparent,
           tabs: [
-            Tab(text: 'Insert Data'),
-            Tab(text: 'View Data'),
+            Tab(text: 'Add Data'),
+            Tab(text: 'Products'),
             Tab(text: 'Extras')
           ],
         ),
@@ -40,19 +51,7 @@ class _AdminHomeState extends State<AdminHome>
       body: WillPopScope(
         onWillPop: () async {
           if (tabController.index == 0) {
-            return await showDialog(
-              context: context,
-              child: utils.alertDialog(
-                  content: 'Exit ?',
-                  yesPressed: () {
-                    Navigator.pop(context);
-                    return true;
-                  },
-                  noPressed: () {
-                    Navigator.pop(context);
-                    return false;
-                  }),
-            );
+            return true;
           } else {
             tabController.animateTo(0);
             handleState();
@@ -61,7 +60,22 @@ class _AdminHomeState extends State<AdminHome>
         },
         child: TabBarView(
           controller: tabController,
-          children: [PushData(), ViewMyProducts(), AdminExtras()],
+          children: [
+            PushData(),
+            utils.container(
+              child: ViewMyProducts(
+                stream: Firestore.instance
+                    .collection('products')
+                    .where('author',
+                    isEqualTo:
+                    Provider
+                        .of<DocumentSnapshot>(context)
+                        .documentID)
+                    .snapshots(),
+              ),
+            ),
+            AdminExtras()
+          ],
         ),
       ),
     );

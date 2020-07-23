@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -67,7 +69,7 @@ class _AdminExtrasState extends State<AdminExtras> {
                           await Permission.storage.request().isGranted) {
                         asset = await MultiImagePicker.pickImages(
                           maxImages: 1,
-                          enableCamera: true,
+                          enableCamera: false,
                           selectedAssets: asset,
                           materialOptions: MaterialOptions(
                             statusBarColor: '#FF6347',
@@ -96,7 +98,7 @@ class _AdminExtrasState extends State<AdminExtras> {
                               });
                             });
                           } catch (e) {
-                            print(e);
+                            print(e.toString());
                           }
                         }
                       } else {
@@ -129,8 +131,9 @@ class _AdminExtrasState extends State<AdminExtras> {
                 child: utils.alertDialog(
                   content: 'Signout ?',
                   yesPressed: () {
-                    Navigator.pop(context);
+                    Get.back();
                     FirebaseAuth.instance.signOut();
+                    Phoenix.rebirth(context);
                   },
                   noPressed: () {
                     Navigator.pop(context);

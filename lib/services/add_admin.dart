@@ -82,7 +82,7 @@ class _AddAdminState extends State<AddAdmin> {
                           name.text.length > 0) {
                         register();
                       } else {
-                        utils.snackBar(scaffoldKey, 'Invalid entries');
+                        utils.showSnackbar('Invalid entries');
                       }
                     },
                   ),
@@ -107,9 +107,7 @@ class _AddAdminState extends State<AddAdmin> {
       );
       await _db.collection('admin').document(result.user.uid).setData(
         {
-          'since': DateTime
-              .now()
-              .millisecondsSinceEpoch,
+          'since': DateTime.now().millisecondsSinceEpoch,
           'name': name.text.toLowerCase(),
           'isSuperuser': false,
           'isAdmin': true,
@@ -126,7 +124,7 @@ class _AddAdminState extends State<AddAdmin> {
       handleState();
       helperMessage = utils.errorMessageHelper(error.code);
     }
-    utils.snackBar(scaffoldKey, helperMessage);
+    utils.showSnackbar(helperMessage);
   }
 
   handleState() {

@@ -109,7 +109,7 @@ class _PushDataState extends State<PushData> {
                               try {
                                 images = await MultiImagePicker.pickImages(
                                   maxImages: 5,
-                                  enableCamera: true,
+                                  enableCamera: false,
                                   selectedAssets: images,
                                   materialOptions: MaterialOptions(
                                     statusBarColor: '#FF6347',
@@ -265,9 +265,7 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: specificationController.text,
-        uid: Provider
-            .of<DocumentSnapshot>(context, listen: false)
-            .documentID,
+        uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
       );
       clearAllData();
       loading = false;

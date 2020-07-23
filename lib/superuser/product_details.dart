@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
+import 'package:strings/strings.dart';
 import 'package:superuser/superuser/admin_screens/edit_data_screen.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
@@ -64,7 +65,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            snapshot.data['title'],
+                            capitalize('${snapshot.data['title']}'),
                             style: TextStyle(
                               fontSize: 26.0,
                               fontWeight: FontWeight.w500,
@@ -98,64 +99,78 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 9),
                           Text(
-                            '${snapshot.data['description']}',
+                            capitalize('${snapshot.data['description']}'),
+                            textAlign: TextAlign.justify,
+                            style: utils.inputTextStyle(),
+                          ),
+                          SizedBox(height: 18),
+                          Text(
+                            'Specifications',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 9),
+                          Text(
+                            capitalize('${snapshot.data['specifications']}'),
                             textAlign: TextAlign.justify,
                             style: utils.inputTextStyle(),
                           ),
                           SizedBox(height: 9),
                           !snapshot.data['isSold']
                               ? Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 3,
-                                child: utils.productInputText(
-                                  label: 'Sold Reason',
-                                  controller: textController,
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: utils.getRaisedButton(
-                                    title: 'sold',
-                                    onPressed: () {
-                                      if (textController.text.length >
-                                          0) {
-                                        snapshot.reference.updateData({
-                                          'isSold': true,
-                                          'soldReason':
-                                          textController.text
-                                        });
-                                        textController.clear();
-                                      } else {
-                                        utils.showSnackbar(
-                                            'Reason can\'t be null');
-                                      }
-                                    }),
-                              )
-                            ],
-                          )
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 3,
+                                      child: utils.productInputText(
+                                        label: 'Sold Reason',
+                                        controller: textController,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: utils.getRaisedButton(
+                                          title: 'sold',
+                                          onPressed: () {
+                                            if (textController.text.length >
+                                                0) {
+                                              snapshot.reference.updateData({
+                                                'isSold': true,
+                                                'soldReason':
+                                                    textController.text
+                                              });
+                                              textController.clear();
+                                            } else {
+                                              utils.showSnackbar(
+                                                  'Reason can\'t be null');
+                                            }
+                                          }),
+                                    )
+                                  ],
+                                )
                               : Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  'Sold Reason : ${snapshot
-                                      .data['soldReason']}',
-                                  textAlign: TextAlign.start,
-                                  textScaleFactor: 1.2,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Text(
+                                        'Sold Reason : ${snapshot.data['soldReason']}',
+                                        textAlign: TextAlign.start,
+                                        textScaleFactor: 1.2,
+                                      ),
+                                    ),
+                                    utils.getRaisedButton(
+                                        title: 'Available',
+                                        onPressed: () {
+                                          snapshot.reference.updateData({
+                                            'isSold': false,
+                                            'soldReason': null
+                                          });
+                                        }),
+                                  ],
                                 ),
-                              ),
-                              utils.getRaisedButton(
-                                  title: 'Available',
-                                  onPressed: () {
-                                    snapshot.reference.updateData({
-                                      'isSold': false,
-                                      'soldReason': null
-                                    });
-                                  }),
-                            ],
-                          ),
                           SizedBox(height: 50),
                         ],
                       ),

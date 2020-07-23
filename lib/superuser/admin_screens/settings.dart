@@ -83,7 +83,7 @@ class _SettingsState extends State<Settings> {
                             await Permission.storage.request().isGranted) {
                           asset = await MultiImagePicker.pickImages(
                             maxImages: 1,
-                            enableCamera: true,
+                            enableCamera: false,
                             selectedAssets: asset,
                             materialOptions: MaterialOptions(
                               statusBarColor: '#FF6347',
@@ -150,10 +150,9 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.locationExit,
                 color: Colors.red.shade300,
               ),
-              onTap: () =>
-                  Get.to(
-                    CategoriesScreen(type: 'locations'),
-                  ),
+              onTap: () => Get.to(
+                CategoriesScreen(type: 'locations'),
+              ),
             ),
             utils.listTile(
               title: 'Showrooms',
