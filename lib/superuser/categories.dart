@@ -26,12 +26,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final utils = context.watch<Utils>();
     DocumentSnapshot snapshot;
 
-    for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == widget.type) {
-        items.clear();
-        snapshot = doc;
-        items.addAll(doc.data.keys);
-        break;
+    if (extras != null) {
+      for (DocumentSnapshot doc in extras.documents) {
+        if (doc.documentID == widget.type) {
+          items.clear();
+          snapshot = doc;
+          items.addAll(doc.data.keys);
+          break;
+        }
       }
     }
 

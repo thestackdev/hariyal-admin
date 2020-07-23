@@ -147,98 +147,98 @@ class _PushDataState extends State<PushData> {
                       ),
                     );
                   }),
-          ),
-          Form(
-            key: globalKey,
-            child: Column(
-              children: <Widget>[
-                utils.productInputDropDown(
-                    label: 'Category',
-                    value: selectedCategory,
-                    items: categoryMap.keys.toList(),
-                    onChanged: (value) {
-                      selectedCategory = value;
-                      selectedSubCategory = null;
-                      handleSetState();
-                    }),
-                utils.productInputDropDown(
-                    label: 'Sub-Category',
-                    value: selectedSubCategory,
-                    items: subCategory,
-                    onChanged: (value) {
-                      selectedSubCategory = value;
-                      handleSetState();
-                    }),
-                utils.productInputDropDown(
-                    label: 'State',
-                    value: selectedState,
-                    items: locationsMap.keys.toList(),
-                    onChanged: (value) {
-                      selectedState = value;
-                      selectedArea = null;
-                      handleSetState();
-                    }),
-                utils.productInputDropDown(
-                    label: 'Area',
-                    value: selectedArea,
-                    items: areasList,
-                    onChanged: (newValue) {
-                      selectedArea = newValue;
-                      handleSetState();
-                    }),
-                utils.productInputDropDown(
-                    label: 'Showroom',
-                    items: showroomList,
-                    value: selectedShowroom,
-                    isShowroom: true,
-                    onChanged: (newValue) {
-                      selectedShowroom = newValue;
-                      showroomList.forEach((element) {
-                        if (element['name'] == newValue) {
-                          showroomAddressController.text =
-                          element['adress'];
-                          addressID = element.documentID;
-                          return false;
-                        } else {
-                          return true;
-                        }
-                      });
-                      handleSetState();
-                    }),
-                utils.productInputText(
-                  label: 'Showroom Address',
-                  controller: showroomAddressController,
-                  readOnly: true,
                 ),
-                utils.productInputText(
-                  label: 'Price',
-                  controller: price,
-                  textInputType:
-                  TextInputType.numberWithOptions(signed: true),
+                Form(
+                  key: globalKey,
+                  child: Column(
+                    children: <Widget>[
+                      utils.productInputDropDown(
+                          label: 'Category',
+                          value: selectedCategory,
+                          items: categoryMap.keys.toList(),
+                          onChanged: (value) {
+                            selectedCategory = value;
+                            selectedSubCategory = null;
+                            handleSetState();
+                          }),
+                      utils.productInputDropDown(
+                          label: 'Sub-Category',
+                          value: selectedSubCategory,
+                          items: subCategory,
+                          onChanged: (value) {
+                            selectedSubCategory = value;
+                            handleSetState();
+                          }),
+                      utils.productInputDropDown(
+                          label: 'State',
+                          value: selectedState,
+                          items: locationsMap.keys.toList(),
+                          onChanged: (value) {
+                            selectedState = value;
+                            selectedArea = null;
+                            handleSetState();
+                          }),
+                      utils.productInputDropDown(
+                          label: 'Area',
+                          value: selectedArea,
+                          items: areasList,
+                          onChanged: (newValue) {
+                            selectedArea = newValue;
+                            handleSetState();
+                          }),
+                      utils.productInputDropDown(
+                          label: 'Showroom',
+                          items: showroomList,
+                          value: selectedShowroom,
+                          isShowroom: true,
+                          onChanged: (newValue) {
+                            selectedShowroom = newValue;
+                            showroomList.forEach((element) {
+                              if (element['name'] == newValue) {
+                                showroomAddressController.text =
+                                    element['adress'];
+                                addressID = element.documentID;
+                                return false;
+                              } else {
+                                return true;
+                              }
+                            });
+                            handleSetState();
+                          }),
+                      utils.productInputText(
+                        label: 'Showroom Address',
+                        controller: showroomAddressController,
+                        readOnly: true,
+                      ),
+                      utils.productInputText(
+                        label: 'Price',
+                        controller: price,
+                        textInputType:
+                            TextInputType.numberWithOptions(signed: true),
+                      ),
+                      utils.productInputText(
+                        label: 'Title',
+                        controller: title,
+                      ),
+                      utils.productInputText(
+                        label: 'Description',
+                        controller: description,
+                      ),
+                      utils.productInputText(
+                        label: 'Specifications',
+                        controller: specificationController,
+                        textInputAction: TextInputAction.newline,
+                      ),
+                    ],
+                  ),
                 ),
-                utils.productInputText(
-                  label: 'Title',
-                  controller: title,
+                SizedBox(height: 18),
+                utils.getRaisedButton(
+                  title: 'Add Product',
+                  onPressed: onPressed,
                 ),
-                utils.productInputText(
-                  label: 'Description',
-                  controller: description,
-                ),
-                utils.productInputText(
-                  label: 'Specifications',
-                  controller: specificationController,
-                  textInputAction: TextInputAction.newline,
-                ),
+                SizedBox(height: 50),
               ],
-            ),
-          ),
-          SizedBox(height: 18),
-          utils.getRaisedButton(
-            title: 'Add Product',
-            onPressed: onPressed,
-          ),
-          SizedBox(height: 50),
-        ],
             ),
     );
   }
@@ -265,7 +265,9 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: specificationController.text,
-        uid: Provider.of<String>(context, listen: false),
+        uid: Provider
+            .of<DocumentSnapshot>(context, listen: false)
+            .documentID,
       );
       clearAllData();
       loading = false;

@@ -13,6 +13,8 @@ import 'package:superuser/superuser/superuser_home.dart';
 import 'package:superuser/utils.dart';
 
 final Utils utils = Utils();
+final Firestore _db = Firestore.instance;
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 final appTheme = ThemeData(
   brightness: Brightness.light,
@@ -39,42 +41,58 @@ void main() async {
 }
 
 class AuthenticationChecker extends StatelessWidget {
-  final Firestore _db = Firestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final Utils utils = Utils();
-
   @override
   Widget build(BuildContext context) {
-    return DataStreamBuilder<FirebaseUser>(
+    return StreamBuilder<FirebaseUser>(
       stream: _auth.onAuthStateChanged,
-      errorBuilder: (context, error) => utils.nullWidget(error),
-      loadingBuilder: (context) => utils.progressIndicator(),
       builder: (context, authsnap) {
-        return DataStreamBuilder<DocumentSnapshot>(
-          stream: _db.collection('admin').document(authsnap.uid).snapshots(),
-          errorBuilder: (context, error) => utils.nullWidget(error),
-          loadingBuilder: (context) => utils.progressIndicator(),
-          builder: (context, snapshot) {
-            return MultiProvider(
-              providers: [
-                Provider<String>.value(value: snapshot.documentID),
-                Provider<Utils>.value(value: utils),
-                StreamProvider<QuerySnapshot>.value(
-                  initialData: null,
-                  value: _db.collection('extras').snapshots(),
-                ),
-              ],
-              child: GetMaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: appTheme,
-                home: homeWidget(
-                  snapshot.data['isSuperuser'],
-                  snapshot.data['isAdmin'],
-                ),
-              ),
+        if (authsnap.connectionState == ConnectionState.active) {
+          if (!authsnap.hasData) {
+            return GetMaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: appTheme,
+              home: Authenticate(),
             );
-          },
-        );
+          } else {
+            return DataStreamBuilder<DocumentSnapshot>(
+              stream: _db
+                  .collection('admin')
+                  .document(authsnap.data.uid)
+                  .snapshots(),
+              errorBuilder: (context, error) => utils.nullWidget(error),
+              loadingBuilder: (context) => Container(
+                color: Colors.white,
+                child: utils.progressIndicator(),
+              ),
+              builder: (context, snapshot) {
+                return MultiProvider(
+                  providers: [
+                    Provider<DocumentSnapshot>.value(value: snapshot),
+                    Provider<Utils>.value(value: utils),
+                    StreamProvider<QuerySnapshot>.value(
+                      initialData: null,
+                      value: _db.collection('extras').snapshots(),
+                    ),
+                  ],
+                  child: GetMaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    navigatorKey: Get.key,
+                    theme: appTheme,
+                    home: homeWidget(
+                      snapshot.data['isSuperuser'],
+                      snapshot.data['isAdmin'],
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        } else {
+          return Container(
+            color: Colors.white,
+            child: utils.progressIndicator(),
+          );
+        }
       },
     );
   }

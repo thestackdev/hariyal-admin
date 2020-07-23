@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:strings/strings.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Customerdetails extends StatefulWidget {
   final DocumentSnapshot docsnap;
@@ -63,7 +65,16 @@ class _CustomerdetailsState extends State<Customerdetails> {
               ),
               readOnly: true,
               maxLines: null,
-              decoration: utils.inputDecoration(label: 'Phone'),
+              decoration: utils.inputDecoration(
+                label: 'Phone',
+                suffix: IconButton(
+                    icon: Icon(MdiIcons.phone),
+                    onPressed: () {
+                      if (widget.docsnap['phone'] != 'default') {
+                        makeAPhone('tel: + ${widget.docsnap['phone']}');
+                      }
+                    }),
+              ),
             ),
           ),
           utils.textInputPadding(
@@ -72,7 +83,18 @@ class _CustomerdetailsState extends State<Customerdetails> {
               initialValue: widget.docsnap['email'] ?? 'Something went wrong !',
               readOnly: true,
               maxLines: null,
-              decoration: utils.inputDecoration(label: 'Email'),
+              decoration: utils.inputDecoration(
+                label: 'Email',
+                suffix: IconButton(
+                    icon: Icon(MdiIcons.emailOutline),
+                    onPressed: () {
+                      if (widget.docsnap['email'] != 'defaut') {
+                        writeAnEmail(
+                          widget.docsnap['email'],
+                        );
+                      }
+                    }),
+              ),
             ),
           ),
           utils.textInputPadding(
@@ -95,7 +117,17 @@ class _CustomerdetailsState extends State<Customerdetails> {
               ),
               readOnly: true,
               maxLines: null,
-              decoration: utils.inputDecoration(label: 'Alternate Phone'),
+              decoration: utils.inputDecoration(
+                label: 'Alternate Phone',
+                suffix: IconButton(
+                    icon: Icon(MdiIcons.phone),
+                    onPressed: () {
+                      if (widget.docsnap['alternatePhoneNumber'] != 'defaut') {
+                        makeAPhone(
+                            'tel: + ${widget.docsnap['alternatePhoneNumber']}');
+                      }
+                    }),
+              ),
             ),
           ),
           utils.textInputPadding(
@@ -147,14 +179,14 @@ class _CustomerdetailsState extends State<Customerdetails> {
               .document(widget.docsnap.documentID)
               .snapshots(),
           builder: (context, interestsnap) {
-            if (interestsnap.data['interested'] == null ||
+            if (interestsnap.data == null ||
                 interestsnap.data['interested'].length == 0) {
               return utils.nullWidget('No interests found !');
             } else {
+              Map interestsList = interestsnap.data['interested'];
+              List sortedList = interestsList.keys.toList().reversed.toList();
               return ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: interestsnap.data['interested'].length,
+                  itemCount: sortedList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return DataStreamBuilder<DocumentSnapshot>(
                         errorBuilder: (context, error) =>
@@ -163,7 +195,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                         stream: firestore
                             .collection('products')
                             .document(
-                              interestsnap.data['interested'][index],
+                              interestsList[sortedList[index]],
                             )
                             .snapshots(),
                         builder: (context, productsnap) {
@@ -179,7 +211,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                               ),
                               onTap: () => Get.to(
                                 ProductDetails(
-                                  docID: interestsnap.data['interested'][index],
+                                  docID: interestsList[sortedList[index]],
                                 ),
                               ),
                             );
@@ -191,5 +223,31 @@ class _CustomerdetailsState extends State<Customerdetails> {
             }
           }),
     );
+  }
+
+  makeAPhone(String url) async {
+    try {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        utils.showSnackbar('Something went wrong');
+      }
+    } catch (e) {
+      utils.showSnackbar(e.toString());
+    }
+  }
+
+  writeAnEmail(String email) async {
+    final Uri _emailLaunchUri = Uri(
+        scheme: 'mailto', path: email, queryParameters: {'subject': 'Hariyal'});
+    try {
+      if (await canLaunch(_emailLaunchUri.toString())) {
+        await launch(_emailLaunchUri.toString());
+      } else {
+        utils.showSnackbar('Something went wrong');
+      }
+    } catch (e) {
+      utils.showSnackbar(e.toString());
+    }
   }
 }

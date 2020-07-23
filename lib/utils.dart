@@ -141,8 +141,9 @@ class Utils {
     );
   }
 
-  inputDecoration({label, iconData}) {
+  inputDecoration({label, iconData, suffix}) {
     return InputDecoration(
+      suffix: suffix,
       labelText: label,
       isDense: true,
       labelStyle: textStyle(color: Colors.red),
@@ -170,18 +171,18 @@ class Utils {
       ),
       prefix: iconData != null
           ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(
-                  iconData,
-                  color: Colors.red.shade300,
-                  size: 18,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-              ],
-            )
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(
+            iconData,
+            color: Colors.red.shade300,
+            size: 18,
+          ),
+          SizedBox(
+            width: 5,
+          ),
+        ],
+      )
           : SizedBox(),
     );
   }
@@ -321,9 +322,9 @@ class Utils {
         trailing: isTrailingNull
             ? SizedBox.shrink()
             : Icon(
-          MdiIcons.chevronRight,
-          color: Colors.red,
-        ),
+                MdiIcons.chevronRight,
+                color: Colors.red,
+              ),
         onTap: onTap,
         title: Text(
           capitalize(title),
@@ -333,11 +334,11 @@ class Utils {
         subtitle: subtitle == null
             ? null
             : Text(
-          capitalize(subtitle),
-          style: TextStyle(
-            color: Colors.grey.shade700,
-          ),
-        ),
+                capitalize(subtitle),
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
       ),
     );
   }

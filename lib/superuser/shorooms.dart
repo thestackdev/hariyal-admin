@@ -136,7 +136,7 @@ class _ShowroomsState extends State<Showrooms> {
     adress = '',
     latitude = '',
     longitude = '',
-    document = '',
+    document,
   }) {
     titleController.text = title;
     addressController.text = adress;
@@ -153,41 +153,56 @@ class _ShowroomsState extends State<Showrooms> {
             addressController.text.length > 0 &&
             latitudeController.text.length > 0 &&
             longitudeController.text.length > 0) {
-          await firestore.collection('showrooms').document(document).setData({
-            'name': titleController.text,
-            'adress': addressController.text,
-            'latitude': latitudeController.text,
-            'longitude': longitudeController.text,
-          }, merge: true);
+          if (document == null) {
+            await firestore.collection('showrooms').document().setData({
+              'name': titleController.text,
+              'adress': addressController.text,
+              'latitude': latitudeController.text,
+              'longitude': longitudeController.text,
+            }, merge: true);
+          } else {
+            await firestore.collection('showrooms').document(document).setData({
+              'name': titleController.text,
+              'adress': addressController.text,
+              'latitude': latitudeController.text,
+              'longitude': longitudeController.text,
+            }, merge: true);
+          }
+
           utils.showSnackbar('Showroom Added');
         } else {
           utils.showSnackbar('Invalid Entries');
         }
       },
       noPressed: () => Get.back(),
-      content: Column(
-        children: <Widget>[
-          utils.productInputText(
-            label: 'Name',
-            controller: titleController,
+      content: Container(
+        height: 200,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              utils.productInputText(
+                label: 'Name',
+                controller: titleController,
+              ),
+              utils.productInputText(
+                label: 'Address',
+                controller: addressController,
+              ),
+              utils.productInputText(
+                label: 'latitude',
+                controller: latitudeController,
+                textInputType: TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
+              ),
+              utils.productInputText(
+                label: 'longitude',
+                controller: longitudeController,
+                textInputType: TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
+              ),
+            ],
           ),
-          utils.productInputText(
-            label: 'Address',
-            controller: addressController,
-          ),
-          utils.productInputText(
-            label: 'latitude',
-            controller: latitudeController,
-            textInputType:
-                TextInputType.numberWithOptions(signed: true, decimal: true),
-          ),
-          utils.productInputText(
-            label: 'longitude',
-            controller: longitudeController,
-            textInputType:
-                TextInputType.numberWithOptions(signed: true, decimal: true),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -22,6 +22,13 @@ class _ProductDetailsState extends State<ProductDetails> {
   bool loading = false;
   FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   Firestore firestore = Firestore.instance;
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,29 +103,60 @@ class _ProductDetailsState extends State<ProductDetails> {
                             style: utils.inputTextStyle(),
                           ),
                           SizedBox(height: 9),
-                          Container(
-                            margin: EdgeInsets.all(9),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(9),
-                              color: Colors.grey.shade100,
-                            ),
-                            child: SwitchListTile(
-                              title: Text(
-                                snapshot.data['isSold']
-                                    ? 'Mark as Available'
-                                    : 'Mark as sold',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
+                          !snapshot.data['isSold']
+                              ? Row(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 3,
+                                child: utils.productInputText(
+                                  label: 'Sold Reason',
+                                  controller: textController,
                                 ),
                               ),
-                              value: snapshot.data['isSold'],
-                              onChanged: (value) {
-                                snapshot.reference
-                                    .updateData({'isSold': value});
-                              },
-                            ),
+                              Expanded(
+                                flex: 1,
+                                child: utils.getRaisedButton(
+                                    title: 'sold',
+                                    onPressed: () {
+                                      if (textController.text.length >
+                                          0) {
+                                        snapshot.reference.updateData({
+                                          'isSold': true,
+                                          'soldReason':
+                                          textController.text
+                                        });
+                                        textController.clear();
+                                      } else {
+                                        utils.showSnackbar(
+                                            'Reason can\'t be null');
+                                      }
+                                    }),
+                              )
+                            ],
+                          )
+                              : Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  'Sold Reason : ${snapshot
+                                      .data['soldReason']}',
+                                  textAlign: TextAlign.start,
+                                  textScaleFactor: 1.2,
+                                ),
+                              ),
+                              utils.getRaisedButton(
+                                  title: 'Available',
+                                  onPressed: () {
+                                    snapshot.reference.updateData({
+                                      'isSold': false,
+                                      'soldReason': null
+                                    });
+                                  }),
+                            ],
                           ),
+                          SizedBox(height: 50),
                         ],
                       ),
                       Positioned(
@@ -152,13 +190,13 @@ class _ProductDetailsState extends State<ProductDetails> {
     );
   }
 
-  deleteProduct(snapshot) async {
+  deleteProduct(DocumentSnapshot snapshot) async {
     loading = true;
     handleState();
-    await Future.forEach(snapshot.data.data['images'], (element) async {
+    await Future.forEach(snapshot.data['images'], (element) async {
       try {
         StorageReference ref =
-            await firebaseStorage.getReferenceFromUrl(element);
+        await firebaseStorage.getReferenceFromUrl(element);
         await ref.delete();
       } catch (e) {
         utils.showSnackbar(e.toString());
@@ -166,13 +204,13 @@ class _ProductDetailsState extends State<ProductDetails> {
     });
     await firestore
         .collection('products')
-        .document(snapshot.data.documentID)
+        .document(snapshot.documentID)
         .delete();
     Get.back();
   }
 
   editProduct(snapshot) {
-    Get.to(EditDataScreen(productSnap: snapshot.data));
+    Get.to(EditDataScreen(productSnap: snapshot));
   }
 
   handleState() => (mounted) ? setState(() => null) : null;

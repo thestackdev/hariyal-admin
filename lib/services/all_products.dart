@@ -14,7 +14,6 @@ class AllProducts extends StatefulWidget {
 }
 
 class _AllProductsState extends State<AllProducts> {
-  bool isSearchActive = false;
   final queryConroller = TextEditingController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
@@ -40,7 +39,7 @@ class _AllProductsState extends State<AllProducts> {
               padding: const EdgeInsets.all(9),
               child: TextField(
                 style: utils.inputTextStyle(),
-                maxLines: null,
+                maxLines: 1,
                 controller: queryConroller,
                 decoration: getDecoration(),
               ),
@@ -53,7 +52,7 @@ class _AllProductsState extends State<AllProducts> {
   }
 
   finterProducts() {
-    return DataStreamBuilder(
+    return DataStreamBuilder<DocumentSnapshot>(
       errorBuilder: (context, error) => utils.nullWidget(error),
       loadingBuilder: (context) => utils.progressIndicator(),
       stream: firestore
@@ -61,7 +60,7 @@ class _AllProductsState extends State<AllProducts> {
           .document(queryConroller.text)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data.data == null) {
+        if (snapshot.data == null) {
           return utils.nullWidget('No Products Found !');
         } else {
           return utils.productCard(
@@ -72,7 +71,7 @@ class _AllProductsState extends State<AllProducts> {
               FocusScope.of(context).unfocus();
               Get.to(
                 ProductDetails(
-                  docID: snapshot.data.documentID,
+                  docID: snapshot.documentID,
                 ),
               );
             },

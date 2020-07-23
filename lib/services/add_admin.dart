@@ -18,7 +18,6 @@ class _AddAdminState extends State<AddAdmin> {
   final name = TextEditingController();
   Utils utils = Utils();
   bool loading = false;
-  bool checkBoxValue = false;
   final Firestore _db = Firestore.instance;
   String helperMessage;
 
@@ -51,46 +50,44 @@ class _AddAdminState extends State<AddAdmin> {
                       ),
                     ),
                   ),
-            utils.textInputPadding(
-              child: TextField(
-                controller: email,
-                maxLines: null,
-                keyboardType: TextInputType.emailAddress,
-                decoration: utils.inputDecoration(
-                  label: 'Email',
-                  iconData: MdiIcons.emailOutline,
-                ),
+                  utils.textInputPadding(
+                    child: TextField(
+                      controller: email,
+                      maxLines: null,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: utils.inputDecoration(
+                        label: 'Email',
+                        iconData: MdiIcons.emailOutline,
+                      ),
+                    ),
+                  ),
+                  utils.textInputPadding(
+                    child: TextField(
+                      controller: password,
+                      maxLines: 1,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: utils.inputDecoration(
+                        label: 'Password',
+                        iconData: MdiIcons.lockOutline,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 18),
+                  utils.getRaisedButton(
+                    title: 'Add Admin',
+                    onPressed: () async {
+                      FocusScope.of(context).unfocus();
+                      if (email.text.length > 0 &&
+                          password.text.length > 0 &&
+                          name.text.length > 0) {
+                        register();
+                      } else {
+                        utils.snackBar(scaffoldKey, 'Invalid entries');
+                      }
+                    },
+                  ),
+                ],
               ),
-            ),
-            utils.textInputPadding(
-              child: TextField(
-                controller: password,
-                maxLines: 1,
-                keyboardType: TextInputType.visiblePassword,
-                decoration: utils.inputDecoration(
-                  label: 'Password',
-                  iconData: MdiIcons.lockOutline,
-                ),
-              ),
-            ),
-            SizedBox(height: 18),
-            utils.getRaisedButton(
-              title: 'Add Admin',
-              onPressed: checkBoxValue
-                  ? () async {
-                FocusScope.of(context).unfocus();
-                if (email.text.length > 0 &&
-                    password.text.length > 0 &&
-                    name.text.length > 0) {
-                  register();
-                } else {
-                  utils.snackBar(scaffoldKey, 'Invalid entries');
-                }
-              }
-                  : null,
-            ),
-          ],
-        ),
       ),
     );
   }

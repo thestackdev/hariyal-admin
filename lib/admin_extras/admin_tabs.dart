@@ -23,7 +23,7 @@ class _AdminExtrasState extends State<AdminExtras> {
   @override
   Widget build(BuildContext context) {
     utils = context.watch<Utils>();
-    uid = context.watch<String>();
+    uid = context.watch<DocumentSnapshot>().documentID;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -37,7 +37,7 @@ class _AdminExtrasState extends State<AdminExtras> {
               ViewMyProducts(
                 stream: firestore
                     .collection('products')
-                    .where('author', isEqualTo: uid)
+                    .where('author', isEqualTo: widget.adminUid)
                     .snapshots(),
               ),
               getPrivilages(),
