@@ -46,7 +46,8 @@ class _CustomerdetailsState extends State<Customerdetails> {
       child: ListView(
         children: <Widget>[
           SizedBox(height: 30),
-          utils.textInputPadding(
+          Padding(
+            padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
               initialValue: capitalize(
@@ -57,47 +58,68 @@ class _CustomerdetailsState extends State<Customerdetails> {
               decoration: utils.inputDecoration(label: 'Name'),
             ),
           ),
-          utils.textInputPadding(
-            child: TextFormField(
-              style: utils.inputTextStyle(),
-              initialValue: capitalize(
-                widget.docsnap['phone'] ?? 'Something went wrong !',
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: TextFormField(
+                    style: utils.inputTextStyle(),
+                    initialValue: capitalize(
+                      widget.docsnap['phone'] ?? 'Something went wrong !',
+                    ),
+                    readOnly: true,
+                    maxLines: null,
+                    decoration: utils.inputDecoration(
+                      label: 'Phone',
+                    ),
+                  ),
+                ),
               ),
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.inputDecoration(
-                label: 'Phone',
-                suffix: IconButton(
-                    icon: Icon(MdiIcons.phone),
-                    onPressed: () {
-                      if (widget.docsnap['phone'] != 'default') {
-                        makeAPhone('tel: ${widget.docsnap['phone']}');
-                      }
-                    }),
+              SizedBox(
+                child: IconButton(
+                  icon: Icon(MdiIcons.phoneOutline),
+                  onPressed: () =>
+                      makeAPhone('tel: ${widget.docsnap['phone']}'),
+                ),
               ),
-            ),
+            ],
           ),
-          utils.textInputPadding(
-            child: TextFormField(
-              style: utils.inputTextStyle(),
-              initialValue: widget.docsnap['email'] ?? 'Something went wrong !',
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.inputDecoration(
-                label: 'Email',
-                suffix: IconButton(
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: TextFormField(
+                    style: utils.inputTextStyle(),
+                    initialValue:
+                        widget.docsnap['email'] ?? 'Something went wrong !',
+                    readOnly: true,
+                    maxLines: null,
+                    decoration: utils.inputDecoration(
+                      label: 'Email',
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                child: IconButton(
                     icon: Icon(MdiIcons.emailOutline),
                     onPressed: () {
-                      if (widget.docsnap['email'] != 'defaut') {
+                      if (widget.docsnap['email'] != 'default') {
                         writeAnEmail(
                           widget.docsnap['email'],
                         );
+                      } else {
+                        utils.showSnackbar('Invalid Email Address');
                       }
                     }),
               ),
-            ),
+              SizedBox(width: 18),
+            ],
           ),
-          utils.textInputPadding(
+          Padding(
+            padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
               initialValue: capitalize(
@@ -108,29 +130,42 @@ class _CustomerdetailsState extends State<Customerdetails> {
               decoration: utils.inputDecoration(label: 'Gender'),
             ),
           ),
-          utils.textInputPadding(
-            child: TextFormField(
-              style: utils.inputTextStyle(),
-              initialValue: capitalize(
-                widget.docsnap['alternatePhoneNumber'] ??
-                    'Something went wrong !',
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: TextFormField(
+                    style: utils.inputTextStyle(),
+                    initialValue: capitalize(
+                      widget.docsnap['alternatePhoneNumber'] ??
+                          'Something went wrong !',
+                    ),
+                    readOnly: true,
+                    maxLines: null,
+                    decoration: utils.inputDecoration(
+                      label: 'Alternate Phone',
+                    ),
+                  ),
+                ),
               ),
-              readOnly: true,
-              maxLines: null,
-              decoration: utils.inputDecoration(
-                label: 'Alternate Phone',
-                suffix: IconButton(
-                    icon: Icon(MdiIcons.phone),
+              SizedBox(
+                child: IconButton(
+                    icon: Icon(MdiIcons.phoneOutline),
                     onPressed: () {
-                      if (widget.docsnap['alternatePhoneNumber'] != 'defaut') {
+                      if (widget.docsnap['alternatePhoneNumber'] != 'default') {
                         makeAPhone(
                             'tel: ${widget.docsnap['alternatePhoneNumber']}');
+                      } else {
+                        utils.showSnackbar('No Phone Number');
                       }
                     }),
               ),
-            ),
+              SizedBox(width: 18),
+            ],
           ),
-          utils.textInputPadding(
+          Padding(
+            padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
               initialValue: capitalize(
@@ -141,7 +176,8 @@ class _CustomerdetailsState extends State<Customerdetails> {
               decoration: utils.inputDecoration(label: 'Permanent Address'),
             ),
           ),
-          utils.textInputPadding(
+          Padding(
+            padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
               initialValue: capitalize(
@@ -153,7 +189,8 @@ class _CustomerdetailsState extends State<Customerdetails> {
               decoration: utils.inputDecoration(label: 'City/District'),
             ),
           ),
-          utils.textInputPadding(
+          Padding(
+            padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
               initialValue: capitalize(

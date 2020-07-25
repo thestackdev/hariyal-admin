@@ -8,10 +8,17 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/add_admin.dart';
-import 'package:superuser/superuser/categories.dart';
+import 'package:superuser/superuser/utilities/categories.dart';
+import 'package:superuser/superuser/utilities/states.dart';
 import 'package:superuser/widgets/image_view.dart';
 import '../../utils.dart';
-import '../shorooms.dart';
+import '../utilities/shorooms.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:superuser/services/all_products.dart';
+import 'package:superuser/superuser/admin_screens/admins.dart';
+import 'package:superuser/superuser/admin_screens/customers.dart';
+import 'package:superuser/utils.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -36,7 +43,7 @@ class _SettingsState extends State<Settings> {
     final authorsnap = context.watch<DocumentSnapshot>();
     nameController.text = authorsnap.data['name'];
     return Scaffold(
-      appBar: utils.appbar('Settings'),
+      appBar: utils.appbar('Superuser Console'),
       body: utils.container(
         child: ListView(
           children: <Widget>[
@@ -46,10 +53,7 @@ class _SettingsState extends State<Settings> {
                 GestureDetector(
                   onTap: () {
                     Get.to(
-                      HariyalImageView(
-                        imageUrls: [authorsnap['imageUrl']],
-                      ),
-                    );
+                        HariyalImageView(imageUrls: [authorsnap['imageUrl']]));
                   },
                   child: Container(
                     padding: EdgeInsets.all(18),
@@ -140,9 +144,7 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.cartArrowRight,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Get.to(
-                CategoriesScreen(type: 'category'),
-              ),
+              onTap: () => Get.to(CategoriesScreen()),
             ),
             utils.listTile(
               title: 'Locations',
@@ -150,9 +152,7 @@ class _SettingsState extends State<Settings> {
                 MdiIcons.locationExit,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Get.to(
-                CategoriesScreen(type: 'locations'),
-              ),
+              onTap: () => Get.to(States()),
             ),
             utils.listTile(
               title: 'Showrooms',
@@ -161,6 +161,35 @@ class _SettingsState extends State<Settings> {
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.to(Showrooms()),
+            ),
+            utils.listTile(
+              title: 'My Products',
+              leading: Icon(MdiIcons.cartOutline, color: Colors.red),
+              onTap: () => Get.to(AllProducts()),
+            ),
+            utils.listTile(
+              title: 'Customers',
+              leading: Icon(MdiIcons.humanMaleMale, color: Colors.red),
+              onTap: () => Get.to(AllCustomers()),
+            ),
+            utils.listTile(
+              title: 'Admins',
+              leading: Icon(MdiIcons.humanChild, color: Colors.red),
+              onTap: () => Get.to(Admins()),
+            ),
+            utils.listTile(
+              title: 'Logout',
+              leading: Icon(MdiIcons.logout, color: Colors.red),
+              onTap: () => utils.getSimpleDialouge(
+                title: 'Confirm',
+                content: Text('Logout ?'),
+                yesPressed: () {
+                  Get.back();
+                  FirebaseAuth.instance.signOut();
+                  Phoenix.rebirth(context);
+                },
+                noPressed: () => Get.back(),
+              ),
             ),
           ],
         ),

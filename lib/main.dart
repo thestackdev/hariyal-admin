@@ -13,19 +13,8 @@ import 'package:superuser/superuser/superuser_home.dart';
 import 'package:superuser/utils.dart';
 
 final Utils utils = Utils();
-final Firestore _db = Firestore.instance;
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-final appTheme = ThemeData(
-  brightness: Brightness.light,
-  fontFamily: 'Ubuntu',
-  primarySwatch: Colors.red,
-  scaffoldBackgroundColor: Colors.red,
-  pageTransitionsTheme: PageTransitionsTheme(builders: {
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-  }),
-);
+final Firestore firestore = Firestore.instance;
+final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,78 +22,82 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
+
+  Widget homeWidget() {
+    firebaseAuth.signOut();
+    return Authenticate();
+  }
+
   runApp(
     Phoenix(
-      child: AuthenticationChecker(),
-    ),
-  );
-}
-
-class AuthenticationChecker extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<FirebaseUser>(
-      stream: _auth.onAuthStateChanged,
-      builder: (context, authsnap) {
-        if (authsnap.connectionState == ConnectionState.active) {
-          if (!authsnap.hasData) {
-            return GetMaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: appTheme,
-              home: Authenticate(),
-            );
-          } else {
-            return DataStreamBuilder<DocumentSnapshot>(
-              stream: _db
-                  .collection('admin')
-                  .document(authsnap.data.uid)
-                  .snapshots(),
-              errorBuilder: (context, error) => utils.nullWidget(error),
-              loadingBuilder: (context) => Container(
-                color: Colors.white,
-                child: utils.progressIndicator(),
-              ),
-              builder: (context, snapshot) {
-                return MultiProvider(
-                  providers: [
-                    Provider<DocumentSnapshot>.value(value: snapshot),
-                    Provider<Utils>.value(value: utils),
-                    StreamProvider<QuerySnapshot>.value(
-                      initialData: null,
-                      value: _db.collection('extras').snapshots(),
-                    ),
-                  ],
-                  child: GetMaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    navigatorKey: Get.key,
-                    theme: appTheme,
-                    home: homeWidget(
-                      snapshot.data['isSuperuser'],
-                      snapshot.data['isAdmin'],
-                    ),
-                  ),
-                );
-              },
+      child: StreamBuilder<FirebaseUser>(
+        initialData: null,
+        stream: FirebaseAuth.instance.onAuthStateChanged,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              color: Colors.white,
+              child: utils.progressIndicator(),
             );
           }
-        } else {
-          return Container(
-            color: Colors.white,
-            child: utils.progressIndicator(),
-          );
-        }
-      },
-    );
-  }
-
-  homeWidget(bool isSuperuser, bool isAdmin) {
-    if (isSuperuser) {
-      return SuperuserHome();
-    } else if (isAdmin) {
-      return AdminHome();
-    } else {
-      _auth.signOut();
-      return Authenticate();
-    }
-  }
+          if (snapshot.hasData) {
+            return DataStreamBuilder<DocumentSnapshot>(
+                loadingBuilder: (context) => Container(
+                      color: Colors.white,
+                      child: utils.progressIndicator(),
+                    ),
+                stream: Firestore.instance
+                    .collection('admin')
+                    .document(snapshot.data.uid)
+                    .snapshots(),
+                builder: (context, adminsnap) {
+                  return MultiProvider(
+                    providers: [
+                      StreamProvider<QuerySnapshot>.value(
+                        initialData: null,
+                        value: firestore.collection('extras').snapshots(),
+                      ),
+                      Provider<DocumentSnapshot>.value(
+                        value: adminsnap,
+                      ),
+                      Provider<Utils>.value(
+                        value: utils,
+                      ),
+                    ],
+                    child: GetMaterialApp(
+                      defaultTransition: Transition.rightToLeftWithFade,
+                      enableLog: false,
+                      theme: ThemeData(
+                        visualDensity: VisualDensity.adaptivePlatformDensity,
+                        fontFamily: 'Ubuntu',
+                        primarySwatch: Colors.red,
+                        scaffoldBackgroundColor: Colors.red,
+                      ),
+                      debugShowCheckedModeBanner: false,
+                      home: adminsnap.data['isSuperuser']
+                          ? SuperuserHome()
+                          : adminsnap.data['isAdmin']
+                              ? AdminHome()
+                              : homeWidget(),
+                    ),
+                  );
+                });
+          } else {
+            return GetMaterialApp(
+              defaultTransition: Transition.rightToLeftWithFade,
+              enableLog: false,
+              theme: ThemeData(
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+                fontFamily: 'Ubuntu',
+                primarySwatch: Colors.red,
+                scaffoldBackgroundColor: Colors.red,
+              ),
+              debugShowCheckedModeBanner: false,
+              home: Authenticate(),
+            );
+          }
+        },
+      ),
+    ),
+  );
 }

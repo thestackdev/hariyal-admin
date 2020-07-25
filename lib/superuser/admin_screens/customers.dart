@@ -15,22 +15,21 @@ class AllCustomers extends StatefulWidget {
 }
 
 class _AllCustomersState extends State<AllCustomers> {
-  bool isSearchActive = false;
-  final queryConroller = TextEditingController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
-  Utils utils;
   int count = 30;
+  String searchValue;
+  final TextEditingController controller = TextEditingController();
 
   @override
   void dispose() {
-    queryConroller.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
+    final utils = context.watch<Utils>();
     return Scaffold(
       appBar: utils.appbar('Customers'),
       body: utils.container(
@@ -39,27 +38,63 @@ class _AllCustomersState extends State<AllCustomers> {
             Container(
               padding: const EdgeInsets.all(9),
               color: Colors.red,
-              child: TextField(
-                style: utils.inputTextStyle(),
-                maxLines: null,
-                controller: queryConroller,
-                decoration: getDecoration(),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      style: utils.inputTextStyle(),
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (value) {
+                        searchValue = value;
+                        isQueryActive = true;
+                        handleState();
+                      },
+                      onChanged: (value) {
+                        searchValue = value;
+                        isQueryActive = true;
+                        handleState();
+                      },
+                      maxLines: 1,
+                      decoration: getDecoration(),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 30,
+                    child: IconButton(
+                      padding: EdgeInsets.all(9),
+                      color: Colors.white,
+                      icon: Icon(
+                        isQueryActive
+                            ? MdiIcons.closeOutline
+                            : MdiIcons.accountSearchOutline,
+                      ),
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        if (isQueryActive) {
+                          isQueryActive = false;
+                          searchValue = null;
+                          controller.clear();
+                        } else if (controller.text.length > 0) {
+                          isQueryActive = true;
+                          searchValue = controller.text;
+                        }
+                        handleState();
+                      },
+                    ),
+                  )
+                ],
               ),
             ),
             Expanded(
               child: DataStreamBuilder<QuerySnapshot>(
                 errorBuilder: (context, error) => utils.nullWidget(error),
                 loadingBuilder: (context) => utils.progressIndicator(),
-                stream: isQueryActive
-                    ? firestore
-                        .collection('customers')
-                        .where('name', isEqualTo: queryConroller.text)
-                        .limit(count)
-                        .snapshots()
-                    : firestore
-                        .collection('customers')
-                        .limit(count)
-                        .snapshots(),
+                stream: firestore
+                    .collection('customers')
+                    .where('name', isEqualTo: searchValue?.toLowerCase())
+                    .limit(count)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.documents.length == 0) {
                     return utils.nullWidget('No customers found !');
@@ -80,12 +115,11 @@ class _AllCustomersState extends State<AllCustomers> {
                               ),
                             ),
                             title: '${snapshot.documents[index]['name']}',
-                            onTap: () =>
-                                Get.to(
-                                  Customerdetails(
-                                    docsnap: snapshot.documents[index],
-                                  ),
-                                ),
+                            onTap: () => Get.to(
+                              Customerdetails(
+                                docsnap: snapshot.documents[index],
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -103,63 +137,22 @@ class _AllCustomersState extends State<AllCustomers> {
   getDecoration() {
     return InputDecoration(
       isDense: true,
-      labelStyle: TextStyle(
-        color: Colors.red.shade300,
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-        letterSpacing: 1.0,
-      ),
-      hintText: 'search by name',
-      suffixIcon: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(MdiIcons.accountSearchOutline),
-            onPressed: () {
-              if (queryConroller.text.length > 0) {
-                isQueryActive = true;
-                FocusScope.of(context).unfocus();
-                handleState();
-              }
-            },
-          ),
-          isQueryActive
-              ? IconButton(
-                  icon: Icon(MdiIcons.closeOutline),
-                  onPressed: () {
-                    if (isQueryActive) {
-                      FocusScope.of(context).unfocus();
-                      queryConroller.clear();
-                      isQueryActive = false;
-                      handleState();
-                    }
-                  },
-                )
-              : SizedBox()
-        ],
-      ),
-      contentPadding: EdgeInsets.all(18),
+      hintText: 'Search by name',
+      contentPadding: EdgeInsets.all(12),
       border: InputBorder.none,
       fillColor: Colors.grey.shade100,
       filled: true,
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
       ),
       disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
       ),
     );
   }

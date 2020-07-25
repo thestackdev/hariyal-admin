@@ -15,23 +15,114 @@ class Utils {
     );
   }
 
-  simpleDialouge({
-    String label,
+  blankScreenLoading() {
+    return Container(
+      color: Colors.white,
+      child: progressIndicator(),
+    );
+  }
+
+  dismissible({
+    Key key,
+    Widget child,
+    Future<bool> Function(DismissDirection) confirmDismiss,
+  }) {
+    return Dismissible(
+      key: key,
+      child: child,
+      confirmDismiss: confirmDismiss,
+      background: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(9),
+          color: Colors.red,
+        ),
+        child: ListTile(
+          leading: Icon(
+            MdiIcons.deleteOffOutline,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      secondaryBackground: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(9),
+          color: Colors.blue,
+        ),
+        child: ListTile(
+          trailing: Icon(
+            MdiIcons.pencilOutline,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  getSimpleDialouge({
+    String title,
     Function yesPressed,
     Function noPressed,
     Widget content,
   }) {
-    return Get.defaultDialog(
-      title: capitalize(label),
-      content: content,
-      middleText: '',
-      cancel: FlatButton(
-        child: Text('Cancel', style: textStyle()),
-        onPressed: noPressed,
+    return Get.dialog(
+      AlertDialog(
+        scrollable: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: Center(
+          child: Text(
+            title,
+            style: textStyle(
+              color: Colors.red,
+            ),
+          ),
+        ),
+        content: content,
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel', style: textStyle()),
+            onPressed: noPressed,
+          ),
+          FlatButton(
+            child: Text('Confirm', style: textStyle()),
+            onPressed: yesPressed,
+          ),
+        ],
       ),
-      confirm: FlatButton(
-        child: Text('Confirm', style: textStyle()),
-        onPressed: yesPressed,
+    );
+  }
+
+  dialogInput({String hintText, TextEditingController controller}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: inputTextStyle(),
+        isDense: true,
+        labelStyle: textStyle(color: Colors.red),
+        contentPadding: EdgeInsets.all(12),
+        border: InputBorder.none,
+        fillColor: Colors.grey.shade100,
+        filled: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(9),
+          borderSide: BorderSide(
+            color: Colors.grey.shade100,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(9),
+          borderSide: BorderSide(
+            color: Colors.grey.shade100,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(9),
+          borderSide: BorderSide(
+            color: Colors.grey.shade100,
+          ),
+        ),
       ),
     );
   }
@@ -152,36 +243,32 @@ class Utils {
       fillColor: Colors.grey.shade100,
       filled: true,
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(9),
         borderSide: BorderSide(
           color: Colors.grey.shade100,
         ),
       ),
       disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(9),
         borderSide: BorderSide(
           color: Colors.grey.shade100,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(9),
         borderSide: BorderSide(
           color: Colors.grey.shade100,
         ),
       ),
       prefix: iconData != null
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(
-                  iconData,
-                  color: Colors.red.shade300,
-                  size: 18,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-              ],
+          ? SizedBox(
+              height: 9,
+              width: 9,
+              child: Icon(
+                iconData,
+                color: Colors.red.shade300,
+                size: 18,
+              ),
             )
           : SizedBox(),
     );
@@ -272,7 +359,7 @@ class Utils {
 
   Widget textInputPadding({child}) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 27, vertical: 9),
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
       child: child,
     );
   }
@@ -304,7 +391,7 @@ class Utils {
       margin: EdgeInsets.all(9),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(9),
-        color: Colors.grey.shade100,
+        color: Colors.grey.shade50,
       ),
       child: ListTile(
         leading: leading,

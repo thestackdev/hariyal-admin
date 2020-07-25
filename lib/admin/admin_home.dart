@@ -67,10 +67,8 @@ class _AdminHomeState extends State<AdminHome>
                 stream: Firestore.instance
                     .collection('products')
                     .where('author',
-                    isEqualTo:
-                    Provider
-                        .of<DocumentSnapshot>(context)
-                        .documentID)
+                        isEqualTo:
+                            Provider.of<DocumentSnapshot>(context).documentID)
                     .snapshots(),
               ),
             ),

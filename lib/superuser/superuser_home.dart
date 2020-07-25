@@ -3,10 +3,9 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
-import 'package:superuser/superuser/admin_screens/settings.dart';
+import 'package:superuser/superuser/admin_screens/more.dart';
 import 'package:superuser/utils.dart';
 
-import 'admin_screens/extras.dart';
 import 'admin_screens/reports.dart';
 import 'admin_screens/requests.dart';
 import 'admin_screens/sold_items.dart';
@@ -18,8 +17,8 @@ class SuperuserHome extends StatefulWidget {
 
 class _SuperuserHomeState extends State<SuperuserHome> {
   int currentScreen = 0;
-  final screenList = [Requests(), SoldItems(), PushData(), Reports(), Extras()];
-  final titleList = ['Orders', 'Sold Items', 'Add Items', 'Reports', 'Extras'];
+  final screenList = [Requests(), SoldItems(), PushData(), Reports()];
+  final titleList = ['Orders', 'Sold Items', 'Add Items', 'Reports'];
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
         ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(MdiIcons.cogOutline),
+              icon: Icon(Icons.more_horiz),
               onPressed: () => Get.to(Settings())),
         ],
       ),
@@ -66,10 +65,6 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           bottomNavigationBar(
             title: titleList[3],
             icon: MdiIcons.receipt,
-          ),
-          bottomNavigationBar(
-            title: titleList[4],
-            icon: MdiIcons.more,
           ),
         ],
       ),

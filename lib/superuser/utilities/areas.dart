@@ -4,19 +4,19 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:strings/strings.dart';
+import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/utils.dart';
 
-class SubCategories extends StatefulWidget {
+class Areas extends StatefulWidget {
   final mapKey;
-  final docID;
 
-  const SubCategories({Key key, this.mapKey, this.docID}) : super(key: key);
+  const Areas({Key key, this.mapKey}) : super(key: key);
 
   @override
-  _SubCategoriesState createState() => _SubCategoriesState();
+  _AreasState createState() => _AreasState();
 }
 
-class _SubCategoriesState extends State<SubCategories> {
+class _AreasState extends State<Areas> {
   final textController = TextEditingController();
   List items = [];
   DocumentSnapshot snapshot;
@@ -32,7 +32,7 @@ class _SubCategoriesState extends State<SubCategories> {
     final utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
     for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == widget.docID) {
+      if (doc.documentID == 'locations') {
         items.clear();
         snapshot = doc;
         if (doc.data[widget.mapKey] != null) {
@@ -47,10 +47,10 @@ class _SubCategoriesState extends State<SubCategories> {
       appBar: utils.appbar(capitalize(widget.mapKey), actions: [
         IconButton(
           icon: Icon(MdiIcons.plusOutline),
-          onPressed: () => utils.simpleDialouge(
-            label: 'Add Data',
-            content: utils.productInputText(
-              label: 'Type here',
+          onPressed: () => utils.getSimpleDialouge(
+            title: 'Add Areas',
+            content: utils.dialogInput(
+              hintText: 'Type here',
               controller: textController,
             ),
             noPressed: () => Get.back(),
@@ -75,7 +75,10 @@ class _SubCategoriesState extends State<SubCategories> {
           itemCount: items.length,
           itemBuilder: (context, index) => utils.listTile(
             title: capitalize(items[index]),
-            isTrailingNull: true,
+            onTap: () => Get.to(Specifications(
+              mapKey: items[index],
+            )),
+            isTrailingNull: false,
           ),
         ),
       ),

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/utils.dart';
@@ -40,9 +39,7 @@ class _PushDataState extends State<PushData> {
     loading = true;
     handleSetState();
 
-    await firestore.collection('showrooms').getDocuments().then((value) {
-      showroomList.addAll(value.documents);
-    });
+    // await
     loading = false;
     handleSetState();
   }
@@ -104,13 +101,11 @@ class _PushDataState extends State<PushData> {
                         ),
                         child: IconButton(
                           onPressed: () async {
-                            if (await Permission.camera.request().isGranted &&
-                                await Permission.storage.request().isGranted) {
-                              try {
-                                images = await MultiImagePicker.pickImages(
-                                  maxImages: 5,
-                                  enableCamera: false,
-                                  selectedAssets: images,
+                            try {
+                              images = await MultiImagePicker.pickImages(
+                                maxImages: 5,
+                                enableCamera: true,
+                                /*  selectedAssets: images,
                                   materialOptions: MaterialOptions(
                                     statusBarColor: '#FF6347',
                                     startInAllView: true,
@@ -119,14 +114,11 @@ class _PushDataState extends State<PushData> {
                                     allViewTitle: "Pick Images",
                                     useDetailsView: false,
                                     selectCircleStrokeColor: "#FF6347",
-                                  ),
-                                );
-                                handleSetState();
-                              } catch (e) {
-                                utils.showSnackbar(e.toString());
-                              }
-                            } else {
-                              utils.showSnackbar('Insufficient Permissions');
+                                  ), */
+                              );
+                              handleSetState();
+                            } catch (e) {
+                              utils.showSnackbar(e.toString());
                             }
                           },
                           icon: Icon(
@@ -176,14 +168,30 @@ class _PushDataState extends State<PushData> {
                           onChanged: (value) {
                             selectedState = value;
                             selectedArea = null;
+                            selectedShowroom = null;
+                            showroomAddressController.clear();
+                            showroomList.clear();
                             handleSetState();
                           }),
                       utils.productInputDropDown(
                           label: 'Area',
                           value: selectedArea,
                           items: areasList,
-                          onChanged: (newValue) {
+                          onChanged: (newValue) async {
                             selectedArea = newValue;
+                            selectedShowroom = null;
+                            showroomAddressController.clear();
+                            showroomList.clear();
+                            loading = true;
+                            handleSetState();
+                            await firestore
+                                .collection('showrooms')
+                                .where('area', isEqualTo: newValue)
+                                .getDocuments()
+                                .then((value) {
+                              showroomList.addAll(value.documents);
+                            });
+                            loading = false;
                             handleSetState();
                           }),
                       utils.productInputDropDown(

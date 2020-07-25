@@ -2,7 +2,6 @@
     package="com.hariyal.superuser">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,6 +37,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
+        android:requestLegacyExternalStorage="true"
     </application>
 </manifest>
