@@ -5,7 +5,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 class PushProduct {
   List imageUrls = [];
   final _storage = FirebaseStorage.instance.ref().child('products');
-  Firestore _reference = Firestore.instance;
+  CollectionReference _reference = Firestore.instance.collection('products');
 
   uploadProduct({
     List<Asset> images,
@@ -25,9 +25,7 @@ class PushProduct {
       imageUrls.add(await uploadProductImages(element));
     });
 
-    final docID = DateTime.now().microsecondsSinceEpoch.toString();
-
-    await _reference.collection('products').document(docID).setData({
+    await _reference.document().setData({
       'title': title,
       'description': description,
       'images': imageUrls,
@@ -40,6 +38,7 @@ class PushProduct {
       'isSold': false,
       'soldTo': null,
       'soldReason': null,
+      'interested_count': 0,
     });
   }
 
@@ -71,14 +70,11 @@ class PushProduct {
       }
     }
 
-    await _reference.collection('products').document(docID).updateData({
+    await _reference.document(docID).updateData({
       'title': title,
       'description': description,
       'images': imageUrls,
-      'location': {
-        'state': state.toLowerCase(),
-        'area': area.toLowerCase(),
-      },
+      'location': {'state': state, 'area': area},
       'category': {'category': category, 'subCategory': subCategory},
       'adress': adressID,
       'price': price,
@@ -91,8 +87,8 @@ class PushProduct {
       return _storage
           .child(DateTime.now().microsecondsSinceEpoch.toString())
           .putData(await images
-          .getByteData(quality: 75)
-          .then((value) => value.buffer.asUint8List()))
+              .getByteData(quality: 75)
+              .then((value) => value.buffer.asUint8List()))
           .onComplete
           .then((value) {
         return value.ref.getDownloadURL();

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:strings/strings.dart';
-import 'package:superuser/superuser/admin_screens/edit_data_screen.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
+
+import 'superuser_screens/edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
   final docID;
@@ -211,7 +212,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     await Future.forEach(snapshot.data['images'], (element) async {
       try {
         StorageReference ref =
-        await firebaseStorage.getReferenceFromUrl(element);
+            await firebaseStorage.getReferenceFromUrl(element);
         await ref.delete();
       } catch (e) {
         utils.showSnackbar(e.toString());

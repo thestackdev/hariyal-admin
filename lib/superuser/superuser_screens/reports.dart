@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:superuser/utils.dart';
 
 class Reports extends StatefulWidget {
@@ -8,10 +9,9 @@ class Reports extends StatefulWidget {
 }
 
 class _ReportsState extends State<Reports> {
-  Utils utils = Utils();
-
   @override
   Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
     return utils.container(
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('reports').snapshots(),

@@ -15,6 +15,9 @@ class States extends StatefulWidget {
 class _StatesState extends State<States> {
   List items = [];
   final textController = TextEditingController();
+  Firestore firestore = Firestore.instance;
+  DocumentSnapshot snapshot;
+  Utils utils;
 
   @override
   void dispose() {
@@ -25,8 +28,8 @@ class _StatesState extends State<States> {
   @override
   Widget build(BuildContext context) {
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
-    final utils = context.watch<Utils>();
-    DocumentSnapshot snapshot;
+
+    utils = context.watch<Utils>();
 
     if (extras == null) {
       return utils.blankScreenLoading();
@@ -52,31 +55,129 @@ class _StatesState extends State<States> {
               controller: textController,
             ),
             noPressed: () => Get.back(),
-            yesPressed: () {
-              Get.back();
-              if (textController.text.length > 0 &&
-                  !items.contains(textController.text.toLowerCase())) {
-                snapshot.reference
-                    .updateData({textController.text.toLowerCase(): []});
-              } else {
-                utils.showSnackbar('Invalid entries');
-              }
-              textController.clear();
-            },
+            yesPressed: () => addState(),
           ),
         ),
       ]),
       body: utils.container(
         child: ListView.builder(
           itemCount: items.length,
-          itemBuilder: (context, index) => utils.listTile(
-            title: capitalize(items[index]),
-            onTap: () => Get.to(
-              Areas(mapKey: items[index]),
+          itemBuilder: (context, index) => utils.dismissible(
+            key: UniqueKey(),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                return await utils.getSimpleDialouge(
+                  title: 'Confirm',
+                  content: Text('Delete this State ?'),
+                  yesPressed: () {
+                    deleteState(items[index]);
+                    snapshot.reference
+                        .updateData({items[index]: FieldValue.delete()});
+                    Get.back();
+                  },
+                  noPressed: () => Get.back(),
+                );
+              } else {
+                textController.text = items[index];
+                return await utils.getSimpleDialouge(
+                  title: 'Edit State',
+                  content: utils.dialogInput(
+                    hintText: 'Type here',
+                    controller: textController,
+                  ),
+                  noPressed: () => Get.back(),
+                  yesPressed: () {
+                    if (utils.validateInputText(textController.text) &&
+                        textController.text != items[index] &&
+                        !items.contains(textController.text.toLowerCase())) {
+                      List tempData = snapshot.data[items[index]];
+
+                      snapshot.reference
+                          .updateData({textController.text: tempData});
+                      snapshot.reference
+                          .updateData({items[index]: FieldValue.delete()});
+                      editState(items[index], textController.text);
+                      Get.back();
+                    } else {
+                      Get.back();
+                      utils.showSnackbar('Invalid entries');
+                    }
+                    textController.clear();
+                  },
+                );
+              }
+            },
+            child: utils.listTile(
+              title: capitalize(items[index]),
+              onTap: () => Get.to(Areas(mapKey: items[index])),
             ),
           ),
         ),
       ),
     );
+  }
+
+  addState() {
+    if (utils.validateInputText(textController.text) &&
+        !items.contains(textController.text.toLowerCase())) {
+      snapshot.reference.updateData({textController.text.toLowerCase(): []});
+      Get.back();
+      utils.showSnackbar('State Added');
+    } else {
+      Get.back();
+      utils.showSnackbar('Invalid entries');
+    }
+
+    textController.clear();
+  }
+
+  deleteState(String data) {
+    firestore
+        .collection('products')
+        .where('location.state', isEqualTo: data)
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((element) {
+        element.reference.updateData({
+          'location.state': null,
+          'location.area': null,
+          'isDeleted': true,
+        });
+      });
+    });
+    firestore
+        .collection('showrooms')
+        .where('state', isEqualTo: data)
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((element) {
+        element.reference.updateData({
+          'state': null,
+        });
+      });
+    });
+  }
+
+  editState(String oldData, String newData) {
+    firestore
+        .collection('products')
+        .where('location.state', isEqualTo: oldData)
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((element) {
+        element.reference.updateData({'location.state': newData});
+      });
+    });
+    firestore
+        .collection('showrooms')
+        .where('state', isEqualTo: oldData)
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((element) {
+        element.reference.updateData({
+          'state': newData,
+        });
+      });
+    });
   }
 }

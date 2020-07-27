@@ -15,6 +15,14 @@ class Utils {
     );
   }
 
+  bool validateInputText(String text) {
+    if (text.trim().length > 0 && !text.contains('.')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   blankScreenLoading() {
     return Container(
       color: Colors.white,
@@ -161,10 +169,12 @@ class Utils {
     String label,
     TextInputType textInputType = TextInputType.text,
     TextInputAction textInputAction = TextInputAction.done,
+    Function(String) onChanged,
     bool readOnly = false,
   }) {
     return textInputPadding(
       child: TextFormField(
+        onChanged: onChanged,
         style: inputTextStyle(),
         readOnly: readOnly,
         maxLines: null,
@@ -261,20 +271,17 @@ class Utils {
         ),
       ),
       prefix: iconData != null
-          ? SizedBox(
-              height: 9,
-              width: 9,
-              child: Icon(
-                iconData,
-                color: Colors.red.shade300,
-                size: 18,
-              ),
-            )
+          ? Icon(
+        iconData,
+        color: Colors.red.shade300,
+        size: 18,
+      )
           : SizedBox(),
     );
   }
 
   void showSnackbar(String message) {
+    if (Get.isSnackbarOpen) Get.back();
     Get.snackbar(
       'Alert',
       message,

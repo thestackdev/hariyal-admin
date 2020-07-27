@@ -48,6 +48,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   Firestore firestore = Firestore.instance;
   bool loading = false;
   final textstyle = TextStyle(color: Colors.grey, fontSize: 16);
+  List shouldRemoveImages = [];
 
   fetchPreviousData() async {
     loading = true;
@@ -96,6 +97,10 @@ class _EditDataScreenState extends State<EditDataScreen> {
   Widget build(BuildContext context) {
     utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
+
+    if (extras == null) {
+      return utils.blankScreenLoading();
+    }
 
     for (var map in extras.documents) {
       if (map.documentID == 'category') {
@@ -153,20 +158,16 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () async {
-                                    existingImages.removeAt(index);
-                                    handleSetState();
-                                    Firestore.instance
-                                        .collection('products')
-                                        .document(widget.productSnap.documentID)
-                                        .updateData({'images': existingImages});
-                                    FirebaseStorage.instance
-                                        .ref()
-                                        .getStorage()
-                                        .getReferenceFromUrl(
-                                            existingImages[index])
-                                        .then((value) {
-                                      value.delete();
-                                    });
+                                    try {
+                                      shouldRemoveImages
+                                          .add(existingImages[index]);
+                                      existingImages
+                                          .remove(existingImages[index]);
+
+                                      handleSetState();
+                                    } catch (e) {
+                                      utils.showSnackbar(e.toString());
+                                    }
                                   },
                                 ),
                               ),
@@ -348,11 +349,27 @@ class _EditDataScreenState extends State<EditDataScreen> {
         title.text.length > 0 &&
         description.text.length > 0 &&
         specificationController.text.length > 0) {
-      if (existingImages != null && newImages != null ||
-          existingImages.length != 0 && newImages.length != 0) {
+      if (existingImages.length == 0 && newImages.length > 0 ||
+          existingImages.length > 0 && newImages.length == 0) {
         FocusScope.of(context).unfocus();
         loading = true;
         handleSetState();
+
+        shouldRemoveImages.forEach((element) {
+          FirebaseStorage.instance
+              .ref()
+              .getStorage()
+              .getReferenceFromUrl(element)
+              .then((value) {
+            value.delete();
+          });
+        });
+
+        Firestore.instance
+            .collection('products')
+            .document(widget.productSnap.documentID)
+            .updateData({'images': existingImages});
+
         await PushProduct().updateProduct(
           newImages: newImages,
           category: selectedCategory,
@@ -371,6 +388,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
         loading = false;
         handleSetState();
         utils.showSnackbar('Item Updated Sucessfully');
+      } else {
+        utils.showSnackbar('Upload alteast one image');
       }
     } else {
       utils.showSnackbar('Invalid Selections');

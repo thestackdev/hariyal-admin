@@ -47,7 +47,8 @@ class _ShowroomsState extends State<Showrooms> {
                       return await utils.getSimpleDialouge(
                         title: 'Confirm',
                         content: Text('Delete this Showroom ?'),
-                        yesPressed: () async {
+                        yesPressed: () {
+                          deleteShowroom(snapshot.documents[index].documentID);
                           snapshot.documents[index].reference.delete();
                           Get.back();
                         },
@@ -73,5 +74,20 @@ class _ShowroomsState extends State<Showrooms> {
         ),
       ),
     );
+  }
+
+  deleteShowroom(String docID) {
+    firestore
+        .collection('products')
+        .where('adress', isEqualTo: docID)
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((element) {
+        element.reference.updateData({
+          'adress': null,
+          'isDeleted': true,
+        });
+      });
+    });
   }
 }

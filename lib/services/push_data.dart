@@ -14,41 +14,30 @@ class PushData extends StatefulWidget {
 class _PushDataState extends State<PushData> {
   List<Asset> images = [];
   String selectedCategory;
-  String selectedShowroom;
+  String selectedSubCategory;
   String selectedState;
   String selectedArea;
-  String selectedSubCategory;
+  String selectedShowroom;
   List subCategory = [];
   List areasList = [];
   List showroomList = [];
+  List specificationsList = [];
   String addressID;
   bool loading = false;
   Utils utils;
+
   Map categoryMap = {};
   Map locationsMap = {};
+  Map specificationsMap = {};
+  Map inputSpecifications = {};
+
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
 
   final price = TextEditingController();
   final title = TextEditingController();
   final description = TextEditingController();
   final showroomAddressController = TextEditingController();
-  final specificationController = TextEditingController();
   Firestore firestore = Firestore.instance;
-
-  initData() async {
-    loading = true;
-    handleSetState();
-
-    // await
-    loading = false;
-    handleSetState();
-  }
-
-  @override
-  void initState() {
-    initData();
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -56,7 +45,6 @@ class _PushDataState extends State<PushData> {
     title.dispose();
     description.dispose();
     showroomAddressController.dispose();
-    specificationController.dispose();
     super.dispose();
   }
 
@@ -71,6 +59,8 @@ class _PushDataState extends State<PushData> {
           categoryMap.addAll(map.data);
         } else if (map.documentID == 'locations') {
           locationsMap.addAll(map.data);
+        } else if (map.documentID == 'specifications') {
+          specificationsMap.addAll(map.data);
         }
       }
       if (selectedCategory != null) {
@@ -105,20 +95,20 @@ class _PushDataState extends State<PushData> {
                               images = await MultiImagePicker.pickImages(
                                 maxImages: 5,
                                 enableCamera: true,
-                                /*  selectedAssets: images,
-                                  materialOptions: MaterialOptions(
-                                    statusBarColor: '#FF6347',
-                                    startInAllView: true,
-                                    actionBarColor: "#FF6347",
-                                    actionBarTitle: "Pick Images",
-                                    allViewTitle: "Pick Images",
-                                    useDetailsView: false,
-                                    selectCircleStrokeColor: "#FF6347",
-                                  ), */
+                                selectedAssets: images,
+                                materialOptions: MaterialOptions(
+                                  statusBarColor: '#FF6347',
+                                  startInAllView: true,
+                                  actionBarColor: "#FF6347",
+                                  actionBarTitle: "Pick Images",
+                                  allViewTitle: "Pick Images",
+                                  useDetailsView: false,
+                                  selectCircleStrokeColor: "#FF6347",
+                                ),
                               );
                               handleSetState();
                             } catch (e) {
-                              utils.showSnackbar(e.toString());
+                              utils.showSnackbar('Something went wrong !');
                             }
                           },
                           icon: Icon(
@@ -151,16 +141,32 @@ class _PushDataState extends State<PushData> {
                           onChanged: (value) {
                             selectedCategory = value;
                             selectedSubCategory = null;
+                            specificationsList.clear();
+                            if (specificationsMap[value] != null) {
+                              specificationsList
+                                  .addAll(specificationsMap[value]);
+                            }
+
                             handleSetState();
                           }),
-                      utils.productInputDropDown(
-                          label: 'Sub-Category',
-                          value: selectedSubCategory,
-                          items: subCategory,
-                          onChanged: (value) {
-                            selectedSubCategory = value;
-                            handleSetState();
-                          }),
+                      GestureDetector(
+                        onTap: () {
+                          if (selectedCategory == null) {
+                            utils.showSnackbar('Please select category first');
+                          } else if (subCategory.length == 0) {
+                            utils.showSnackbar(
+                                'No subcategories in $selectedCategory');
+                          }
+                        },
+                        child: utils.productInputDropDown(
+                            label: 'Sub-Category',
+                            value: selectedSubCategory,
+                            items: subCategory,
+                            onChanged: (value) {
+                              selectedSubCategory = value;
+                              handleSetState();
+                            }),
+                      ),
                       utils.productInputDropDown(
                           label: 'State',
                           value: selectedState,
@@ -173,46 +179,64 @@ class _PushDataState extends State<PushData> {
                             showroomList.clear();
                             handleSetState();
                           }),
-                      utils.productInputDropDown(
-                          label: 'Area',
-                          value: selectedArea,
-                          items: areasList,
-                          onChanged: (newValue) async {
-                            selectedArea = newValue;
-                            selectedShowroom = null;
-                            showroomAddressController.clear();
-                            showroomList.clear();
-                            loading = true;
-                            handleSetState();
-                            await firestore
-                                .collection('showrooms')
-                                .where('area', isEqualTo: newValue)
-                                .getDocuments()
-                                .then((value) {
-                              showroomList.addAll(value.documents);
-                            });
-                            loading = false;
-                            handleSetState();
-                          }),
-                      utils.productInputDropDown(
-                          label: 'Showroom',
-                          items: showroomList,
-                          value: selectedShowroom,
-                          isShowroom: true,
-                          onChanged: (newValue) {
-                            selectedShowroom = newValue;
-                            showroomList.forEach((element) {
-                              if (element['name'] == newValue) {
-                                showroomAddressController.text =
-                                    element['adress'];
-                                addressID = element.documentID;
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            });
-                            handleSetState();
-                          }),
+                      GestureDetector(
+                        onTap: () {
+                          if (selectedState == null) {
+                            utils.showSnackbar('Please select state first');
+                          } else if (subCategory.length == 0) {
+                            utils.showSnackbar('No areas in $selectedState');
+                          }
+                        },
+                        child: utils.productInputDropDown(
+                            label: 'Area',
+                            value: selectedArea,
+                            items: areasList,
+                            onChanged: (newValue) async {
+                              selectedArea = newValue;
+                              selectedShowroom = null;
+                              showroomAddressController.clear();
+                              showroomList.clear();
+                              utils.showSnackbar(
+                                  'Loading showrooms in $selectedArea...');
+
+                              await firestore
+                                  .collection('showrooms')
+                                  .where('area', isEqualTo: newValue)
+                                  .getDocuments()
+                                  .then((value) {
+                                showroomList.addAll(value.documents);
+                                handleSetState();
+                              });
+                            }),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if (selectedArea == null) {
+                            utils.showSnackbar('Please select area first');
+                          } else if (showroomList.length == 0) {
+                            utils.showSnackbar('No showrooms in $selectedArea');
+                          }
+                        },
+                        child: utils.productInputDropDown(
+                            label: 'Showroom',
+                            items: showroomList,
+                            value: selectedShowroom,
+                            isShowroom: true,
+                            onChanged: (newValue) {
+                              selectedShowroom = newValue;
+                              showroomList.forEach((element) {
+                                if (element['name'] == newValue) {
+                                  showroomAddressController.text =
+                                      element['adress'];
+                                  addressID = element.documentID;
+                                  return false;
+                                } else {
+                                  return true;
+                                }
+                              });
+                              handleSetState();
+                            }),
+                      ),
                       utils.productInputText(
                         label: 'Showroom Address',
                         controller: showroomAddressController,
@@ -232,10 +256,35 @@ class _PushDataState extends State<PushData> {
                         label: 'Description',
                         controller: description,
                       ),
-                      utils.productInputText(
-                        label: 'Specifications',
-                        controller: specificationController,
-                        textInputAction: TextInputAction.newline,
+                      if (specificationsList.length > 0)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Add Specifications',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: specificationsList.length,
+                        itemBuilder: (context, index) {
+                          return utils.textInputPadding(
+                            child: TextField(
+                              decoration: utils.inputDecoration(
+                                label: specificationsList[index],
+                              ),
+                              onChanged: (value) {
+                                inputSpecifications[specificationsList[index]] =
+                                    value;
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -258,7 +307,7 @@ class _PushDataState extends State<PushData> {
         price.text.length > 0 &&
         title.text.length > 0 &&
         description.text.length > 0 &&
-        specificationController.text.length > 0) {
+        inputSpecifications.values.length > 0) {
       FocusScope.of(context).unfocus();
       loading = true;
       handleSetState();
@@ -272,8 +321,10 @@ class _PushDataState extends State<PushData> {
         price: price.text,
         title: title.text.toLowerCase(),
         description: description.text,
-        specifications: specificationController.text,
-        uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
+        specifications: inputSpecifications,
+        uid: Provider
+            .of<DocumentSnapshot>(context, listen: false)
+            .documentID,
       );
       clearAllData();
       loading = false;
@@ -295,8 +346,7 @@ class _PushDataState extends State<PushData> {
     price.clear();
     title.clear();
     description.clear();
-    specificationController.clear();
   }
 
-  handleSetState() => (mounted) ? setState(() {}) : null;
+  handleSetState() => (mounted) ? setState(() => null) : null;
 }

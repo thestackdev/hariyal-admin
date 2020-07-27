@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
-import 'package:superuser/superuser/admin_screens/more.dart';
 import 'package:superuser/utils.dart';
 
-import 'admin_screens/reports.dart';
-import 'admin_screens/requests.dart';
-import 'admin_screens/sold_items.dart';
+import 'superuser_screens/more.dart';
+import 'superuser_screens/reports.dart';
+import 'superuser_screens/requests.dart';
+import 'superuser_screens/sold_items.dart';
 
 class SuperuserHome extends StatefulWidget {
   @override

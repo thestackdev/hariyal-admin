@@ -5,9 +5,9 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:superuser/admin_extras/customer_tabs.dart';
 import 'package:superuser/utils.dart';
-import 'package:provider/provider.dart';
 
 class AllCustomers extends StatefulWidget {
   @override

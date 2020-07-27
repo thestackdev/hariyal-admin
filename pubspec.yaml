@@ -36,6 +36,8 @@ dependencies:
   flutter_data_stream_builder:
   get:
   url_launcher:
+  cloud_functions:
+  image_picker:
 
 dev_dependencies:
   flutter_test:
