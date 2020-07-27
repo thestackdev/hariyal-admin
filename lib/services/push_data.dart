@@ -245,8 +245,8 @@ class _PushDataState extends State<PushData> {
                       utils.productInputText(
                         label: 'Price',
                         controller: price,
-                        textInputType:
-                            TextInputType.numberWithOptions(signed: true),
+                        textInputType: TextInputType.numberWithOptions(
+                            decimal: true, signed: true),
                       ),
                       utils.productInputText(
                         label: 'Title',
@@ -322,9 +322,7 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
-        uid: Provider
-            .of<DocumentSnapshot>(context, listen: false)
-            .documentID,
+        uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
       );
       clearAllData();
       loading = false;
@@ -342,6 +340,7 @@ class _PushDataState extends State<PushData> {
     selectedArea = null;
     selectedShowroom = null;
     showroomAddressController.clear();
+    inputSpecifications.clear();
     images.clear();
     price.clear();
     title.clear();

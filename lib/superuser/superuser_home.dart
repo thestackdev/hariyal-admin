@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/push_data.dart';
+import 'package:superuser/superuser/superuser_screens/orders.dart';
 import 'package:superuser/utils.dart';
 
 import 'superuser_screens/more.dart';
@@ -17,8 +18,14 @@ class SuperuserHome extends StatefulWidget {
 
 class _SuperuserHomeState extends State<SuperuserHome> {
   int currentScreen = 0;
-  final screenList = [Requests(), SoldItems(), PushData(), Reports()];
-  final titleList = ['Orders', 'Sold Items', 'Add Items', 'Reports'];
+  final screenList = [Orders(), Requests(), PushData(), SoldItems(), Reports()];
+  final titleList = [
+    'Orders',
+    'Requests',
+    'Add Items',
+    'Sold Items',
+    'Reports'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +63,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           ),
           bottomNavigationBar(
             title: titleList[1],
-            icon: MdiIcons.cashUsdOutline,
+            icon: MdiIcons.receipt,
           ),
           bottomNavigationBar(
             title: titleList[2],
@@ -64,6 +71,10 @@ class _SuperuserHomeState extends State<SuperuserHome> {
           ),
           bottomNavigationBar(
             title: titleList[3],
+            icon: MdiIcons.cashUsdOutline,
+          ),
+          bottomNavigationBar(
+            title: titleList[4],
             icon: MdiIcons.receipt,
           ),
         ],

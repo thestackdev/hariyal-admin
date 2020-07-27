@@ -11,16 +11,20 @@ class SoldItems extends StatefulWidget {
 
 class _SoldItemsState extends State<SoldItems> {
   Firestore firestore = Firestore.instance;
+  CollectionReference products;
+
+  @override
+  void initState() {
+    products = firestore.collection('products');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
     return utils.container(
       child: ViewMyProducts(
-        stream: firestore
-            .collection('products')
-            .where('isSold', isEqualTo: true)
-            .snapshots(),
+        stream: products.where('isSold', isEqualTo: true).snapshots(),
       ),
     );
   }

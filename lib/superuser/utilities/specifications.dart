@@ -6,22 +6,14 @@ import 'package:strings/strings.dart';
 import 'package:superuser/superuser/utilities/specificationData.dart';
 import 'package:superuser/utils.dart';
 
-class Specifications extends StatefulWidget {
-  @override
-  _SpecificationsState createState() => _SpecificationsState();
-}
-
-class _SpecificationsState extends State<Specifications> {
-  List items = [];
-  final textController = TextEditingController();
-  Firestore firestore = Firestore.instance;
-  DocumentSnapshot snapshot;
-  Utils utils;
+class Specifications extends StatelessWidget {
+  final Firestore firestore = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
-    utils = context.watch<Utils>();
+    final utils = context.watch<Utils>();
+    List items = [];
 
     if (extras == null) {
       return utils.blankScreenLoading();
@@ -30,7 +22,6 @@ class _SpecificationsState extends State<Specifications> {
     for (DocumentSnapshot doc in extras.documents) {
       if (doc.documentID == 'category') {
         items.clear();
-        snapshot = doc;
         items.addAll(doc.data.keys);
         break;
       }

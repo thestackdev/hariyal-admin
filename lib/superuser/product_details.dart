@@ -8,13 +8,9 @@ import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
 
-import 'superuser_screens/edit_data_screen.dart';
+import '../services/edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
-  final docID;
-
-  const ProductDetails({Key key, this.docID}) : super(key: key);
-
   @override
   _ProductDetailsState createState() => _ProductDetailsState();
 }
@@ -25,6 +21,7 @@ class _ProductDetailsState extends State<ProductDetails> {
   FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   Firestore firestore = Firestore.instance;
   final textController = TextEditingController();
+  final docId = Get.arguments;
 
   @override
   void dispose() {
@@ -44,7 +41,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                 loadingBuilder: (context) => utils.progressIndicator(),
                 stream: firestore
                     .collection('products')
-                    .document(widget.docID)
+                    .document(docId)
                     .snapshots(),
                 builder: (context, snapshot) {
                   return Stack(
@@ -114,10 +111,34 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ),
                           SizedBox(height: 9),
-                          Text(
-                            capitalize('${snapshot.data['specifications']}'),
-                            textAlign: TextAlign.justify,
-                            style: utils.inputTextStyle(),
+                          ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount:
+                                snapshot.data['specifications'].keys.length,
+                            itemBuilder: (context, index) {
+                              final keys =
+                                  snapshot.data['specifications'].keys.toList();
+                              return Row(
+                                children: <Widget>[
+                                  Text(
+                                    '${keys[index]}  :  ',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Text(
+                                    snapshot.data['specifications']
+                                        [keys[index]],
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 20,
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
                           ),
                           SizedBox(height: 9),
                           !snapshot.data['isSold']
@@ -133,19 +154,19 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     Expanded(
                                       flex: 1,
                                       child: utils.getRaisedButton(
-                                          title: 'sold',
+                                          title: 'SOLD',
                                           onPressed: () {
                                             if (textController.text.length >
                                                 0) {
                                               snapshot.reference.updateData({
                                                 'isSold': true,
                                                 'soldReason':
-                                                    textController.text
+                                                textController.text
                                               });
                                               textController.clear();
                                             } else {
                                               utils.showSnackbar(
-                                                  'Reason can\'t be null');
+                                                  'Reason can\'t be empty');
                                             }
                                           }),
                                     )
@@ -226,7 +247,7 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   editProduct(snapshot) {
-    Get.to(EditDataScreen(productSnap: snapshot));
+    Get.to(EditDataScreen(), arguments: snapshot);
   }
 
   handleState() => (mounted) ? setState(() => null) : null;

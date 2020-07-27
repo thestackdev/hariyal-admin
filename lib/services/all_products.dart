@@ -14,17 +14,11 @@ class AllProducts extends StatefulWidget {
 }
 
 class _AllProductsState extends State<AllProducts> {
-  final queryConroller = TextEditingController();
-  bool isQueryActive = false;
-  Firestore firestore = Firestore.instance;
+  String text;
+  final CollectionReference products =
+      Firestore.instance.collection('products');
   Utils utils;
   int count = 30;
-
-  @override
-  void dispose() {
-    queryConroller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,29 +30,27 @@ class _AllProductsState extends State<AllProducts> {
           children: <Widget>[
             Container(
               color: Colors.red,
-              padding: const EdgeInsets.all(9),
+              padding: EdgeInsets.all(9),
               child: TextField(
+                onEditingComplete: () => handleState(),
+                onChanged: (value) => text = value,
                 style: utils.inputTextStyle(),
                 maxLines: 1,
-                controller: queryConroller,
                 decoration: getDecoration(),
               ),
             ),
-            isQueryActive ? finterProducts() : allProducts()
+            allProducts()
           ],
         ),
       ),
     );
   }
 
-  finterProducts() {
+  /* finterProducts() {
     return DataStreamBuilder<DocumentSnapshot>(
       errorBuilder: (context, error) => utils.nullWidget(error),
       loadingBuilder: (context) => utils.progressIndicator(),
-      stream: firestore
-          .collection('products')
-          .document(queryConroller.text)
-          .snapshots(),
+      stream: products.document(queryConroller.text).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
           return utils.nullWidget('No Products Found !');
@@ -69,24 +61,23 @@ class _AllProductsState extends State<AllProducts> {
             imageUrl: snapshot.data['images'][0],
             onTap: () {
               FocusScope.of(context).unfocus();
-              Get.to(
-                ProductDetails(
-                  docID: snapshot.documentID,
-                ),
-              );
+              Get.to(ProductDetails(), arguments: snapshot.documentID);
             },
           );
         }
       },
     );
-  }
+  } */
 
   allProducts() {
     return Expanded(
       child: DataStreamBuilder<QuerySnapshot>(
         errorBuilder: (context, error) => utils.nullWidget(error),
         loadingBuilder: (context) => utils.progressIndicator(),
-        stream: firestore.collection('products').limit(count).snapshots(),
+        stream: products
+            .where(FieldPath.documentId, isEqualTo: text)
+            .limit(count)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.documents.length == 0) {
             return utils.nullWidget('No products found !');
@@ -106,9 +97,8 @@ class _AllProductsState extends State<AllProducts> {
                           snapshot.documents[index].data['description'],
                       imageUrl: snapshot.documents[index].data['images'][0],
                       onTap: () => Get.to(
-                        ProductDetails(
-                          docID: snapshot.documents[index].documentID,
-                        ),
+                        ProductDetails(),
+                        arguments: snapshot.documents[index].documentID,
                       ),
                     );
                   } catch (e) {
@@ -131,29 +121,14 @@ class _AllProductsState extends State<AllProducts> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          IconButton(
-            icon: Icon(MdiIcons.shoppingSearch),
-            onPressed: () {
-              FocusScope.of(context).unfocus();
-              if (queryConroller.text.length > 0) {
-                isQueryActive = true;
-                FocusScope.of(context).unfocus();
+          if (text != null)
+            IconButton(
+              icon: Icon(MdiIcons.closeOutline),
+              onPressed: () {
+                text = null;
                 handleState();
-              }
-            },
-          ),
-          isQueryActive
-              ? IconButton(
-                  icon: Icon(MdiIcons.closeOutline),
-                  onPressed: () {
-                    if (isQueryActive) {
-                      queryConroller.clear();
-                      isQueryActive = false;
-                      handleState();
-                    }
-                  },
-                )
-              : SizedBox()
+              },
+            )
         ],
       ),
       contentPadding: EdgeInsets.all(9),

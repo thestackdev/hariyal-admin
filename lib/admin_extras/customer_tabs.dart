@@ -8,6 +8,7 @@ import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
 class Customerdetails extends StatefulWidget {
   final DocumentSnapshot docsnap;
@@ -19,11 +20,21 @@ class Customerdetails extends StatefulWidget {
 }
 
 class _CustomerdetailsState extends State<Customerdetails> {
-  Utils utils = new Utils();
+  Utils utils;
   Firestore firestore = Firestore.instance;
+  CollectionReference products;
+  CollectionReference interests;
+
+  @override
+  void initState() {
+    products = Firestore.instance.collection('products');
+    interests = Firestore.instance.collection('interests');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    utils = context.watch<Utils>();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -208,48 +219,41 @@ class _CustomerdetailsState extends State<Customerdetails> {
 
   interestsPage() {
     return utils.container(
-      child: DataStreamBuilder<DocumentSnapshot>(
+      child: DataStreamBuilder<QuerySnapshot>(
           errorBuilder: (context, error) => utils.nullWidget(error),
           loadingBuilder: (context) => utils.progressIndicator(),
-          stream: firestore
-              .collection('interested')
-              .document(widget.docsnap.documentID)
+          stream: interests
+              .orderBy('timestamp', descending: true)
+              .where('author', isEqualTo: widget.docsnap.documentID)
               .snapshots(),
-          builder: (context, interestsnap) {
-            if (interestsnap.data == null ||
-                interestsnap.data['interested'].length == 0) {
+          builder: (context, interest) {
+            if (interest.documents.length == 0) {
               return utils.nullWidget('No interests found !');
             } else {
-              Map interestsList = interestsnap.data['interested'];
-              List sortedList = interestsList.keys.toList().reversed.toList();
               return ListView.builder(
-                  itemCount: sortedList.length,
-                  itemBuilder: (BuildContext context, int index) {
+                  itemCount: interest.documents.length,
+                  itemBuilder: (context, index) {
                     return DataStreamBuilder<DocumentSnapshot>(
                         errorBuilder: (context, error) =>
                             utils.nullWidget(error),
                         loadingBuilder: (context) => utils.progressIndicator(),
-                        stream: firestore
-                            .collection('products')
-                            .document(
-                              interestsList[sortedList[index]],
-                            )
+                        stream: products
+                            .document(interest.documents[index]['productId'])
                             .snapshots(),
-                        builder: (context, productsnap) {
+                        builder: (context, product) {
                           try {
                             return utils.listTile(
-                              title: '${productsnap.data['title']}',
+                              title: '${product.data['title']}',
                               leading: SizedBox(
                                 width: 70,
                                 child: PNetworkImage(
-                                  productsnap.data['images'][0],
+                                  product.data['images'][0],
                                   fit: BoxFit.fitHeight,
                                 ),
                               ),
                               onTap: () => Get.to(
-                                ProductDetails(
-                                  docID: interestsList[sortedList[index]],
-                                ),
+                                ProductDetails(),
+                                arguments: product.documentID,
                               ),
                             );
                           } catch (e) {

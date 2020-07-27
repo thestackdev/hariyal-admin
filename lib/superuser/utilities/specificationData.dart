@@ -7,27 +7,16 @@ import 'package:strings/strings.dart';
 import 'package:superuser/main.dart';
 import 'package:superuser/utils.dart';
 
-class SpecificationData extends StatefulWidget {
-  @override
-  _SpecificationDataState createState() => _SpecificationDataState();
-}
-
-class _SpecificationDataState extends State<SpecificationData> {
+class SpecificationData extends StatelessWidget {
   final category = Get.arguments;
-  final textController = TextEditingController();
-  List items = [];
-  DocumentSnapshot snapshot;
 
   @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext buildContext) {
+  Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
+    List items = [];
+    DocumentSnapshot snapshot;
+    String text = '';
     for (DocumentSnapshot doc in extras.documents) {
       if (doc.documentID == 'specifications') {
         items.clear();
@@ -35,9 +24,30 @@ class _SpecificationDataState extends State<SpecificationData> {
         if (doc.data[category] != null) {
           items.addAll(doc.data[category]);
         }
-        handleState();
         break;
       }
+    }
+
+    addSpecification() {
+      if (utils.validateInputText(text) &&
+          !items.contains(text.toLowerCase())) {
+        if (snapshot == null) {
+          firestore.collection('extras').document('specifications').setData({
+            category: FieldValue.arrayUnion([text.toLowerCase()])
+          });
+        } else {
+          snapshot.reference.updateData({
+            category: FieldValue.arrayUnion([text.toLowerCase()])
+          });
+        }
+
+        Get.back();
+        utils.showSnackbar('Specification Added');
+      } else {
+        Get.back();
+        utils.showSnackbar('Invalid entries');
+      }
+      text = '';
     }
 
     return Scaffold(
@@ -45,13 +55,13 @@ class _SpecificationDataState extends State<SpecificationData> {
         IconButton(
             icon: Icon(MdiIcons.plusOutline),
             onPressed: () {
-              textController.clear();
               utils.getSimpleDialouge(
                 title: 'Add Specifications in $category',
                 content: utils.dialogInput(
-                  hintText: 'Type here',
-                  controller: textController,
-                ),
+                    hintText: 'Type here',
+                    onChnaged: (value) {
+                      text = value;
+                    }),
                 noPressed: () => Get.back(),
                 yesPressed: () => addSpecification(),
               );
@@ -78,32 +88,31 @@ class _SpecificationDataState extends State<SpecificationData> {
                   noPressed: () => Get.back(),
                 );
               } else {
-                textController.text = items[index];
+                text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit Specification',
                   content: utils.dialogInput(
-                    hintText: 'Type here',
-                    controller: textController,
-                  ),
+                      hintText: 'Type here',
+                      onChnaged: (value) {
+                        text = value;
+                      }),
                   noPressed: () => Get.back(),
                   yesPressed: () {
-                    if (utils.validateInputText(textController.text) &&
-                        textController.text != items[index] &&
-                        !items.contains(textController.text.toLowerCase())) {
-                      editSpecification(items[index], textController.text);
+                    Get.back();
+                    if (utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      editSpecification(items[index], text);
                       snapshot.reference.updateData({
                         category: FieldValue.arrayRemove([items[index]]),
                       });
                       snapshot.reference.updateData({
-                        category: FieldValue.arrayUnion([textController.text]),
+                        category: FieldValue.arrayUnion([text]),
                       });
-
-                      Get.back();
                     } else {
-                      Get.back();
                       utils.showSnackbar('Invalid entries');
                     }
-                    textController.clear();
+                    text = '';
                   },
                 );
               }
@@ -116,29 +125,6 @@ class _SpecificationDataState extends State<SpecificationData> {
         ),
       ),
     );
-  }
-
-  addSpecification() {
-    if (utils.validateInputText(textController.text) &&
-        !items.contains(textController.text.toLowerCase())) {
-      if (snapshot == null) {
-        firestore.collection('extras').document('specifications').setData({
-          category: FieldValue.arrayUnion([textController.text.toLowerCase()])
-        });
-      } else {
-        snapshot.reference.updateData({
-          category: FieldValue.arrayUnion([textController.text.toLowerCase()])
-        });
-      }
-
-      Get.back();
-      utils.showSnackbar('Specification Added');
-    } else {
-      Get.back();
-      utils.showSnackbar('Invalid entries');
-    }
-
-    textController.clear();
   }
 
   deleteSpecification(String data) {
@@ -167,6 +153,4 @@ class _SpecificationDataState extends State<SpecificationData> {
       });
     }); */
   }
-
-  handleState() => (mounted) ?? setState(() => null);
 }

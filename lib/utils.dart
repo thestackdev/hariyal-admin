@@ -101,8 +101,13 @@ class Utils {
     );
   }
 
-  dialogInput({String hintText, TextEditingController controller}) {
-    return TextField(
+  dialogInput({
+    String hintText,
+    TextEditingController controller,
+    Function(String) onChnaged,
+  }) {
+    return TextFormField(
+      onChanged: onChnaged,
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
@@ -272,10 +277,10 @@ class Utils {
       ),
       prefix: iconData != null
           ? Icon(
-        iconData,
-        color: Colors.red.shade300,
-        size: 18,
-      )
+              iconData,
+              color: Colors.red.shade300,
+              size: 18,
+            )
           : SizedBox(),
     );
   }
@@ -393,6 +398,7 @@ class Utils {
     Widget leading,
     bool isTrailingNull = false,
     String subtitle,
+    double textscalefactor,
   }) {
     return Container(
       margin: EdgeInsets.all(9),
@@ -412,7 +418,7 @@ class Utils {
         title: Text(
           capitalize(title),
           style: TextStyle(color: Colors.red),
-          textScaleFactor: 1.2,
+          textScaleFactor: textscalefactor ?? 1.2,
         ),
         subtitle: subtitle == null
             ? null

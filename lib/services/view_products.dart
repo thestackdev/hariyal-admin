@@ -42,8 +42,10 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
                   title: snapshot.documents[index].data['title'],
                   description: snapshot.documents[index].data['description'],
                   imageUrl: snapshot.documents[index].data['images'][0],
-                  onTap: () => Get.to(ProductDetails(
-                      docID: snapshot.documents[index].documentID)),
+                  onTap: () => Get.to(
+                    ProductDetails(),
+                    arguments: snapshot.documents[index].documentID,
+                  ),
                 );
               } catch (e) {
                 return utils.errorListTile();
@@ -73,11 +75,7 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
             imageUrl: snapshot.data['images'][0],
             onTap: () {
               FocusScope.of(context).unfocus();
-              Get.to(
-                ProductDetails(
-                  docID: snapshot.documentID,
-                ),
-              );
+              Get.to(ProductDetails(), arguments: snapshot.documentID);
             },
           );
         }

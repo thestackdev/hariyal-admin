@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/utils.dart';
+import 'package:provider/provider.dart';
 
 class AddAdmin extends StatefulWidget {
   @override
@@ -11,15 +12,18 @@ class AddAdmin extends StatefulWidget {
 }
 
 class _AddAdminState extends State<AddAdmin> {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   final email = TextEditingController();
   final password = TextEditingController();
   final name = TextEditingController();
-  Utils utils = Utils();
   bool loading = false;
-  final Firestore _db = Firestore.instance;
-  String helperMessage;
+  Firestore firestore = Firestore.instance;
+  CollectionReference admin;
+
+  @override
+  void initState() {
+    admin = firestore.collection('admin');
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -31,8 +35,43 @@ class _AddAdminState extends State<AddAdmin> {
 
   @override
   Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
+
+    register() async {
+      loading = true;
+      handleState();
+      FirebaseApp app = await FirebaseApp.configure(
+        name: 'the-hariyal',
+        options: await FirebaseApp.instance.options,
+      );
+      try {
+        final result =
+            await FirebaseAuth.fromApp(app).createUserWithEmailAndPassword(
+          email: email.text,
+          password: password.text,
+        );
+        await admin.document(result.user.uid).setData(
+          {
+            'since': DateTime.now().millisecondsSinceEpoch,
+            'name': name.text.toLowerCase(),
+            'isSuperuser': false,
+            'isAdmin': true,
+          },
+        );
+        email.clear();
+        password.clear();
+        name.clear();
+        loading = false;
+        handleState();
+      } catch (error) {
+        loading = false;
+        handleState();
+        utils.errorMessageHelper(error.code);
+      }
+      utils.showSnackbar('Admin Added Successfully !');
+    }
+
     return Scaffold(
-      key: scaffoldKey,
       appBar: utils.appbar('Add Admin'),
       body: utils.container(
         child: loading
@@ -42,94 +81,55 @@ class _AddAdminState extends State<AddAdmin> {
                   utils.textInputPadding(
                     child: TextField(
                       controller: name,
-                      maxLines: null,
-                      keyboardType: TextInputType.text,
-                      decoration: utils.inputDecoration(
-                        label: 'Full name',
-                        iconData: MdiIcons.accountOutline,
-                      ),
-                    ),
-                  ),
-                  utils.textInputPadding(
-                    child: TextField(
-                      controller: email,
-                      maxLines: null,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: utils.inputDecoration(
-                        label: 'Email',
-                        iconData: MdiIcons.emailOutline,
-                      ),
-                    ),
-                  ),
-                  utils.textInputPadding(
-                    child: TextField(
-                      controller: password,
-                      maxLines: 1,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: utils.inputDecoration(
-                        label: 'Password',
-                        iconData: MdiIcons.lockOutline,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 18),
-                  utils.getRaisedButton(
-                    title: 'Add Admin',
-                    onPressed: () async {
-                      FocusScope.of(context).unfocus();
-                      if (email.text.length > 0 &&
-                          password.text.length > 0 &&
-                          name.text.length > 0) {
-                        register();
-                      } else {
-                        utils.showSnackbar('Invalid entries');
-                      }
-                    },
-                  ),
-                ],
+                maxLines: null,
+                keyboardType: TextInputType.text,
+                decoration: utils.inputDecoration(
+                  label: 'Full name',
+                  iconData: MdiIcons.accountOutline,
+                ),
               ),
+            ),
+            utils.textInputPadding(
+              child: TextField(
+                controller: email,
+                maxLines: null,
+                keyboardType: TextInputType.emailAddress,
+                decoration: utils.inputDecoration(
+                  label: 'Email',
+                  iconData: MdiIcons.emailOutline,
+                ),
+              ),
+            ),
+            utils.textInputPadding(
+              child: TextField(
+                controller: password,
+                maxLines: 1,
+                keyboardType: TextInputType.visiblePassword,
+                decoration: utils.inputDecoration(
+                  label: 'Password',
+                  iconData: MdiIcons.lockOutline,
+                ),
+              ),
+            ),
+            SizedBox(height: 18),
+            utils.getRaisedButton(
+              title: 'Add Admin',
+              onPressed: () async {
+                FocusScope.of(context).unfocus();
+                if (email.text.length > 0 &&
+                    password.text.length > 0 &&
+                    name.text.length > 0) {
+                  register();
+                } else {
+                  utils.showSnackbar('Invalid entries');
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  register() async {
-    loading = true;
-    handleState();
-    FirebaseApp app = await FirebaseApp.configure(
-      name: 'the-hariyal',
-      options: await FirebaseApp.instance.options,
-    );
-    try {
-      final result =
-      await FirebaseAuth.fromApp(app).createUserWithEmailAndPassword(
-        email: email.text,
-        password: password.text,
-      );
-      await _db.collection('admin').document(result.user.uid).setData(
-        {
-          'since': DateTime.now().millisecondsSinceEpoch,
-          'name': name.text.toLowerCase(),
-          'isSuperuser': false,
-          'isAdmin': true,
-        },
-      );
-      email.clear();
-      password.clear();
-      name.clear();
-      helperMessage = "Admin Added Successfully !";
-      loading = false;
-      handleState();
-    } catch (error) {
-      loading = false;
-      handleState();
-      helperMessage = utils.errorMessageHelper(error.code);
-    }
-    utils.showSnackbar(helperMessage);
-  }
-
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  handleState() => (mounted) ? setState(() => null) : null;
 }

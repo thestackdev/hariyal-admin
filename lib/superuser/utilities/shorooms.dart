@@ -8,17 +8,22 @@ import 'package:strings/strings.dart';
 import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/utils.dart';
 
-class Showrooms extends StatefulWidget {
-  @override
-  _ShowroomsState createState() => _ShowroomsState();
-}
-
-class _ShowroomsState extends State<Showrooms> {
-  Firestore firestore = Firestore.instance;
+class Showrooms extends StatelessWidget {
+  final Firestore firestore = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
+    final CollectionReference products = firestore.collection('products');
+    final CollectionReference showrooms = firestore.collection('showrooms');
+
+    deleteShowroom(String docID) {
+      products.where('adress', isEqualTo: docID).getDocuments().then((value) {
+        value.documents.forEach((element) {
+          element.reference.updateData({'adress': null, 'isDeleted': true});
+        });
+      });
+    }
 
     return Scaffold(
       appBar: utils.appbar(
@@ -36,7 +41,7 @@ class _ShowroomsState extends State<Showrooms> {
       ),
       body: utils.container(
         child: DataStreamBuilder<QuerySnapshot>(
-          stream: firestore.collection('showrooms').snapshots(),
+          stream: showrooms.snapshots(),
           builder: (context, snapshot) {
             return ListView.builder(
               itemCount: snapshot.documents.length,
@@ -74,20 +79,5 @@ class _ShowroomsState extends State<Showrooms> {
         ),
       ),
     );
-  }
-
-  deleteShowroom(String docID) {
-    firestore
-        .collection('products')
-        .where('adress', isEqualTo: docID)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({
-          'adress': null,
-          'isDeleted': true,
-        });
-      });
-    });
   }
 }

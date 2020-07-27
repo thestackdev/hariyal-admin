@@ -15,18 +15,10 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  PickedFile asset;
-  StorageReference _storage =
-      FirebaseStorage.instance.ref().child('profile_pictures');
-  final nameController = TextEditingController();
-  DocumentSnapshot authorsnap;
+  final _storage = FirebaseStorage.instance.ref().child('profile_pictures');
   Utils utils;
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
+  DocumentSnapshot authorsnap;
+  final nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +61,7 @@ class _ProfileState extends State<Profile> {
                   color: Colors.red,
                 ),
                 title: Text(
-                  authorsnap['name'],
+                  GetUtils.capitalize(authorsnap['name']),
                   style: TextStyle(
                     color: Colors.red,
                     letterSpacing: 1,
@@ -109,16 +101,16 @@ class _ProfileState extends State<Profile> {
                               color: Colors.white,
                             ),
                             onPressed: () async {
-                              asset = await ImagePicker().getImage(
+                              final asset = await ImagePicker().getImage(
                                 source: ImageSource.camera,
                                 imageQuality: 75,
                               );
                               Get.back();
                               if (asset != null) {
                                 utils.showSnackbar(
-                                  'Uploading images , changes will be displayed in a while',
+                                  'Changes will be displayed in a while',
                                 );
-                                uploadImage();
+                                uploadImage(asset);
                               }
                             },
                           ),
@@ -141,24 +133,25 @@ class _ProfileState extends State<Profile> {
                               color: Colors.white,
                             ),
                             onPressed: () async {
-                              asset = await ImagePicker().getImage(
+                              final asset = await ImagePicker().getImage(
                                 source: ImageSource.gallery,
                                 imageQuality: 75,
                               );
                               Get.back();
                               if (asset != null) {
                                 utils.showSnackbar(
-                                  'Uploading images , changes will be displayed in a while',
+                                  'Changes will be displayed in a while',
                                 );
-                                uploadImage();
+                                uploadImage(asset);
                               }
                             },
                           ),
                           Text(
                             'Gallery',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -187,16 +180,14 @@ class _ProfileState extends State<Profile> {
     if (utils.validateInputText(nameController.text)) {
       authorsnap.reference
           .updateData({'name': nameController.text.toLowerCase()});
-
       utils.showSnackbar('Changes updated');
+      nameController.clear();
     } else {
       utils.showSnackbar('Invalid entries');
     }
-
-    nameController.clear();
   }
 
-  uploadImage() async {
+  uploadImage(final asset) async {
     try {
       _storage
           .child(authorsnap.documentID)

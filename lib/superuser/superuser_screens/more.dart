@@ -4,6 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:provider/provider.dart';
 import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/profile.dart';
+import 'package:superuser/superuser/interests.dart';
 import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/superuser/utilities/states.dart';
@@ -13,16 +14,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:superuser/services/all_products.dart';
 import 'package:superuser/utils.dart';
-
 import 'admins.dart';
 import 'customers.dart';
 
-class Settings extends StatefulWidget {
-  @override
-  _SettingsState createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
+class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
@@ -47,6 +42,14 @@ class _SettingsState extends State<Settings> {
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.to(AddAdmin()),
+            ),
+            utils.listTile(
+              title: 'Interests',
+              leading: Icon(
+                MdiIcons.humanChild,
+                color: Colors.red.shade300,
+              ),
+              onTap: () => Get.to(Interests()),
             ),
             utils.listTile(
               title: 'Categories',
