@@ -8,7 +8,7 @@ import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
 
-import '../services/edit_data_screen.dart';
+//import '../services/edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
   @override
@@ -247,7 +247,7 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   editProduct(snapshot) {
-    Get.to(EditDataScreen(), arguments: snapshot);
+    //Get.to(EditDataScreen(), arguments: snapshot);
   }
 
   handleState() => (mounted) ? setState(() => null) : null;

@@ -1,19 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/services/add_admin.dart';
+import 'package:superuser/services/all_products.dart';
 import 'package:superuser/services/profile.dart';
-import 'package:superuser/superuser/interests.dart';
 import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/superuser/utilities/states.dart';
+import 'package:superuser/utils.dart';
+
 import '../../utils.dart';
 import '../utilities/shorooms.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:superuser/services/all_products.dart';
-import 'package:superuser/utils.dart';
 import 'admins.dart';
 import 'customers.dart';
 
@@ -49,7 +49,9 @@ class Settings extends StatelessWidget {
                 MdiIcons.humanChild,
                 color: Colors.red.shade300,
               ),
-              onTap: () => Get.to(Interests()),
+              onTap: () {
+                //return Get.to(Interests());
+              },
             ),
             utils.listTile(
               title: 'Categories',

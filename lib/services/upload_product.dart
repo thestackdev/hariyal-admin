@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 class PushProduct {
   List imageUrls = [];
@@ -8,7 +9,7 @@ class PushProduct {
   CollectionReference _reference = Firestore.instance.collection('products');
 
   uploadProduct({
-    List<Asset> images,
+    List<File> images,
     category,
     subCategory,
     state,
@@ -82,18 +83,19 @@ class PushProduct {
     });
   }
 
-  uploadProductImages(Asset images) async {
+  Future<String> uploadProductImages(File images) async {
     try {
       return _storage
           .child(DateTime.now().microsecondsSinceEpoch.toString())
-          .putData(await images
-              .getByteData(quality: 75)
-              .then((value) => value.buffer.asUint8List()))
+          .putFile(images)
           .onComplete
           .then((value) {
-        return value.ref.getDownloadURL();
+        return value.ref.getDownloadURL().then((value) {
+          return value.toString();
+        });
       });
     } catch (e) {
+      print(e);
       return null;
     }
   }

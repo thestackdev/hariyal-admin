@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:superuser/full_screen.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/utils.dart';
 
@@ -12,7 +16,7 @@ class PushData extends StatefulWidget {
 }
 
 class _PushDataState extends State<PushData> {
-  List<Asset> images = [];
+  List<File> images = [];
   String selectedCategory;
   String selectedSubCategory;
   String selectedState;
@@ -75,228 +79,270 @@ class _PushDataState extends State<PushData> {
       child: loading
           ? utils.progressIndicator()
           : ListView(
-              children: <Widget>[
-                SizedBox(height: 9),
-                GridView.count(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  crossAxisCount: 3,
-                  children: List.generate(images.length + 1, (index) {
-                    if (index == images.length) {
-                      return Container(
-                        margin: EdgeInsets.all(9),
+        children: <Widget>[
+          SizedBox(height: 9),
+          GridView.count(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            children: List.generate(images.length + 1, (index) {
+              if (index == images.length) {
+                return Container(
+                  margin: EdgeInsets.all(9),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(9),
                           color: Colors.grey.shade100,
                         ),
-                        child: IconButton(
-                          onPressed: () async {
-                            try {
-                              images = await MultiImagePicker.pickImages(
-                                maxImages: 5,
-                                enableCamera: true,
-                                selectedAssets: images,
-                                materialOptions: MaterialOptions(
-                                  statusBarColor: '#FF6347',
-                                  startInAllView: true,
-                                  actionBarColor: "#FF6347",
-                                  actionBarTitle: "Pick Images",
-                                  allViewTitle: "Pick Images",
-                                  useDetailsView: false,
-                                  selectCircleStrokeColor: "#FF6347",
+                        child: images.length >= 5
+                            ? Container()
+                            : IconButton(
+                                onPressed: () async {
+                                  dynamic source;
+                                  await utils.getSimpleDialouge(
+                                      title: 'Select an option',
+                                      yesText: 'Select from gallery',
+                                      noText: 'Take a picture',
+                                      yesPressed: () {
+                                        Navigator.of(context).pop();
+                                        return source = ImageSource.gallery;
+                                      },
+                                      noPressed: () {
+                                        Navigator.of(context).pop();
+                                        return source = ImageSource.camera;
+                                      });
+
+                                  final pickedFile = await ImagePicker()
+                                      .getImage(
+                                          source: source, imageQuality: 75);
+
+                                  File croppedFile =
+                                      await ImageCropper.cropImage(
+                                    sourcePath: pickedFile.path,
+                                    aspectRatioPresets: [
+                                      CropAspectRatioPreset.square,
+                                      CropAspectRatioPreset.ratio3x2,
+                                      CropAspectRatioPreset.original,
+                                      CropAspectRatioPreset.ratio4x3,
+                                      CropAspectRatioPreset.ratio16x9
+                                    ],
+                                    androidUiSettings: AndroidUiSettings(
+                                        toolbarTitle: 'Crop Image',
+                                        toolbarColor:
+                                            Theme.of(context).accentColor,
+                                        toolbarWidgetColor: Colors.white,
+                                        initAspectRatio:
+                                            CropAspectRatioPreset.original,
+                                        lockAspectRatio: false),
+                                  );
+                                  if (croppedFile == null) {
+                                    return;
+                                  }
+
+                                  images.add(croppedFile);
+
+                                  handleSetState();
+                                },
+                                icon: Icon(
+                                  MdiIcons.plusOutline,
+                                  color: Colors.red.shade300,
                                 ),
-                              );
-                              handleSetState();
-                            } catch (e) {
-                              utils.showSnackbar('Something went wrong !');
-                            }
-                          },
-                          icon: Icon(
-                            MdiIcons.plusOutline,
-                            color: Colors.red.shade300,
-                          ),
-                        ),
-                      );
-                    }
-                    return Padding(
-                      padding: EdgeInsets.all(9),
-                      child: AssetThumb(
-                        spinner: utils.progressIndicator(),
-                        asset: images[index],
-                        quality: 50,
-                        width: 270,
-                        height: 270,
-                      ),
-                    );
-                  }),
-                ),
-                Form(
-                  key: globalKey,
-                  child: Column(
-                    children: <Widget>[
-                      utils.productInputDropDown(
-                          label: 'Category',
-                          value: selectedCategory,
-                          items: categoryMap.keys.toList(),
-                          onChanged: (value) {
-                            selectedCategory = value;
-                            selectedSubCategory = null;
-                            specificationsList.clear();
-                            if (specificationsMap[value] != null) {
-                              specificationsList
-                                  .addAll(specificationsMap[value]);
-                            }
-
-                            handleSetState();
-                          }),
-                      GestureDetector(
-                        onTap: () {
-                          if (selectedCategory == null) {
-                            utils.showSnackbar('Please select category first');
-                          } else if (subCategory.length == 0) {
-                            utils.showSnackbar(
-                                'No subcategories in $selectedCategory');
-                          }
-                        },
-                        child: utils.productInputDropDown(
-                            label: 'Sub-Category',
-                            value: selectedSubCategory,
-                            items: subCategory,
-                            onChanged: (value) {
-                              selectedSubCategory = value;
-                              handleSetState();
-                            }),
-                      ),
-                      utils.productInputDropDown(
-                          label: 'State',
-                          value: selectedState,
-                          items: locationsMap.keys.toList(),
-                          onChanged: (value) {
-                            selectedState = value;
-                            selectedArea = null;
-                            selectedShowroom = null;
-                            showroomAddressController.clear();
-                            showroomList.clear();
-                            handleSetState();
-                          }),
-                      GestureDetector(
-                        onTap: () {
-                          if (selectedState == null) {
-                            utils.showSnackbar('Please select state first');
-                          } else if (subCategory.length == 0) {
-                            utils.showSnackbar('No areas in $selectedState');
-                          }
-                        },
-                        child: utils.productInputDropDown(
-                            label: 'Area',
-                            value: selectedArea,
-                            items: areasList,
-                            onChanged: (newValue) async {
-                              selectedArea = newValue;
-                              selectedShowroom = null;
-                              showroomAddressController.clear();
-                              showroomList.clear();
-                              utils.showSnackbar(
-                                  'Loading showrooms in $selectedArea...');
-
-                              await firestore
-                                  .collection('showrooms')
-                                  .where('area', isEqualTo: newValue)
-                                  .getDocuments()
-                                  .then((value) {
-                                showroomList.addAll(value.documents);
-                                handleSetState();
-                              });
-                            }),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (selectedArea == null) {
-                            utils.showSnackbar('Please select area first');
-                          } else if (showroomList.length == 0) {
-                            utils.showSnackbar('No showrooms in $selectedArea');
-                          }
-                        },
-                        child: utils.productInputDropDown(
-                            label: 'Showroom',
-                            items: showroomList,
-                            value: selectedShowroom,
-                            isShowroom: true,
-                            onChanged: (newValue) {
-                              selectedShowroom = newValue;
-                              showroomList.forEach((element) {
-                                if (element['name'] == newValue) {
-                                  showroomAddressController.text =
-                                      element['adress'];
-                                  addressID = element.documentID;
-                                  return false;
-                                } else {
-                                  return true;
-                                }
-                              });
-                              handleSetState();
-                            }),
-                      ),
-                      utils.productInputText(
-                        label: 'Showroom Address',
-                        controller: showroomAddressController,
-                        readOnly: true,
-                      ),
-                      utils.productInputText(
-                        label: 'Price',
-                        controller: price,
-                        textInputType: TextInputType.numberWithOptions(
-                            decimal: true, signed: true),
-                      ),
-                      utils.productInputText(
-                        label: 'Title',
-                        controller: title,
-                      ),
-                      utils.productInputText(
-                        label: 'Description',
-                        controller: description,
-                      ),
-                      if (specificationsList.length > 0)
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Add Specifications',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: specificationsList.length,
-                        itemBuilder: (context, index) {
-                          return utils.textInputPadding(
-                            child: TextField(
-                              decoration: utils.inputDecoration(
-                                label: specificationsList[index],
                               ),
-                              onChanged: (value) {
-                                inputSpecifications[specificationsList[index]] =
-                                    value;
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                      );
+              }
+              return Padding(
+                padding: EdgeInsets.all(9),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(PageRouteBuilder(
+                        opaque: false,
+                        pageBuilder: (BuildContext context, _, __) =>
+                            FullScreen(
+                              tag: index,
+                              image: images[index],
+                            )));
+                  },
+                  child: Hero(
+                    tag: index,
+                    child: Image.file(
+                      images[index],
+                      width: 270,
+                      height: 270,
+                      errorBuilder: (context, url, error) =>
+                          Icon(Icons.error_outline),
+                      filterQuality: FilterQuality.medium,
+                    ),
                   ),
                 ),
-                SizedBox(height: 18),
-                utils.getRaisedButton(
-                  title: 'Add Product',
-                  onPressed: onPressed,
+              );
+            }),
+          ),
+          Form(
+            key: globalKey,
+            child: Column(
+              children: <Widget>[
+                utils.productInputDropDown(
+                    label: 'Category',
+                    value: selectedCategory,
+                    items: categoryMap.keys.toList(),
+                    onChanged: (value) {
+                      selectedCategory = value;
+                      selectedSubCategory = null;
+                      specificationsList.clear();
+                      if (specificationsMap[value] != null) {
+                        specificationsList
+                            .addAll(specificationsMap[value]);
+                      }
+
+                      handleSetState();
+                    }),
+                GestureDetector(
+                  onTap: () {
+                    if (selectedCategory == null) {
+                      utils.showSnackbar('Please select category first');
+                    } else if (subCategory.length == 0) {
+                      utils.showSnackbar(
+                          'No subcategories in $selectedCategory');
+                    }
+                  },
+                  child: utils.productInputDropDown(
+                      label: 'Sub-Category',
+                      value: selectedSubCategory,
+                      items: subCategory,
+                      onChanged: (value) {
+                        selectedSubCategory = value;
+                        handleSetState();
+                      }),
                 ),
-                SizedBox(height: 50),
+                utils.productInputDropDown(
+                    label: 'State',
+                    value: selectedState,
+                    items: locationsMap.keys.toList(),
+                    onChanged: (value) {
+                      selectedState = value;
+                      selectedArea = null;
+                      selectedShowroom = null;
+                      showroomAddressController.clear();
+                      showroomList.clear();
+                      handleSetState();
+                    }),
+                GestureDetector(
+                  onTap: () {
+                    if (selectedState == null) {
+                      utils.showSnackbar('Please select state first');
+                    } else if (subCategory.length == 0) {
+                      utils.showSnackbar('No areas in $selectedState');
+                    }
+                  },
+                  child: utils.productInputDropDown(
+                      label: 'Area',
+                      value: selectedArea,
+                      items: areasList,
+                      onChanged: (newValue) async {
+                        selectedArea = newValue;
+                        selectedShowroom = null;
+                        showroomAddressController.clear();
+                        showroomList.clear();
+                        utils.showSnackbar(
+                            'Loading showrooms in $selectedArea...');
+
+                        await firestore
+                            .collection('showrooms')
+                            .where('area', isEqualTo: newValue)
+                            .getDocuments()
+                            .then((value) {
+                          showroomList.addAll(value.documents);
+                          handleSetState();
+                        });
+                      }),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (selectedArea == null) {
+                      utils.showSnackbar('Please select area first');
+                    } else if (showroomList.length == 0) {
+                      utils.showSnackbar('No showrooms in $selectedArea');
+                    }
+                  },
+                  child: utils.productInputDropDown(
+                      label: 'Showroom',
+                      items: showroomList,
+                      value: selectedShowroom,
+                      isShowroom: true,
+                      onChanged: (newValue) {
+                        selectedShowroom = newValue;
+                        showroomList.forEach((element) {
+                          if (element['name'] == newValue) {
+                            showroomAddressController.text =
+                            element['adress'];
+                            addressID = element.documentID;
+                            return false;
+                          } else {
+                            return true;
+                          }
+                        });
+                        handleSetState();
+                      }),
+                ),
+                utils.productInputText(
+                  label: 'Showroom Address',
+                  controller: showroomAddressController,
+                  readOnly: true,
+                ),
+                utils.productInputText(
+                  label: 'Price',
+                  controller: price,
+                  textInputType: TextInputType.numberWithOptions(
+                      decimal: true, signed: true),
+                ),
+                utils.productInputText(
+                  label: 'Title',
+                  controller: title,
+                ),
+                utils.productInputText(
+                  label: 'Description',
+                  controller: description,
+                ),
+                if (specificationsList.length > 0)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Add Specifications',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: specificationsList.length,
+                  itemBuilder: (context, index) {
+                    return utils.textInputPadding(
+                      child: TextField(
+                        decoration: utils.inputDecoration(
+                          label: specificationsList[index],
+                        ),
+                        onChanged: (value) {
+                          inputSpecifications[specificationsList[index]] =
+                              value;
+                        },
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
+          ),
+          SizedBox(height: 18),
+          utils.getRaisedButton(
+            title: 'Add Product',
+            onPressed: onPressed,
+          ),
+          SizedBox(height: 50),
+        ],
+      ),
     );
   }
 

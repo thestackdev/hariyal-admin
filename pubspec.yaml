@@ -38,6 +38,7 @@ dependencies:
   url_launcher:
   cloud_functions:
   image_picker:
+  image_cropper:
 
 dev_dependencies:
   flutter_test:

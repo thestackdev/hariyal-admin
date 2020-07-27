@@ -66,12 +66,17 @@ class Utils {
     );
   }
 
-  getSimpleDialouge({
-    String title,
-    Function yesPressed,
-    Function noPressed,
-    Widget content,
-  }) {
+  getSimpleDialouge(
+      {String title,
+      yesText,
+      noText,
+      Function yesPressed,
+      Function noPressed,
+      Widget content}) {
+    if (noText == null) noText = 'Cancel';
+
+    if (yesText == null) yesText = 'Confirm';
+
     return Get.dialog(
       AlertDialog(
         scrollable: true,
@@ -89,11 +94,11 @@ class Utils {
         content: content,
         actions: <Widget>[
           FlatButton(
-            child: Text('Cancel', style: textStyle()),
+            child: Text(noText, style: textStyle()),
             onPressed: noPressed,
           ),
           FlatButton(
-            child: Text('Confirm', style: textStyle()),
+            child: Text(yesText, style: textStyle()),
             onPressed: yesPressed,
           ),
         ],
