@@ -4,20 +4,8 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/utils.dart';
 
-class Orders extends StatefulWidget {
-  @override
-  _OrdersState createState() => _OrdersState();
-}
-
-class _OrdersState extends State<Orders> {
-  Firestore firestore = Firestore.instance;
-  CollectionReference orders;
-
-  @override
-  void initState() {
-    orders = firestore.collection('orders');
-    super.initState();
-  }
+class Orders extends StatelessWidget {
+  final CollectionReference orders = Firestore.instance.collection('orders');
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +18,7 @@ class _OrdersState extends State<Orders> {
         stream: orders.snapshots(),
         builder: (context, snapshot) {
           if (snapshot.documents.length == 0) {
-            return utils.nullWidget('No Orders Yet !');
+            return utils.nullWidget('No Orders Found !');
           } else {
             return ListView.builder(
               itemCount: snapshot.documents.length,

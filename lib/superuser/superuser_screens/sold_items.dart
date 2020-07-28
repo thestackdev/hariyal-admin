@@ -4,27 +4,16 @@ import 'package:provider/provider.dart';
 import 'package:superuser/services/view_products.dart';
 import 'package:superuser/utils.dart';
 
-class SoldItems extends StatefulWidget {
-  @override
-  _SoldItemsState createState() => _SoldItemsState();
-}
-
-class _SoldItemsState extends State<SoldItems> {
-  Firestore firestore = Firestore.instance;
-  CollectionReference products;
-
-  @override
-  void initState() {
-    products = firestore.collection('products');
-    super.initState();
-  }
+class SoldItems extends StatelessWidget {
+  final CollectionReference soldItems =
+      Firestore.instance.collection('products');
 
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
     return utils.container(
       child: ViewMyProducts(
-        stream: products.where('isSold', isEqualTo: true).snapshots(),
+        stream: soldItems.where('isSold', isEqualTo: true).snapshots(),
       ),
     );
   }

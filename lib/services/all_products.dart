@@ -14,11 +14,17 @@ class AllProducts extends StatefulWidget {
 }
 
 class _AllProductsState extends State<AllProducts> {
-  String text;
+  TextEditingController controller = TextEditingController();
   final CollectionReference products =
       Firestore.instance.collection('products');
   Utils utils;
   int count = 30;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +39,7 @@ class _AllProductsState extends State<AllProducts> {
               padding: EdgeInsets.all(9),
               child: TextField(
                 onEditingComplete: () => handleState(),
-                onChanged: (value) => text = value,
+                controller: controller,
                 style: utils.inputTextStyle(),
                 maxLines: 1,
                 decoration: getDecoration(),
@@ -46,38 +52,17 @@ class _AllProductsState extends State<AllProducts> {
     );
   }
 
-  /* finterProducts() {
-    return DataStreamBuilder<DocumentSnapshot>(
-      errorBuilder: (context, error) => utils.nullWidget(error),
-      loadingBuilder: (context) => utils.progressIndicator(),
-      stream: products.document(queryConroller.text).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return utils.nullWidget('No Products Found !');
-        } else {
-          return utils.productCard(
-            title: snapshot.data['title'],
-            description: snapshot.data['description'],
-            imageUrl: snapshot.data['images'][0],
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              Get.to(ProductDetails(), arguments: snapshot.documentID);
-            },
-          );
-        }
-      },
-    );
-  } */
-
   allProducts() {
     return Expanded(
       child: DataStreamBuilder<QuerySnapshot>(
         errorBuilder: (context, error) => utils.nullWidget(error),
         loadingBuilder: (context) => utils.progressIndicator(),
-        stream: products
-            .where(FieldPath.documentId, isEqualTo: text)
-            .limit(count)
-            .snapshots(),
+        stream: controller.text.length > 0
+            ? products
+                .where(FieldPath.documentId, isEqualTo: controller.text)
+                .limit(count)
+                .snapshots()
+            : products.limit(count).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.documents.length == 0) {
             return utils.nullWidget('No products found !');
@@ -116,16 +101,17 @@ class _AllProductsState extends State<AllProducts> {
   getDecoration() {
     return InputDecoration(
       isDense: true,
-      hintText: 'search by Document ID',
+      hintText: 'Search by Document ID',
       suffixIcon: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          if (text != null)
+          if (controller.text.length > 0)
             IconButton(
               icon: Icon(MdiIcons.closeOutline),
               onPressed: () {
-                text = null;
+                controller.clear();
+                FocusScope.of(context).unfocus();
                 handleState();
               },
             )

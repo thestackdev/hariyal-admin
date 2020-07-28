@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/utils.dart';
-
 import 'superuser_screens/more.dart';
 import 'superuser_screens/orders.dart';
 import 'superuser_screens/reports.dart';
@@ -45,33 +44,22 @@ class SuperuserHome extends StatelessWidget {
           ),
           actions: <Widget>[
             IconButton(
-                icon: Icon(Icons.more_horiz),
-                onPressed: () => Get.to(Settings())),
+              icon: Icon(Icons.more_horiz),
+              onPressed: () => Get.to(Settings()),
+            ),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           onTap: (index) => controllers.changeScreen(index),
           currentIndex: controllers.currentScreen.value,
-          elevation: 18,
+          elevation: 9,
           type: BottomNavigationBarType.fixed,
           items: [
-            bottomNavigationBar(
-              title: titleList[0],
-              icon: MdiIcons.humanGreeting,
-            ),
-            bottomNavigationBar(
-              title: titleList[1],
-              icon: MdiIcons.receipt,
-            ),
-            bottomNavigationBar(
-              title: titleList[2],
-              icon: MdiIcons.plusCircleOutline,
-            ),
-            bottomNavigationBar(
-              title: titleList[3],
-              icon: MdiIcons.cashUsdOutline,
-            ),
-            bottomNavigationBar(title: titleList[4], icon: MdiIcons.receipt),
+            bottomNavigationBar(titleList[0], MdiIcons.humanGreeting),
+            bottomNavigationBar(titleList[1], MdiIcons.humanMaleMale),
+            bottomNavigationBar(titleList[2], MdiIcons.plusCircleOutline),
+            bottomNavigationBar(titleList[3], MdiIcons.cashUsdOutline),
+            bottomNavigationBar(titleList[4], MdiIcons.receipt),
           ],
         ),
         body: WillPopScope(
@@ -89,7 +77,7 @@ class SuperuserHome extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem bottomNavigationBar({String title, IconData icon}) {
+  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) {
     return BottomNavigationBarItem(
       icon: Icon(icon),
       title: Text(title),

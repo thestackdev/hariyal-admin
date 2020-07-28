@@ -4,20 +4,8 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/utils.dart';
 
-class Reports extends StatefulWidget {
-  @override
-  _ReportsState createState() => _ReportsState();
-}
-
-class _ReportsState extends State<Reports> {
-  Firestore firestore = Firestore.instance;
-  CollectionReference reports;
-
-  @override
-  void initState() {
-    reports = firestore.collection('reports');
-    super.initState();
-  }
+class Reports extends StatelessWidget {
+  final CollectionReference reports = Firestore.instance.collection('reports');
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +21,7 @@ class _ReportsState extends State<Reports> {
           } else {
             return ListView.builder(
               itemCount: snapshot.documents.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (context, index) {
                 return;
               },
             );

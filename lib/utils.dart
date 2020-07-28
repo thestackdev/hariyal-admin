@@ -324,7 +324,8 @@ class Utils {
     );
   }
 
-  Widget appbar(label, {Widget boottom, Widget leading, List<Widget> actions}) {
+  Widget appbar(String label,
+      {Widget boottom, Widget leading, List<Widget> actions}) {
     return AppBar(
       leading: leading,
       actions: actions,
