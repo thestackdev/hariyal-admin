@@ -17,8 +17,6 @@ dependencies:
   firebase_core:
   cloud_firestore:
   material_design_icons_flutter:
-  permission_handler:
-  multi_image_picker:
   flutter_phoenix:
   firebase_storage:
   date_time_format:
