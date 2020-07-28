@@ -7,7 +7,9 @@ import 'package:superuser/main.dart';
 import 'package:superuser/utils.dart';
 
 class SpecificationData extends StatelessWidget {
-  final category = Get.arguments;
+  final String category;
+
+  const SpecificationData({Key key, this.category}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +89,11 @@ class SpecificationData extends StatelessWidget {
                   noPressed: () => Get.back(),
                 );
               } else {
-                text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit Specification',
                   content: utils.dialogInput(
                       hintText: 'Type here',
+                      initialValue: items[index],
                       onChnaged: (value) {
                         text = value;
                       }),

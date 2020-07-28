@@ -120,11 +120,11 @@ class States extends StatelessWidget {
                   noPressed: () => Get.back(),
                 );
               } else {
-                text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit State',
                   content: utils.dialogInput(
                       hintText: 'Type here',
+                      initialValue: items[index],
                       onChnaged: (value) {
                         text = value;
                       }),

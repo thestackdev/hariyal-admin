@@ -206,7 +206,20 @@ class _ProductDetailsState extends State<ProductDetails> {
                               child: utils.materialButton(
                                 color: Colors.red.shade500,
                                 title: 'Delete',
-                                onPressed: () => deleteProduct(snapshot),
+                                onPressed: () => utils.getSimpleDialouge(
+                                  title: 'Are you sure',
+                                  content: Text(
+                                    'Do you want to delete this product ?',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  yesText: 'Delete',
+                                  noText: 'Cancel',
+                                  yesPressed: () => deleteProduct(snapshot),
+                                  noPressed: () => Get.back(),
+                                ),
                               ),
                             ),
                             Expanded(

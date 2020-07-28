@@ -17,28 +17,20 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final _storage = FirebaseStorage.instance.ref().child('profile_pictures');
   DocumentSnapshot authorsnap;
-  final nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
+    String text = '';
 
     authorsnap = context.watch<DocumentSnapshot>();
-    nameController.text = authorsnap.data['name'];
 
     changeName() {
       Get.back();
-      if (utils.validateInputText(nameController.text)) {
-        authorsnap.reference
-            .updateData({'name': nameController.text.toLowerCase()});
+      if (utils.validateInputText(text)) {
+        authorsnap.reference.updateData({'name': text.toLowerCase()});
         utils.showSnackbar('Changes updated');
-        nameController.clear();
+        text = '';
       } else {
         utils.showSnackbar('Invalid entries');
       }
@@ -109,8 +101,11 @@ class _ProfileState extends State<Profile> {
                   onPressed: () => utils.getSimpleDialouge(
                     title: 'Change name',
                     content: utils.dialogInput(
+                      initialValue: authorsnap.data['name'],
+                      onChnaged: (value) {
+                        text = value;
+                      },
                       hintText: 'Type here',
-                      controller: nameController,
                     ),
                     noPressed: () => Get.back(),
                     yesPressed: () => changeName(),

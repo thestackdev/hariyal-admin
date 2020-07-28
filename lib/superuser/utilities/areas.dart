@@ -5,54 +5,98 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:provider/provider.dart';
 import 'package:superuser/utils.dart';
 
-class Areas extends StatefulWidget {
+class Areas extends StatelessWidget {
   final mapKey;
-
   const Areas({Key key, this.mapKey}) : super(key: key);
 
   @override
-  _AreasState createState() => _AreasState();
-}
-
-class _AreasState extends State<Areas> {
-  final textController = TextEditingController();
-  List items = [];
-  DocumentSnapshot snapshot;
-  Firestore firestore = Firestore.instance;
-  Utils utils;
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext buildContext) {
-    utils = context.watch<Utils>();
+  Widget build(BuildContext context) {
+    final utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
+    String text = '';
+    List items = [];
+    DocumentSnapshot snapshot;
+    final Firestore firestore = Firestore.instance;
+    final CollectionReference products = firestore.collection('products');
+    final CollectionReference showrooms = firestore.collection('showrooms');
+
     for (DocumentSnapshot doc in extras.documents) {
       if (doc.documentID == 'locations') {
         items.clear();
         snapshot = doc;
-        if (doc.data[widget.mapKey] != null) {
-          items.addAll(doc.data[widget.mapKey]);
+        if (doc.data[mapKey] != null) {
+          items.addAll(doc.data[mapKey]);
         }
-        handleState();
         break;
       }
     }
 
+    addArea() {
+      if (utils.validateInputText(text) &&
+          !items.contains(text.toLowerCase())) {
+        snapshot.reference.updateData({
+          mapKey: FieldValue.arrayUnion([text.toLowerCase()])
+        });
+        Get.back();
+        utils.showSnackbar('Area Added');
+      } else {
+        Get.back();
+        utils.showSnackbar('Invalid entries');
+      }
+
+      text = '';
+    }
+
+    deleteArea(String data) {
+      products
+          .where('location.area', isEqualTo: data)
+          .getDocuments()
+          .then((value) {
+        value.documents.forEach((element) {
+          element.reference.updateData({
+            'location.area': null,
+            'isDeleted': true,
+          });
+        });
+      });
+      showrooms.where('area', isEqualTo: data).getDocuments().then((value) {
+        value.documents.forEach((element) {
+          element.reference.updateData({
+            'area': null,
+          });
+        });
+      });
+    }
+
+    editArea(String oldData, String newData) {
+      products
+          .where('location.area', isEqualTo: oldData)
+          .getDocuments()
+          .then((value) {
+        value.documents.forEach((element) {
+          element.reference.updateData({'location.area': newData});
+        });
+      });
+      showrooms.where('area', isEqualTo: oldData).getDocuments().then((value) {
+        value.documents.forEach((element) {
+          element.reference.updateData({
+            'area': newData,
+          });
+        });
+      });
+    }
+
     return Scaffold(
-      appBar: utils.appbar(widget.mapKey, actions: [
+      appBar: utils.appbar(mapKey, actions: [
         IconButton(
           icon: Icon(MdiIcons.plusOutline),
           onPressed: () => utils.getSimpleDialouge(
             title: 'Add Areas',
             content: utils.dialogInput(
-              hintText: 'Type here',
-              controller: textController,
-            ),
+                hintText: 'Type here',
+                onChnaged: (value) {
+                  text = value;
+                }),
             noPressed: () => Get.back(),
             yesPressed: () => addArea(),
           ),
@@ -71,32 +115,32 @@ class _AreasState extends State<Areas> {
                   yesPressed: () {
                     deleteArea(items[index]);
                     snapshot.reference.updateData({
-                      widget.mapKey: FieldValue.arrayRemove([items[index]]),
+                      mapKey: FieldValue.arrayRemove([items[index]]),
                     });
                     Get.back();
                   },
                   noPressed: () => Get.back(),
                 );
               } else {
-                textController.text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit Area',
                   content: utils.dialogInput(
-                    hintText: 'Type here',
-                    controller: textController,
-                  ),
+                      hintText: 'Type here',
+                      initialValue: items[index],
+                      onChnaged: (value) {
+                        text = value;
+                      }),
                   noPressed: () => Get.back(),
                   yesPressed: () {
-                    if (utils.validateInputText(textController.text) &&
-                        textController.text != items[index] &&
-                        !items.contains(textController.text.toLowerCase())) {
-                      editArea(items[index], textController.text);
+                    if (utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      editArea(items[index], text);
                       snapshot.reference.updateData({
-                        widget.mapKey: FieldValue.arrayRemove([items[index]]),
+                        mapKey: FieldValue.arrayRemove([items[index]]),
                       });
                       snapshot.reference.updateData({
-                        widget.mapKey:
-                            FieldValue.arrayUnion([textController.text]),
+                        mapKey: FieldValue.arrayUnion([text]),
                       });
 
                       Get.back();
@@ -104,86 +148,15 @@ class _AreasState extends State<Areas> {
                       Get.back();
                       utils.showSnackbar('Invalid entries');
                     }
-                    textController.clear();
+                    text = '';
                   },
                 );
               }
             },
-            child: utils.listTile(
-              title: items[index],
-              isTrailingNull: false,
-            ),
+            child: utils.listTile(title: items[index], isTrailingNull: false),
           ),
         ),
       ),
     );
   }
-
-  addArea() {
-    if (utils.validateInputText(textController.text) &&
-        !items.contains(textController.text.toLowerCase())) {
-      snapshot.reference.updateData({
-        '${widget.mapKey}':
-            FieldValue.arrayUnion([textController.text.toLowerCase()])
-      });
-      Get.back();
-      utils.showSnackbar('Area Added');
-    } else {
-      Get.back();
-      utils.showSnackbar('Invalid entries');
-    }
-
-    textController.clear();
-  }
-
-  deleteArea(String data) {
-    firestore
-        .collection('products')
-        .where('location.area', isEqualTo: data)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({
-          'location.area': null,
-          'isDeleted': true,
-        });
-      });
-    });
-    firestore
-        .collection('showrooms')
-        .where('area', isEqualTo: data)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({
-          'area': null,
-        });
-      });
-    });
-  }
-
-  editArea(String oldData, String newData) {
-    firestore
-        .collection('products')
-        .where('location.area', isEqualTo: oldData)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({'location.area': newData});
-      });
-    });
-    firestore
-        .collection('showrooms')
-        .where('area', isEqualTo: oldData)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({
-          'area': newData,
-        });
-      });
-    });
-  }
-
-  handleState() => (mounted) ?? setState(() => null);
 }
