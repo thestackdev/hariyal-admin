@@ -157,14 +157,25 @@ class _PushDataState extends State<PushData> {
                     return Padding(
                       padding: EdgeInsets.all(9),
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(PageRouteBuilder(
-                              opaque: false,
-                              pageBuilder: (BuildContext context, _, __) =>
-                                  FullScreen(
-                                    tag: index,
-                                    image: images[index],
-                                  )));
+                        onTap: () async {
+                          Map<String, dynamic> map = await Navigator.of(context)
+                              .push(PageRouteBuilder(
+                                  opaque: false,
+                                  pageBuilder: (BuildContext context, _, __) =>
+                                      FullScreen(
+                                        tag: index,
+                                        image: images[index],
+                                      )));
+                          if (map['isDeleted'] == null ||
+                              map['index'] == null ||
+                              map['image'] == null) return;
+
+                          if (map['isDeleted']) {
+                            images.remove(map['image']);
+                          } else {
+                            images[map['index']] = map['image'];
+                          }
+                          handleSetState();
                         },
                         child: Hero(
                           tag: index,

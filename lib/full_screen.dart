@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class FullScreen extends StatelessWidget {
   final image, tag;
@@ -69,11 +72,33 @@ class FullScreen extends StatelessWidget {
                           'Delete',
                           style: TextStyle(color: Colors.white),
                         ),
+                        onTap: () {
+                          back(context, image: image, isDeleted: true);
+                        },
                       ),
                     ),
                     Expanded(
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () async {
+                          File croppedFile = await ImageCropper.cropImage(
+                            sourcePath: image.path,
+                            aspectRatioPresets: [
+                              CropAspectRatioPreset.square,
+                              CropAspectRatioPreset.ratio3x2,
+                              CropAspectRatioPreset.original,
+                              CropAspectRatioPreset.ratio4x3,
+                              CropAspectRatioPreset.ratio16x9
+                            ],
+                            androidUiSettings: AndroidUiSettings(
+                                toolbarTitle: 'Crop Image',
+                                toolbarColor: Theme.of(context).accentColor,
+                                toolbarWidgetColor: Colors.white,
+                                initAspectRatio: CropAspectRatioPreset.original,
+                                lockAspectRatio: false),
+                          );
+                          if (croppedFile == null) return;
+                          back(context, image: croppedFile, isDeleted: false);
+                        },
                         leading: Icon(
                           Icons.crop,
                           color: Colors.white,
@@ -92,5 +117,10 @@ class FullScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void back(BuildContext context, {isDeleted, image}) {
+    Navigator.pop(
+        context, {'isDeleted': isDeleted, 'index': tag, 'image': image});
   }
 }
