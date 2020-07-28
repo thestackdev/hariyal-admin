@@ -301,22 +301,22 @@ class _PushDataState extends State<PushData> {
                               handleSetState();
                             }),
                       ),
-                      utils.productInputText(
+                      utils.inputTextField(
                         label: 'Showroom Address',
                         controller: showroomAddressController,
                         readOnly: true,
                       ),
-                      utils.productInputText(
+                      utils.inputTextField(
                         label: 'Price',
                         controller: price,
                         textInputType: TextInputType.numberWithOptions(
                             decimal: true, signed: true),
                       ),
-                      utils.productInputText(
+                      utils.inputTextField(
                         label: 'Title',
                         controller: title,
                       ),
-                      utils.productInputText(
+                      utils.inputTextField(
                         label: 'Description',
                         controller: description,
                       ),
@@ -337,16 +337,12 @@ class _PushDataState extends State<PushData> {
                         shrinkWrap: true,
                         itemCount: specificationsList.length,
                         itemBuilder: (context, index) {
-                          return utils.textInputPadding(
-                            child: TextField(
-                              decoration: utils.inputDecoration(
-                                label: specificationsList[index],
-                              ),
-                              onChanged: (value) {
-                                inputSpecifications[specificationsList[index]] =
-                                    value;
-                              },
-                            ),
+                          return utils.inputTextField(
+                            label: specificationsList[index],
+                            onChanged: (value) {
+                              inputSpecifications[specificationsList[index]] =
+                                  value;
+                            },
                           );
                         },
                       ),

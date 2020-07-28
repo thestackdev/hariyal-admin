@@ -37,7 +37,7 @@ class _AdminHomeState extends State<AdminHome>
     return Scaffold(
       appBar: utils.appbar(
         'Admin Console',
-        boottom: TabBar(
+        bottom: TabBar(
           labelStyle: textStyle,
           controller: tabController,
           indicatorColor: Colors.transparent,

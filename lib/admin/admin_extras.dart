@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:superuser/authenticate.dart';
 import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/profile.dart';
 import 'package:superuser/utils.dart';
@@ -44,7 +44,7 @@ class AdminExtras extends StatelessWidget {
                   yesPressed: () {
                     Get.back();
                     FirebaseAuth.instance.signOut();
-                    Phoenix.rebirth(context);
+                    Get.offAll(Authenticate());
                   },
                   noPressed: () {
                     Navigator.pop(context);

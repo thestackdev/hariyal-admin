@@ -38,7 +38,7 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
             itemCount: snapshot.documents.length,
             itemBuilder: (context, index) {
               try {
-                return utils.productCard(
+                return utils.card(
                   title: snapshot.documents[index].data['title'],
                   description: snapshot.documents[index].data['description'],
                   imageUrl: snapshot.documents[index].data['images'][0],
@@ -69,7 +69,7 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
         if (snapshot.data == null || !snapshot.data['isSold']) {
           return utils.nullWidget('No Products Found !');
         } else {
-          return utils.productCard(
+          return utils.card(
             title: snapshot.data['title'],
             description: snapshot.data['description'],
             imageUrl: snapshot.data['images'][0],

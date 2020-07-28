@@ -29,7 +29,7 @@ class _AdminExtrasState extends State<AdminExtras> {
       child: Scaffold(
         appBar: utils.appbar(
           'Admin Extras',
-          boottom: utils.tabDecoration('Products', 'Privileges'),
+          bottom: utils.tabDecoration('Products', 'Privileges'),
         ),
         body: utils.container(
           child: TabBarView(

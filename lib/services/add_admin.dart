@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:get/get.dart';
 import 'package:superuser/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -71,45 +71,24 @@ class _AddAdminState extends State<AddAdmin> {
             ? utils.progressIndicator()
             : ListView(
                 children: <Widget>[
-                  utils.textInputPadding(
-                    child: TextField(
-                      controller: name,
-                      maxLines: null,
-                      keyboardType: TextInputType.text,
-                      decoration: utils.inputDecoration(
-                        label: 'Full name',
-                        iconData: MdiIcons.accountOutline,
-                      ),
-                    ),
+                  utils.inputTextField(
+                    label: 'Full name',
+                    controller: name,
                   ),
-                  utils.textInputPadding(
-                    child: TextField(
-                      controller: email,
-                      maxLines: null,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: utils.inputDecoration(
-                        label: 'Email',
-                        iconData: MdiIcons.emailOutline,
-                      ),
-                    ),
+                  utils.inputTextField(
+                    controller: email,
+                    label: 'Email',
                   ),
-                  utils.textInputPadding(
-                    child: TextField(
-                      controller: password,
-                      maxLines: 1,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: utils.inputDecoration(
-                        label: 'Password',
-                        iconData: MdiIcons.lockOutline,
-                      ),
-                    ),
+                  utils.inputTextField(
+                    controller: password,
+                    label: 'Password',
                   ),
                   SizedBox(height: 18),
                   utils.getRaisedButton(
                     title: 'Add Admin',
                     onPressed: () async {
                       FocusScope.of(context).unfocus();
-                      if (email.text.length > 0 &&
+                      if (GetUtils.isEmail(email.text) &&
                           password.text.length > 0 &&
                           name.text.length > 0) {
                         register();

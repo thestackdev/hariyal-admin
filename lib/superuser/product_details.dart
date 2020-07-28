@@ -145,7 +145,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   children: <Widget>[
                                     Expanded(
                                       flex: 3,
-                                      child: utils.productInputText(
+                                      child: utils.inputTextField(
                                         label: 'Sold Reason',
                                         controller: textController,
                                       ),
@@ -240,6 +240,7 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   deleteProduct(DocumentSnapshot snapshot) async {
+    Get.back();
     loading = true;
     handleState();
     await Future.forEach(snapshot.data['images'], (element) async {

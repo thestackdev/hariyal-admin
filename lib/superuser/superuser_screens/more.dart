@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +10,7 @@ import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/superuser/utilities/states.dart';
 import 'package:superuser/utils.dart';
+import '../../authenticate.dart';
 import '../../utils.dart';
 import '../interests.dart';
 import '../utilities/shorooms.dart';
@@ -107,7 +107,7 @@ class Settings extends StatelessWidget {
                 yesPressed: () {
                   Get.back();
                   FirebaseAuth.instance.signOut();
-                  Phoenix.rebirth(context);
+                  Get.offAll(Authenticate());
                 },
                 noPressed: () => Get.back(),
               ),

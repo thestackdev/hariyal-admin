@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/utils.dart';
 
 class Authenticate extends StatefulWidget {
@@ -11,11 +10,7 @@ class Authenticate extends StatefulWidget {
 class _AuthenticateState extends State<Authenticate> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final titleStyle = TextStyle(
-    color: Colors.grey.shade700,
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-  );
+
   final contentStyle = TextStyle(
     color: Colors.grey,
     fontSize: 18,
@@ -42,34 +37,28 @@ class _AuthenticateState extends State<Authenticate> {
             : ListView(
                 children: <Widget>[
                   SizedBox(height: 90),
-                  utils.textInputPadding(
-                    child: Text('Login', style: titleStyle),
-                  ),
-                  utils.textInputPadding(
-                      child: Text('Hey Admin !', style: contentStyle)),
-                  utils.textInputPadding(
-                    child: TextField(
-                      style: utils.inputTextStyle(),
-                      controller: emailController,
-                      maxLines: 1,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: utils.inputDecoration(
-                        label: 'Email',
-                        iconData: MdiIcons.emailOutline,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  utils.textInputPadding(
-                    child: TextField(
-                      style: utils.inputTextStyle(),
-                      controller: passwordController,
-                      maxLines: 1,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: utils.inputDecoration(
-                        label: 'Password',
-                        iconData: MdiIcons.lockOutline,
-                      ),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: Text('Hey Admin !', style: contentStyle),
+                  ),
+                  utils.inputTextField(
+                    label: 'Email',
+                    controller: emailController,
+                  ),
+                  utils.inputTextField(
+                    label: 'Password',
+                    controller: passwordController,
                   ),
                   SizedBox(height: 18),
                   utils.getRaisedButton(

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Utils {
-  textStyle({Color color, double fontSize}) {
+  TextStyle textStyle({Color color, double fontSize}) {
     return TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: fontSize,
@@ -29,7 +29,7 @@ class Utils {
     );
   }
 
-  dismissible({
+  Widget dismissible({
     Key key,
     Widget child,
     Future<bool> Function(DismissDirection) confirmDismiss,
@@ -65,7 +65,7 @@ class Utils {
     );
   }
 
-  getSimpleDialouge(
+  Future<bool> getSimpleDialouge(
       {String title,
       yesText,
       noText,
@@ -105,7 +105,7 @@ class Utils {
     );
   }
 
-  dialogInput({
+  Widget dialogInput({
     String hintText,
     Function(String) onChnaged,
     String initialValue,
@@ -152,7 +152,8 @@ class Utils {
     bool isShowroom = false,
     String Function(dynamic) validator,
   }) {
-    return textInputPadding(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
       child: DropdownButtonFormField(
         validator: (value) => value == null ? 'Field can\'t be empty' : null,
         value: value,
@@ -173,7 +174,7 @@ class Utils {
     );
   }
 
-  Widget productInputText({
+  Widget inputTextField({
     TextEditingController controller,
     String label,
     TextInputType textInputType = TextInputType.text,
@@ -181,7 +182,8 @@ class Utils {
     Function(String) onChanged,
     bool readOnly = false,
   }) {
-    return textInputPadding(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
       child: TextFormField(
         onChanged: onChanged,
         style: inputTextStyle(),
@@ -195,7 +197,7 @@ class Utils {
     );
   }
 
-  Widget productCard({
+  Widget card({
     String title,
     String description,
     String imageUrl,
@@ -325,7 +327,7 @@ class Utils {
   }
 
   Widget appbar(String label,
-      {Widget boottom, Widget leading, List<Widget> actions}) {
+      {Widget bottom, Widget leading, List<Widget> actions}) {
     return AppBar(
       leading: leading,
       actions: actions,
@@ -335,7 +337,7 @@ class Utils {
       ),
       centerTitle: true,
       elevation: 0,
-      bottom: boottom,
+      bottom: bottom,
     );
   }
 
@@ -350,7 +352,7 @@ class Utils {
     );
   }
 
-  progressIndicator() {
+  Widget progressIndicator() {
     return Center(
       child: SpinKitRing(color: Colors.red.shade300, lineWidth: 5),
     );
@@ -371,13 +373,6 @@ class Utils {
           style: textStyle(color: Colors.white, fontSize: 16),
         ),
       ),
-    );
-  }
-
-  Widget textInputPadding({child}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      child: child,
     );
   }
 
@@ -428,7 +423,7 @@ class Utils {
         subtitle: subtitle == null
             ? null
             : Text(
-                GetUtils.capitalize(subtitle),
+                GetUtils.capitalizeFirst(subtitle),
                 style: TextStyle(
                   color: Colors.grey.shade700,
                 ),

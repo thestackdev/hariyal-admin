@@ -83,21 +83,21 @@ class _AddShowroomState extends State<AddShowroom> {
                   selectedArea = newValue;
                   handleSetState();
                 }),
-            utils.productInputText(
+            utils.inputTextField(
               label: 'Name',
               controller: titleController,
             ),
-            utils.productInputText(
+            utils.inputTextField(
               label: 'Address',
               controller: addressController,
             ),
-            utils.productInputText(
+            utils.inputTextField(
               label: 'latitude',
               controller: latitudeController,
               textInputType:
                   TextInputType.numberWithOptions(signed: true, decimal: true),
             ),
-            utils.productInputText(
+            utils.inputTextField(
               label: 'longitude',
               controller: longitudeController,
               textInputType:

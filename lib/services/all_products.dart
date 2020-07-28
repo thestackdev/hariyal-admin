@@ -76,7 +76,7 @@ class _AllProductsState extends State<AllProducts> {
                 itemCount: snapshot.documents.length,
                 itemBuilder: (context, index) {
                   try {
-                    return utils.productCard(
+                    return utils.card(
                       title: snapshot.documents[index].data['title'],
                       description:
                           snapshot.documents[index].data['description'],

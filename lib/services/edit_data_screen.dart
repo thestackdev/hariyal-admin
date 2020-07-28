@@ -416,22 +416,22 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                   handleSetState();
                                 }),
                           ),
-                          utils.productInputText(
+                          utils.inputTextField(
                             label: 'Showroom Address',
                             controller: showroomAddressController,
                             readOnly: true,
                           ),
-                          utils.productInputText(
+                          utils.inputTextField(
                             label: 'Price',
                             controller: price,
                             textInputType:
                                 TextInputType.numberWithOptions(signed: true),
                           ),
-                          utils.productInputText(
+                          utils.inputTextField(
                             label: 'Title',
                             controller: title,
                           ),
-                          utils.productInputText(
+                          utils.inputTextField(
                             label: 'Description',
                             controller: description,
                           ),
@@ -447,7 +447,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                 ),
                               ),
                             ),
-                          ListView.builder(
+                          /* ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: specificationsList.length,
@@ -466,7 +466,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                 ),
                               );
                             },
-                          ),
+                          ), */
                         ],
                       ),
                     ),

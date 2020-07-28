@@ -227,7 +227,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
       child: Scaffold(
         appBar: utils.appbar(
           'Customer Console',
-          boottom: utils.tabDecoration('Details', 'Interests'),
+          bottom: utils.tabDecoration('Details', 'Interests'),
         ),
         body: TabBarView(
           children: <Widget>[

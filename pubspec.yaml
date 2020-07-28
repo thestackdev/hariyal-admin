@@ -1,7 +1,7 @@
 name: superuser
-description: A product by shanmukeshwar
+description: A product by shanmukeshwar and gautham
 
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -17,7 +17,6 @@ dependencies:
   firebase_core:
   cloud_firestore:
   material_design_icons_flutter:
-  flutter_phoenix:
   firebase_storage:
   date_time_format:
   cached_network_image:
