@@ -165,7 +165,9 @@ class _PushDataState extends State<PushData> {
                                       FullScreen(
                                         tag: index,
                                         image: images[index],
+                                        imageLink: null,
                                       )));
+                          if (map == null) return;
                           if (map['isDeleted'] == null ||
                               map['index'] == null ||
                               map['image'] == null) return;

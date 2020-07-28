@@ -6,6 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:superuser/full_screen.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/widgets/network_image.dart';
 
@@ -139,50 +140,42 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       shrinkWrap: true,
                       crossAxisCount: 3,
                       children: List.generate(existingImages.length, (index) {
-                        return Stack(
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.all(9),
-                              child: PNetworkImage(
-                                existingImages[index],
-                                fit: BoxFit.contain,
-                                width: 270,
-                                height: 270,
-                              ),
-                            ),
-                            Align(
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                margin: EdgeInsets.all(9),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(6)),
-                                  color: Colors.red[800],
+                        return GestureDetector(
+                          onTap: () async {
+                            Map<String, dynamic> map =
+                                await Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                        opaque: false,
+                                        pageBuilder: (BuildContext context, _,
+                                                __) =>
+                                            FullScreen(
+                                              tag: index,
+                                              image: null,
+                                              imageLink: existingImages[index],
+                                            )));
+                            if (map == null) return;
+                            if (map['isDeleted'] == null ||
+                                map['index'] == null ||
+                                map['image'] == null) return;
+                            if (map['isDeleted']) {
+                              shouldRemoveImages.add(map['image']);
+                              existingImages.remove(map['image']);
+                            } else {
+                              existingImages[map['index']] = map['image'];
+                            }
+                            handleSetState();
+                          },
+                          child: Hero(
+                              tag: index,
+                              child: Padding(
+                                padding: EdgeInsets.all(9),
+                                child: PNetworkImage(
+                                  existingImages[index],
+                                  fit: BoxFit.contain,
+                                  width: 270,
+                                  height: 270,
                                 ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.close,
-                                    size: 12,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () async {
-                                    try {
-                                      shouldRemoveImages
-                                          .add(existingImages[index]);
-                                      existingImages
-                                          .remove(existingImages[index]);
-
-                                      handleSetState();
-                                    } catch (e) {
-                                      utils.showSnackbar(e.toString());
-                                    }
-                                  },
-                                ),
-                              ),
-                              alignment: Alignment.topRight,
-                            )
-                          ],
+                              )),
                         );
                       }),
                     ),

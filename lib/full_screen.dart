@@ -4,10 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 
+import 'widgets/network_image.dart';
+
 class FullScreen extends StatelessWidget {
   final image, tag;
+  final String imageLink;
 
-  FullScreen({this.image, this.tag});
+  FullScreen({this.image, this.tag, this.imageLink});
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +43,22 @@ class FullScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Hero(
-                  tag: tag,
-                  child: Image.file(
-                    image,
-                    width: 270,
-                    height: 270,
-                    errorBuilder: (context, url, error) =>
-                        Icon(Icons.error_outline),
-                    filterQuality: FilterQuality.medium,
-                  ),
-                ),
+                    tag: tag,
+                    child: imageLink == null
+                        ? Image.file(
+                            image,
+                            width: 270,
+                            height: 270,
+                            errorBuilder: (context, url, error) =>
+                                Icon(Icons.error_outline),
+                            filterQuality: FilterQuality.medium,
+                          )
+                        : PNetworkImage(
+                            imageLink,
+                            fit: BoxFit.contain,
+                            width: 270,
+                            height: 270,
+                          )),
               ),
             ),
             Align(
@@ -73,7 +82,9 @@ class FullScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          back(context, image: image, isDeleted: true);
+                          back(context,
+                              image: image != null ? image : imageLink,
+                              isDeleted: true);
                         },
                       ),
                     ),
