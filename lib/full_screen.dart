@@ -7,10 +7,10 @@ import 'package:image_cropper/image_cropper.dart';
 import 'widgets/network_image.dart';
 
 class FullScreen extends StatelessWidget {
-  final image, tag;
+  final image, index;
   final String imageLink;
 
-  FullScreen({this.image, this.tag, this.imageLink});
+  FullScreen({this.image, this.index, this.imageLink});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class FullScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Hero(
-                    tag: tag,
+                    tag: imageLink == null ? image.path.toString() : imageLink,
                     child: imageLink == null
                         ? Image.file(
                             image,
@@ -132,6 +132,6 @@ class FullScreen extends StatelessWidget {
 
   void back(BuildContext context, {isDeleted, image}) {
     Navigator.pop(
-        context, {'isDeleted': isDeleted, 'index': tag, 'image': image});
+        context, {'isDeleted': isDeleted, 'index': index, 'image': image});
   }
 }

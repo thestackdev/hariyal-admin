@@ -163,7 +163,7 @@ class _PushDataState extends State<PushData> {
                                   opaque: false,
                                   pageBuilder: (BuildContext context, _, __) =>
                                       FullScreen(
-                                        tag: index,
+                                        index: index,
                                         image: images[index],
                                         imageLink: null,
                                       )));
@@ -180,7 +180,7 @@ class _PushDataState extends State<PushData> {
                           handleSetState();
                         },
                         child: Hero(
-                          tag: index,
+                          tag: images[index].path.toString(),
                           child: Image.file(
                             images[index],
                             width: 270,
