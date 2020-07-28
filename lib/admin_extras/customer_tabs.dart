@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
@@ -61,7 +60,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
             padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
-              initialValue: capitalize(
+              initialValue: GetUtils.capitalize(
                 widget.docsnap['name'] ?? 'Something went wrong !',
               ),
               readOnly: true,
@@ -76,7 +75,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                   padding: EdgeInsets.all(12),
                   child: TextFormField(
                     style: utils.inputTextStyle(),
-                    initialValue: capitalize(
+                    initialValue: GetUtils.capitalize(
                       widget.docsnap['phone'] ?? 'Something went wrong !',
                     ),
                     readOnly: true,
@@ -133,7 +132,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
             padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
-              initialValue: capitalize(
+              initialValue: GetUtils.capitalize(
                 widget.docsnap['gender'] ?? 'Something went wrong !',
               ),
               readOnly: true,
@@ -148,7 +147,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                   padding: EdgeInsets.all(12),
                   child: TextFormField(
                     style: utils.inputTextStyle(),
-                    initialValue: capitalize(
+                    initialValue: GetUtils.capitalize(
                       widget.docsnap['alternatePhoneNumber'] ??
                           'Something went wrong !',
                     ),
@@ -179,7 +178,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
             padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
-              initialValue: capitalize(
+              initialValue: GetUtils.capitalize(
                 widget.docsnap['permanentAddress'] ?? 'Something went wrong !',
               ),
               readOnly: true,
@@ -191,7 +190,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
             padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
-              initialValue: capitalize(
+              initialValue: GetUtils.capitalize(
                 widget.docsnap['location']['cityDistrict'] ??
                     'Something went wrong !',
               ),
@@ -204,7 +203,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
             padding: EdgeInsets.all(12),
             child: TextFormField(
               style: utils.inputTextStyle(),
-              initialValue: capitalize(
+              initialValue: GetUtils.capitalize(
                 widget.docsnap['location']['state'] ?? 'Something went wrong !',
               ),
               readOnly: true,

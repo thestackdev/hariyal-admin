@@ -195,13 +195,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_absolute_path:
-    dependency: "direct main"
-    description:
-      name: flutter_absolute_path
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.6"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -247,20 +240,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  font_awesome_flutter:
-    dependency: "direct main"
-    description:
-      name: font_awesome_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.8.1"
   get:
     dependency: "direct main"
     description:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "3.4.1"
   http:
     dependency: transitive
     description:
@@ -324,13 +310,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  lists:
-    dependency: transitive
-    description:
-      name: lists
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.6"
   matcher:
     dependency: transitive
     description:
@@ -374,7 +353,7 @@ packages:
     source: hosted
     version: "1.6.4"
   path_provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
@@ -504,13 +483,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  splashscreen:
-    dependency: "direct main"
-    description:
-      name: splashscreen
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
   sqflite:
     dependency: transitive
     description:
@@ -546,13 +518,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  strings:
-    dependency: "direct main"
-    description:
-      name: strings
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   synchronized:
     dependency: transitive
     description:
@@ -581,13 +546,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
-  unicode:
-    dependency: transitive
-    description:
-      name: unicode
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.4"
   url_launcher:
     dependency: "direct main"
     description:

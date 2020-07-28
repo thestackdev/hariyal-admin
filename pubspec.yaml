@@ -21,16 +21,11 @@ dependencies:
   multi_image_picker:
   flutter_phoenix:
   firebase_storage:
-  path_provider:
-  flutter_absolute_path:
   date_time_format:
   image:
-  font_awesome_flutter:
   cached_network_image:
   photo_view:
   flutter_spinkit:
-  splashscreen:
-  strings:
   lazy_load_scrollview:
   provider:
   flutter_data_stream_builder:

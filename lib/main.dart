@@ -8,7 +8,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:superuser/admin/admin_home.dart';
-import 'package:superuser/superuser/authenticate.dart';
+import 'package:superuser/authenticate.dart';
 import 'package:superuser/superuser/superuser_home.dart';
 import 'package:superuser/utils.dart';
 
