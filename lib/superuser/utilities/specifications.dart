@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/superuser/utilities/specificationData.dart';
 import 'package:superuser/utils.dart';
 
@@ -28,12 +27,12 @@ class Specifications extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: utils.appbar(capitalize('Choose Category')),
+      appBar: utils.appbar('Choose Category'),
       body: utils.container(
         child: ListView.builder(
           itemCount: items.length,
           itemBuilder: (context, index) => utils.listTile(
-            title: capitalize(items[index]),
+            title: items[index],
             onTap: () => Get.to(SpecificationData(), arguments: items[index]),
           ),
         ),

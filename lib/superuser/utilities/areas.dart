@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/utils.dart';
 
 class Areas extends StatefulWidget {
@@ -45,7 +44,7 @@ class _AreasState extends State<Areas> {
     }
 
     return Scaffold(
-      appBar: utils.appbar(capitalize(widget.mapKey), actions: [
+      appBar: utils.appbar(widget.mapKey, actions: [
         IconButton(
           icon: Icon(MdiIcons.plusOutline),
           onPressed: () => utils.getSimpleDialouge(
@@ -111,7 +110,7 @@ class _AreasState extends State<Areas> {
               }
             },
             child: utils.listTile(
-              title: capitalize(items[index]),
+              title: items[index],
               isTrailingNull: false,
             ),
           ),

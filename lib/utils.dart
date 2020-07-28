@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:strings/strings.dart';
 
 class Utils {
   textStyle({Color color, double fontSize}) {
@@ -214,7 +213,7 @@ class Utils {
           width: 90,
           filterQuality: FilterQuality.low,
         ),
-        title: Text(capitalize(title)),
+        title: Text(GetUtils.capitalize(title)),
         subtitle: Text(description),
       ),
     );
@@ -330,7 +329,7 @@ class Utils {
       leading: leading,
       actions: actions,
       title: Text(
-        label,
+        GetUtils.capitalize(label),
         style: textStyle(fontSize: 23),
       ),
       centerTitle: true,
@@ -421,14 +420,14 @@ class Utils {
               ),
         onTap: onTap,
         title: Text(
-          capitalize(title),
+          GetUtils.capitalize(title),
           style: TextStyle(color: Colors.red),
           textScaleFactor: textscalefactor ?? 1.2,
         ),
         subtitle: subtitle == null
             ? null
             : Text(
-                capitalize(subtitle),
+                GetUtils.capitalize(subtitle),
                 style: TextStyle(
                   color: Colors.grey.shade700,
                 ),

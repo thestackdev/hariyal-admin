@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/main.dart';
 import 'package:superuser/utils.dart';
 
@@ -51,7 +50,7 @@ class SpecificationData extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: utils.appbar(capitalize(category), actions: [
+      appBar: utils.appbar(category, actions: [
         IconButton(
             icon: Icon(MdiIcons.plusOutline),
             onPressed: () {
@@ -118,7 +117,7 @@ class SpecificationData extends StatelessWidget {
               }
             },
             child: utils.listTile(
-              title: capitalize(items[index]),
+              title: items[index],
               isTrailingNull: true,
             ),
           ),

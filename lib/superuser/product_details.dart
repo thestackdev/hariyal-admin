@@ -3,7 +3,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
@@ -62,7 +61,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            capitalize('${snapshot.data['title']}'),
+                            GetUtils.capitalize('${snapshot.data['title']}'),
                             style: TextStyle(
                               fontSize: 26.0,
                               fontWeight: FontWeight.w500,
@@ -96,7 +95,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 9),
                           Text(
-                            capitalize('${snapshot.data['description']}'),
+                            GetUtils.capitalize(
+                                '${snapshot.data['description']}'),
                             textAlign: TextAlign.justify,
                             style: utils.inputTextStyle(),
                           ),

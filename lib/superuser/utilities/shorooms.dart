@@ -4,7 +4,6 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:strings/strings.dart';
 import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/utils.dart';
 
@@ -69,8 +68,8 @@ class Showrooms extends StatelessWidget {
                   key: UniqueKey(),
                   child: utils.listTile(
                     title: snapshot.documents[index]['name'],
-                    subtitle: 'Address : ' +
-                        capitalize(snapshot.documents[index]['adress']),
+                    subtitle:
+                        'Address : ' + snapshot.documents[index]['adress'],
                   ),
                 );
               },
