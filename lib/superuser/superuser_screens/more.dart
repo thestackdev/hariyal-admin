@@ -11,8 +11,8 @@ import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/superuser/utilities/states.dart';
 import 'package:superuser/utils.dart';
-
 import '../../utils.dart';
+import '../interests.dart';
 import '../utilities/shorooms.dart';
 import 'admins.dart';
 import 'customers.dart';
@@ -49,9 +49,7 @@ class Settings extends StatelessWidget {
                 MdiIcons.humanChild,
                 color: Colors.red.shade300,
               ),
-              onTap: () {
-                //return Get.to(Interests());
-              },
+              onTap: () => Get.to(Interests()),
             ),
             utils.listTile(
               title: 'Categories',

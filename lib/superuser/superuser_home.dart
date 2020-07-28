@@ -6,6 +6,7 @@ import 'package:superuser/services/push_data.dart';
 import 'package:superuser/utils.dart';
 
 import 'superuser_screens/more.dart';
+import 'superuser_screens/orders.dart';
 import 'superuser_screens/reports.dart';
 import 'superuser_screens/requests.dart';
 import 'superuser_screens/sold_items.dart';
@@ -18,10 +19,11 @@ class SuperuserHome extends StatefulWidget {
 class _SuperuserHomeState extends State<SuperuserHome> {
   int currentScreen = 0;
   final screenList = [
-    /*Orders(),*/ Requests(),
+    Orders(),
+    Requests(),
     PushData(),
     SoldItems(),
-    Reports()
+    Reports(),
   ];
   final titleList = [
     'Orders',
@@ -77,10 +79,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
             title: titleList[3],
             icon: MdiIcons.cashUsdOutline,
           ),
-          bottomNavigationBar(
-            title: titleList[4],
-            icon: MdiIcons.receipt,
-          ),
+          bottomNavigationBar(title: titleList[4], icon: MdiIcons.receipt),
         ],
       ),
       body: WillPopScope(

@@ -7,8 +7,7 @@ import 'package:strings/strings.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
-
-//import '../services/edit_data_screen.dart';
+import '../services/edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
   @override
@@ -161,7 +160,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                               snapshot.reference.updateData({
                                                 'isSold': true,
                                                 'soldReason':
-                                                textController.text
+                                                    textController.text
                                               });
                                               textController.clear();
                                             } else {
@@ -246,9 +245,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     Get.back();
   }
 
-  editProduct(snapshot) {
-    //Get.to(EditDataScreen(), arguments: snapshot);
-  }
+  editProduct(snapshot) => Get.to(EditDataScreen(), arguments: snapshot);
 
   handleState() => (mounted) ? setState(() => null) : null;
 }
