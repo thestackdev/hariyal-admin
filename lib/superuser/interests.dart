@@ -22,8 +22,13 @@ class Interests extends StatelessWidget {
       appBar: utils.appbar('Interests'),
       body: utils.container(
         child: DataStreamBuilder<QuerySnapshot>(
+          errorBuilder: (context, error) => utils.nullWidget(error),
+          loadingBuilder: (context) => utils.progressIndicator(),
           stream: interests.orderBy('timestamp', descending: true).snapshots(),
           builder: (context, interest) {
+            if (interest.documents.length == 0) {
+              return utils.nullWidget('No Interests found !');
+            }
             return ListView.builder(
               itemCount: interest.documents.length,
               itemBuilder: (context, index) {

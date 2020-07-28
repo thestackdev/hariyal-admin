@@ -107,12 +107,12 @@ class Utils {
 
   dialogInput({
     String hintText,
-    TextEditingController controller,
     Function(String) onChnaged,
+    String initialValue,
   }) {
     return TextFormField(
+      initialValue: initialValue,
       onChanged: onChnaged,
-      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: inputTextStyle(),
@@ -330,7 +330,7 @@ class Utils {
       leading: leading,
       actions: actions,
       title: Text(
-        GetUtils.capitalize(label),
+        GetUtils.capitalizeFirst(label),
         style: textStyle(fontSize: 23),
       ),
       centerTitle: true,
@@ -421,7 +421,7 @@ class Utils {
               ),
         onTap: onTap,
         title: Text(
-          GetUtils.capitalize(title),
+          GetUtils.capitalizeFirst(title.trim()),
           style: TextStyle(color: Colors.red),
           textScaleFactor: textscalefactor ?? 1.2,
         ),

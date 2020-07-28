@@ -436,8 +436,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
         title != null &&
         price.text.length > 0 &&
         title.text.length > 0 &&
-        description.text.length > 0 &&
-        inputSpecifications.values.length > 0) {
+        description.text.length > 0) {
       if (existingImages.length == 0 && newImages.length > 0 ||
           existingImages.length > 0 && newImages.length == 0) {
         FocusScope.of(context).unfocus();

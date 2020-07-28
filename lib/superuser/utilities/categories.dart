@@ -7,7 +7,8 @@ import 'package:superuser/superuser/utilities/sub_categories.dart';
 import 'package:superuser/utils.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  final Firestore firestore = Firestore.instance;
+  final CollectionReference products =
+      Firestore.instance.collection('products');
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,6 @@ class CategoriesScreen extends StatelessWidget {
     String text = '';
     List items = [];
     DocumentSnapshot snapshot;
-    CollectionReference products = firestore.collection('products');
 
     if (extras == null) {
       return utils.blankScreenLoading();
@@ -106,11 +106,11 @@ class CategoriesScreen extends StatelessWidget {
                   noPressed: () => Get.back(),
                 );
               } else {
-                text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit Category',
                   content: utils.dialogInput(
                       hintText: 'Type here',
+                      initialValue: items[index],
                       onChnaged: (value) {
                         text = value;
                       }),
@@ -138,7 +138,9 @@ class CategoriesScreen extends StatelessWidget {
             },
             child: utils.listTile(
               title: items[index],
-              onTap: () => Get.to(SubCategories(), arguments: items[index]),
+              onTap: () => Get.to(SubCategories(
+                mapKey: items[index],
+              )),
             ),
           ),
         ),

@@ -33,7 +33,9 @@ class Specifications extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) => utils.listTile(
             title: items[index],
-            onTap: () => Get.to(SpecificationData(), arguments: items[index]),
+            onTap: () => Get.to(
+              SpecificationData(category: items[index]),
+            ),
           ),
         ),
       ),

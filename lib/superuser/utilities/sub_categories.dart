@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:superuser/main.dart';
 import 'package:superuser/utils.dart';
 
 class SubCategories extends StatelessWidget {
-  final String mapKey = Get.arguments;
+  final String mapKey;
+  const SubCategories({Key key, this.mapKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final utils = context.watch<Utils>();
     final QuerySnapshot extras = context.watch<QuerySnapshot>();
+    final CollectionReference products =
+        Firestore.instance.collection('products');
     String text = '';
     List items = [];
     DocumentSnapshot snapshot;
@@ -44,8 +46,7 @@ class SubCategories extends StatelessWidget {
     }
 
     deleteSubCategory(String data) {
-      firestore
-          .collection('products')
+      products
           .where('category.subCategory', isEqualTo: data)
           .getDocuments()
           .then((value) {
@@ -59,8 +60,7 @@ class SubCategories extends StatelessWidget {
     }
 
     editSubCategory(String oldData, String newData) {
-      firestore
-          .collection('products')
+      products
           .where('category.subCategory', isEqualTo: oldData)
           .getDocuments()
           .then((value) {
@@ -109,11 +109,11 @@ class SubCategories extends StatelessWidget {
                   noPressed: () => Get.back(),
                 );
               } else {
-                text = items[index];
                 return await utils.getSimpleDialouge(
                   title: 'Edit Sub-Category',
                   content: utils.dialogInput(
                       hintText: 'Type here',
+                      initialValue: items[index],
                       onChnaged: (value) {
                         text = value;
                       }),

@@ -139,7 +139,7 @@ class _AddShowroomState extends State<AddShowroom> {
                           'longitude': longitudeController.text,
                         });
                       }
-                      Get.back(result: true);
+                      Get.back(result: false);
                     } else {
                       utils.showSnackbar('Invalid Entries');
                     }
