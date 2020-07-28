@@ -16,14 +16,7 @@ class _AddAdminState extends State<AddAdmin> {
   final password = TextEditingController();
   final name = TextEditingController();
   bool loading = false;
-  Firestore firestore = Firestore.instance;
-  CollectionReference admin;
-
-  @override
-  void initState() {
-    admin = firestore.collection('admin');
-    super.initState();
-  }
+  final CollectionReference admin = Firestore.instance.collection('admin');
 
   @override
   void dispose() {
@@ -81,52 +74,52 @@ class _AddAdminState extends State<AddAdmin> {
                   utils.textInputPadding(
                     child: TextField(
                       controller: name,
-                maxLines: null,
-                keyboardType: TextInputType.text,
-                decoration: utils.inputDecoration(
-                  label: 'Full name',
-                  iconData: MdiIcons.accountOutline,
-                ),
+                      maxLines: null,
+                      keyboardType: TextInputType.text,
+                      decoration: utils.inputDecoration(
+                        label: 'Full name',
+                        iconData: MdiIcons.accountOutline,
+                      ),
+                    ),
+                  ),
+                  utils.textInputPadding(
+                    child: TextField(
+                      controller: email,
+                      maxLines: null,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: utils.inputDecoration(
+                        label: 'Email',
+                        iconData: MdiIcons.emailOutline,
+                      ),
+                    ),
+                  ),
+                  utils.textInputPadding(
+                    child: TextField(
+                      controller: password,
+                      maxLines: 1,
+                      keyboardType: TextInputType.visiblePassword,
+                      decoration: utils.inputDecoration(
+                        label: 'Password',
+                        iconData: MdiIcons.lockOutline,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 18),
+                  utils.getRaisedButton(
+                    title: 'Add Admin',
+                    onPressed: () async {
+                      FocusScope.of(context).unfocus();
+                      if (email.text.length > 0 &&
+                          password.text.length > 0 &&
+                          name.text.length > 0) {
+                        register();
+                      } else {
+                        utils.showSnackbar('Invalid entries');
+                      }
+                    },
+                  ),
+                ],
               ),
-            ),
-            utils.textInputPadding(
-              child: TextField(
-                controller: email,
-                maxLines: null,
-                keyboardType: TextInputType.emailAddress,
-                decoration: utils.inputDecoration(
-                  label: 'Email',
-                  iconData: MdiIcons.emailOutline,
-                ),
-              ),
-            ),
-            utils.textInputPadding(
-              child: TextField(
-                controller: password,
-                maxLines: 1,
-                keyboardType: TextInputType.visiblePassword,
-                decoration: utils.inputDecoration(
-                  label: 'Password',
-                  iconData: MdiIcons.lockOutline,
-                ),
-              ),
-            ),
-            SizedBox(height: 18),
-            utils.getRaisedButton(
-              title: 'Add Admin',
-              onPressed: () async {
-                FocusScope.of(context).unfocus();
-                if (email.text.length > 0 &&
-                    password.text.length > 0 &&
-                    name.text.length > 0) {
-                  register();
-                } else {
-                  utils.showSnackbar('Invalid entries');
-                }
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -368,8 +368,7 @@ class _PushDataState extends State<PushData> {
         title != null &&
         price.text.length > 0 &&
         title.text.length > 0 &&
-        description.text.length > 0 &&
-        inputSpecifications.values.length > 0) {
+        description.text.length > 0) {
       FocusScope.of(context).unfocus();
       loading = true;
       handleSetState();

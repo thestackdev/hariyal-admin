@@ -16,15 +16,52 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final _storage = FirebaseStorage.instance.ref().child('profile_pictures');
-  Utils utils;
   DocumentSnapshot authorsnap;
   final nameController = TextEditingController();
 
   @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
+    final utils = context.watch<Utils>();
+
     authorsnap = context.watch<DocumentSnapshot>();
     nameController.text = authorsnap.data['name'];
+
+    changeName() {
+      Get.back();
+      if (utils.validateInputText(nameController.text)) {
+        authorsnap.reference
+            .updateData({'name': nameController.text.toLowerCase()});
+        utils.showSnackbar('Changes updated');
+        nameController.clear();
+      } else {
+        utils.showSnackbar('Invalid entries');
+      }
+    }
+
+    uploadImage(final asset) async {
+      try {
+        _storage
+            .child(authorsnap.documentID)
+            .putData(await asset
+                .readAsBytes()
+                .then((value) => value.buffer.asUint8List()))
+            .onComplete
+            .then((value) {
+          value.ref.getDownloadURL().then((value) async {
+            await authorsnap.reference.updateData({'imageUrl': value});
+          });
+        });
+      } catch (e) {
+        utils.showSnackbar('Something went wrong');
+      }
+    }
+
     return Scaffold(
       appBar: utils.appbar('Profile'),
       body: utils.container(
@@ -173,35 +210,5 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
-  }
-
-  changeName() {
-    Get.back();
-    if (utils.validateInputText(nameController.text)) {
-      authorsnap.reference
-          .updateData({'name': nameController.text.toLowerCase()});
-      utils.showSnackbar('Changes updated');
-      nameController.clear();
-    } else {
-      utils.showSnackbar('Invalid entries');
-    }
-  }
-
-  uploadImage(final asset) async {
-    try {
-      _storage
-          .child(authorsnap.documentID)
-          .putData(await asset
-              .readAsBytes()
-              .then((value) => value.buffer.asUint8List()))
-          .onComplete
-          .then((value) {
-        value.ref.getDownloadURL().then((value) async {
-          await authorsnap.reference.updateData({'imageUrl': value});
-        });
-      });
-    } catch (e) {
-      utils.showSnackbar('Something went wrong');
-    }
   }
 }

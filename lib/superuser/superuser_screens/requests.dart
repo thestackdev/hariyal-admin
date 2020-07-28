@@ -4,20 +4,9 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:superuser/utils.dart';
 import 'package:provider/provider.dart';
 
-class Requests extends StatefulWidget {
-  @override
-  _RequestsState createState() => _RequestsState();
-}
-
-class _RequestsState extends State<Requests> {
-  Firestore firestore = Firestore.instance;
-  CollectionReference requests;
-
-  @override
-  void initState() {
-    requests = firestore.collection('requests');
-    super.initState();
-  }
+class Requests extends StatelessWidget {
+  final CollectionReference requests =
+      Firestore.instance.collection('requests');
 
   @override
   Widget build(BuildContext context) {
