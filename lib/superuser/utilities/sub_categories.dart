@@ -2,33 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/utils.dart';
 
 class SubCategories extends StatelessWidget {
   final String mapKey;
+
   const SubCategories({Key key, this.mapKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
+    final Controllers controllers = Get.find();
+    final Utils utils = Utils();
+
     final CollectionReference products =
         Firestore.instance.collection('products');
     String text = '';
-    List items = [];
+    List items = controllers.categories.value[mapKey];
     DocumentSnapshot snapshot;
-
-    for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == 'category') {
-        items.clear();
-        snapshot = doc;
-        if (doc.data[mapKey] != null) {
-          items.addAll(doc.data[mapKey]);
-        }
-        break;
-      }
-    }
 
     addSubCategory() {
       if (utils.validateInputText(text) &&
@@ -140,7 +131,10 @@ class SubCategories extends StatelessWidget {
                 );
               }
             },
-            child: utils.listTile(title: items[index], isTrailingNull: true),
+            child: utils.listTile(
+              title: items[index],
+              isTrailingNull: true,
+            ),
           ),
         ),
       ),

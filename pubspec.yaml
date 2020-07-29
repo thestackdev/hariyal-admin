@@ -23,7 +23,6 @@ dependencies:
   photo_view:
   flutter_spinkit:
   lazy_load_scrollview:
-  provider:
   flutter_data_stream_builder:
   get:
   url_launcher:

@@ -2,16 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:superuser/authenticate.dart';
 import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/profile.dart';
 import 'package:superuser/utils.dart';
-import 'package:provider/provider.dart';
 
 class AdminExtras extends StatelessWidget {
+  final Utils utils = Utils();
+  @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-
     return utils.container(
       child: ListView(
         children: <Widget>[
@@ -44,10 +42,9 @@ class AdminExtras extends StatelessWidget {
                   yesPressed: () {
                     Get.back();
                     FirebaseAuth.instance.signOut();
-                    Get.offAll(Authenticate());
                   },
                   noPressed: () {
-                    Navigator.pop(context);
+                    Get.back();
                   },
                 ),
               );

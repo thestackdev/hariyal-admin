@@ -7,11 +7,10 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/full_screen.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/widgets/network_image.dart';
-
 import '../utils.dart';
 
 class EditDataScreen extends StatefulWidget {
@@ -21,6 +20,7 @@ class EditDataScreen extends StatefulWidget {
 
 class _EditDataScreenState extends State<EditDataScreen> {
   final DocumentSnapshot docsnap = Get.arguments;
+  final Controllers controllers = Get.find();
 
 /////////////////
   Map categoryMap = {};
@@ -31,7 +31,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   String selectedSubCategory;
 
-  Utils utils;
+  final Utils utils = Utils();
   List<File> newImages = [];
   List existingImages = [];
   String selectedCategory;
@@ -88,6 +88,9 @@ class _EditDataScreenState extends State<EditDataScreen> {
   @override
   void initState() {
     fetchPreviousData();
+    categoryMap = controllers.categories.value.data;
+    locationsMap = controllers.locations.value.data;
+    specificationsMap = controllers.specifications.value.data;
     super.initState();
   }
 
@@ -102,23 +105,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
-
-    if (extras == null) {
-      return utils.blankScreenLoading();
-    }
-
-    for (var map in extras.documents) {
-      if (map.documentID == 'category') {
-        categoryMap.addAll(map.data);
-      } else if (map.documentID == 'locations') {
-        locationsMap.addAll(map.data);
-      } else if (map.documentID == 'specifications') {
-        specificationsMap.addAll(map.data);
-      }
-    }
-
     if (selectedCategory != null) {
       subCategory = categoryMap[selectedCategory];
     }

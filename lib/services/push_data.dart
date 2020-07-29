@@ -1,16 +1,18 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/full_screen.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/utils.dart';
 
 class PushData extends StatefulWidget {
+  final Controllers controllers = Get.find();
+
   @override
   _PushDataState createState() => _PushDataState();
 }
@@ -28,7 +30,7 @@ class _PushDataState extends State<PushData> {
   List specificationsList = [];
   String addressID;
   bool loading = false;
-  Utils utils;
+  final Utils utils = Utils();
 
   Map categoryMap = {};
   Map locationsMap = {};
@@ -44,6 +46,14 @@ class _PushDataState extends State<PushData> {
   Firestore firestore = Firestore.instance;
 
   @override
+  void initState() {
+    categoryMap = widget.controllers.categories.value.data;
+    locationsMap = widget.controllers.locations.value.data;
+    specificationsMap = widget.controllers.specifications.value.data;
+    super.initState();
+  }
+
+  @override
   void dispose() {
     price.dispose();
     title.dispose();
@@ -54,25 +64,11 @@ class _PushDataState extends State<PushData> {
 
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
-
-    if (extras != null) {
-      for (var map in extras.documents) {
-        if (map.documentID == 'category') {
-          categoryMap.addAll(map.data);
-        } else if (map.documentID == 'locations') {
-          locationsMap.addAll(map.data);
-        } else if (map.documentID == 'specifications') {
-          specificationsMap.addAll(map.data);
-        }
-      }
-      if (selectedCategory != null) {
-        subCategory = categoryMap[selectedCategory];
-      }
-      if (selectedState != null) {
-        areasList = locationsMap[selectedState];
-      }
+    if (selectedCategory != null) {
+      subCategory = categoryMap[selectedCategory];
+    }
+    if (selectedState != null) {
+      areasList = locationsMap[selectedState];
     }
 
     return utils.container(
@@ -325,10 +321,9 @@ class _PushDataState extends State<PushData> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             'Add Specifications',
-                            style: TextStyle(
+                            style: utils.textStyle(
                               color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 19,
                             ),
                           ),
                         ),
@@ -381,7 +376,7 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
-        uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
+        // uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
       );
       clearAllData();
       loading = false;
@@ -404,6 +399,7 @@ class _PushDataState extends State<PushData> {
     price.clear();
     title.clear();
     description.clear();
+    specificationsList.clear();
   }
 
   handleSetState() => (mounted) ? setState(() => null) : null;

@@ -2,35 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/superuser/utilities/areas.dart';
 import 'package:superuser/utils.dart';
 
 class States extends StatelessWidget {
   final Firestore firestore = Firestore.instance;
+  final Controllers controllers = Get.find();
+  final Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
-    final utils = context.watch<Utils>();
     final CollectionReference products = firestore.collection('products');
     final CollectionReference showrooms = firestore.collection('showrooms');
     DocumentSnapshot snapshot;
-    List items = [];
+    List items = controllers.locations.value.data.keys.toList();
     String text = '';
-
-    if (extras == null) {
-      return utils.blankScreenLoading();
-    }
-
-    for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == 'locations') {
-        items.clear();
-        snapshot = doc;
-        items.addAll(doc.data.keys);
-        break;
-      }
-    }
 
     addState() {
       if (utils.validateInputText(text) &&

@@ -5,48 +5,44 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_view.dart';
 
-class Profile extends StatefulWidget {
-  @override
-  _ProfileState createState() => _ProfileState();
-}
-
-class _ProfileState extends State<Profile> {
+class Profile extends StatelessWidget {
+  final controllers = Controllers.to;
+  final utils = Utils();
   final _storage = FirebaseStorage.instance.ref().child('profile_pictures');
-  DocumentSnapshot authorsnap;
+  final reference = Firestore.instance.collection('admin');
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
     String text = '';
 
-    authorsnap = context.watch<DocumentSnapshot>();
-
-    changeName() {
+    void changeName() {
       Get.back();
       if (utils.validateInputText(text)) {
-        authorsnap.reference.updateData({'name': text.toLowerCase()});
+        controllers.userData.value.reference
+            .updateData({'name': text.toLowerCase()});
         utils.showSnackbar('Changes updated');
         text = '';
       } else {
-        utils.showSnackbar('Invalid entries');
+        utils.showSnackbar('Given name is not valid');
       }
     }
 
-    uploadImage(final asset) async {
+    uploadImage(final PickedFile asset) async {
       try {
         _storage
-            .child(authorsnap.documentID)
+            .child(controllers.userData.value.documentID)
             .putData(await asset
                 .readAsBytes()
                 .then((value) => value.buffer.asUint8List()))
             .onComplete
             .then((value) {
           value.ref.getDownloadURL().then((value) async {
-            await authorsnap.reference.updateData({'imageUrl': value});
+            await controllers.userData.value.reference
+                .updateData({'imageUrl': value});
           });
         });
       } catch (e) {
@@ -61,7 +57,8 @@ class _ProfileState extends State<Profile> {
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                Get.to(HariyalImageView(imageUrls: [authorsnap['imageUrl']]));
+                Get.to(HariyalImageView(
+                    imageUrls: [controllers.userData.value['imageUrl']]));
               },
               child: Container(
                 padding: EdgeInsets.all(18),
@@ -71,9 +68,11 @@ class _ProfileState extends State<Profile> {
                     backgroundColor: Colors.white,
                     maxRadius: 90,
                     minRadius: 90,
-                    backgroundImage: authorsnap['imageUrl'] == null
-                        ? AssetImage('assets/avatar-default-circle.png')
-                        : CachedNetworkImageProvider(authorsnap['imageUrl']),
+                    backgroundImage:
+                        controllers.userData.value['imageUrl'] == null
+                            ? AssetImage('assets/avatar-default-circle.png')
+                            : CachedNetworkImageProvider(
+                                controllers.userData.value['imageUrl']),
                   ),
                 ),
               ),
@@ -90,7 +89,7 @@ class _ProfileState extends State<Profile> {
                   color: Colors.red,
                 ),
                 title: Text(
-                  GetUtils.capitalize(authorsnap['name']),
+                  GetUtils.capitalize(controllers.userData.value['name']),
                   style: TextStyle(
                     color: Colors.red,
                     letterSpacing: 1,
@@ -101,7 +100,7 @@ class _ProfileState extends State<Profile> {
                   onPressed: () => utils.getSimpleDialouge(
                     title: 'Change name',
                     content: utils.dialogInput(
-                      initialValue: authorsnap.data['name'],
+                      initialValue: controllers.userData.value.data['name'],
                       onChnaged: (value) {
                         text = value;
                       },

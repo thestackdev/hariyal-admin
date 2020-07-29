@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 
@@ -20,12 +19,11 @@ class _ViewMyProductsState extends State<ViewMyProducts> {
   final queryConroller = TextEditingController();
   bool isQueryActive = false;
   Firestore firestore = Firestore.instance;
-  Utils utils;
+  final Utils utils = Utils();
   int count = 30;
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
     return DataStreamBuilder<QuerySnapshot>(
       stream: widget.stream,
       errorBuilder: (context, error) => utils.nullWidget(error),

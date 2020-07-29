@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/utils.dart';
-import 'package:provider/provider.dart';
 
 class AddAdmin extends StatefulWidget {
   @override
@@ -17,6 +16,7 @@ class _AddAdminState extends State<AddAdmin> {
   final name = TextEditingController();
   bool loading = false;
   final CollectionReference admin = Firestore.instance.collection('admin');
+  final Utils utils = Utils();
 
   @override
   void dispose() {
@@ -28,8 +28,6 @@ class _AddAdminState extends State<AddAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-
     register() async {
       loading = true;
       handleState();

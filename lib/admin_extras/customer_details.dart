@@ -7,7 +7,6 @@ import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:provider/provider.dart';
 
 class Customerdetails extends StatefulWidget {
   final DocumentSnapshot docsnap;
@@ -21,11 +20,10 @@ class Customerdetails extends StatefulWidget {
 class _CustomerdetailsState extends State<Customerdetails> {
   CollectionReference products = Firestore.instance.collection('products');
   CollectionReference interests = Firestore.instance.collection('interests');
+  final Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-
     void makeAPhone(String url) async {
       try {
         if (await canLaunch(url)) {

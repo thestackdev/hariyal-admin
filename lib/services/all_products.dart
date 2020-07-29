@@ -6,7 +6,6 @@ import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
-import 'package:provider/provider.dart';
 
 class AllProducts extends StatefulWidget {
   @override
@@ -17,7 +16,7 @@ class _AllProductsState extends State<AllProducts> {
   TextEditingController controller = TextEditingController();
   final CollectionReference products =
       Firestore.instance.collection('products');
-  Utils utils;
+  final Utils utils = Utils();
   int count = 30;
 
   @override
@@ -28,7 +27,6 @@ class _AllProductsState extends State<AllProducts> {
 
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
     return Scaffold(
       appBar: utils.appbar('All Products'),
       body: utils.container(

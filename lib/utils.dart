@@ -229,7 +229,7 @@ class Utils {
         color: Colors.grey.shade100,
       ),
       child: ListTile(
-        title: nullWidget('404 Product not found !'),
+        title: nullWidget('Currently unavailable !'),
       ),
     );
   }
@@ -453,19 +453,19 @@ class Utils {
   String errorMessageHelper(String error) {
     switch (error) {
       case "ERROR_EMAIL_ALREADY_IN_USE":
-        return "Your emai address is already in use";
+        return "Emai address is already in use";
 
       case "ERROR_INVALID_EMAIL":
-        return "Email address appears to be malformed.";
+        return "Invalid Email Adress";
 
       case "ERROR_WRONG_PASSWORD":
         return "Wrong Password";
 
       case "ERROR_USER_NOT_FOUND":
-        return "User with this email doesn't exist.";
+        return "User with this email doesn't exist";
 
       case "ERROR_USER_DISABLED":
-        return "Your Credintials are disabled , please contect Admin !";
+        return "Your Account is disabled , please contact Admin !";
 
       case "ERROR_TOO_MANY_REQUESTS":
         return "Too many requests, Try again later.";

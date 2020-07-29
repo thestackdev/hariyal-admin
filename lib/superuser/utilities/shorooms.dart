@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/utils.dart';
 
 class Showrooms extends StatelessWidget {
   final Firestore firestore = Firestore.instance;
+  final Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
     final CollectionReference products = firestore.collection('products');
     final CollectionReference showrooms = firestore.collection('showrooms');
 

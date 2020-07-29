@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/admin_extras/admin_tabs.dart';
 import 'package:superuser/utils.dart';
 
@@ -18,6 +17,7 @@ class _AdminsState extends State<Admins> {
   Firestore firestore = Firestore.instance;
   int count = 30;
   String searchValue;
+  final Utils utils = Utils();
   final TextEditingController controller = TextEditingController();
 
   @override
@@ -28,7 +28,6 @@ class _AdminsState extends State<Admins> {
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
     return Scaffold(
       appBar: utils.appbar('Admins'),
       body: utils.container(

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/utils.dart';
 
 class AddShowroom extends StatefulWidget {
@@ -14,6 +14,8 @@ class _AddShowroomState extends State<AddShowroom> {
   final addressController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
+  final Controllers controllers = Get.find();
+  final Utils utils = Utils();
   List states = [];
   List areas = [];
   Map locationsMap = {};
@@ -47,17 +49,10 @@ class _AddShowroomState extends State<AddShowroom> {
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-    final extras = context.watch<QuerySnapshot>();
-    if (extras != null) {
-      for (var map in extras.documents) {
-        if (map.documentID == 'locations') {
-          locationsMap.addAll(map.data);
-        }
-      }
-      if (selectedState != null) {
-        areas = locationsMap[selectedState];
-      }
+    locationsMap = controllers.locations.value.data;
+
+    if (selectedState != null) {
+      areas = locationsMap[selectedState];
     }
 
     return Scaffold(

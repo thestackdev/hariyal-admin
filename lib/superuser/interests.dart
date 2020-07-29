@@ -3,17 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:superuser/admin_extras/customer_tabs.dart';
+import 'package:superuser/admin_extras/customer_details.dart';
 import 'package:superuser/superuser/product_details.dart';
 import 'package:superuser/utils.dart';
 
 class Interests extends StatelessWidget {
   final firestore = Firestore.instance;
+  final Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
     final products = firestore.collection('products');
     final interests = firestore.collection('interests');
     final customers = firestore.collection('customers');

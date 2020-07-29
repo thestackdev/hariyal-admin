@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
-import 'package:provider/provider.dart';
 import 'package:superuser/services/view_products.dart';
 import 'package:superuser/utils.dart';
 
@@ -16,14 +15,13 @@ class AdminExtras extends StatefulWidget {
 }
 
 class _AdminExtrasState extends State<AdminExtras> {
-  Utils utils;
+  final Utils utils = Utils();
   Firestore firestore = Firestore.instance;
   String uid;
 
   @override
   Widget build(BuildContext context) {
-    utils = context.watch<Utils>();
-    uid = context.watch<DocumentSnapshot>().documentID;
+    // uid = context.watch<DocumentSnapshot>().documentID;
     return DefaultTabController(
       length: 2,
       child: Scaffold(

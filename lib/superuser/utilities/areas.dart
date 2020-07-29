@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/utils.dart';
 
 class Areas extends StatelessWidget {
@@ -11,8 +11,8 @@ class Areas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
+    final Controllers controllers = Get.find();
+    final Utils utils = Utils();
     String text = '';
     List items = [];
     DocumentSnapshot snapshot;
@@ -20,16 +20,7 @@ class Areas extends StatelessWidget {
     final CollectionReference products = firestore.collection('products');
     final CollectionReference showrooms = firestore.collection('showrooms');
 
-    for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == 'locations') {
-        items.clear();
-        snapshot = doc;
-        if (doc.data[mapKey] != null) {
-          items.addAll(doc.data[mapKey]);
-        }
-        break;
-      }
-    }
+    items = controllers.locations.value[mapKey];
 
     addArea() {
       if (utils.validateInputText(text) &&

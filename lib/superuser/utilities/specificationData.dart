@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:superuser/main.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/utils.dart';
 
 class SpecificationData extends StatelessWidget {
@@ -13,21 +12,14 @@ class SpecificationData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utils = context.watch<Utils>();
-    final QuerySnapshot extras = context.watch<QuerySnapshot>();
-    List items = [];
+    final Utils utils = Utils();
+    final Controllers controllers = Get.find();
+    final Firestore firestore = Firestore.instance;
+
+    List items = controllers.specifications.value.data[category];
+
     DocumentSnapshot snapshot;
     String text = '';
-    for (DocumentSnapshot doc in extras.documents) {
-      if (doc.documentID == 'specifications') {
-        items.clear();
-        snapshot = doc;
-        if (doc.data[category] != null) {
-          items.addAll(doc.data[category]);
-        }
-        break;
-      }
-    }
 
     addSpecification() {
       if (utils.validateInputText(text) &&
