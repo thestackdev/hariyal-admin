@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
+import 'package:superuser/services/change_password.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_view.dart';
 
@@ -13,7 +13,6 @@ class Profile extends StatelessWidget {
   final controllers = Controllers.to;
   final utils = Utils();
   final _storage = FirebaseStorage.instance.ref().child('profile_pictures');
-  final reference = Firestore.instance.collection('admin');
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,8 @@ class Profile extends StatelessWidget {
                         controllers.userData.value['imageUrl'] == null
                             ? AssetImage('assets/avatar-default-circle.png')
                             : CachedNetworkImageProvider(
-                                controllers.userData.value['imageUrl']),
+                                controllers.userData.value['imageUrl'],
+                              ),
                   ),
                 ),
               ),
@@ -114,10 +114,6 @@ class Profile extends StatelessWidget {
             ),
             utils.listTile(
               title: 'Change Profile Picture',
-              leading: Icon(
-                MdiIcons.image,
-                color: Colors.red.shade300,
-              ),
               onTap: () => Get.bottomSheet(
                 Wrap(
                   alignment: WrapAlignment.spaceEvenly,
@@ -129,7 +125,7 @@ class Profile extends StatelessWidget {
                           IconButton(
                             icon: Icon(
                               MdiIcons.cameraOutline,
-                              color: Colors.white,
+                              color: Colors.red,
                             ),
                             onPressed: () async {
                               final asset = await ImagePicker().getImage(
@@ -148,8 +144,7 @@ class Profile extends StatelessWidget {
                           Text(
                             'Camera',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                                color: Colors.red, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -161,7 +156,7 @@ class Profile extends StatelessWidget {
                           IconButton(
                             icon: Icon(
                               MdiIcons.imageOutline,
-                              color: Colors.white,
+                              color: Colors.red,
                             ),
                             onPressed: () async {
                               final asset = await ImagePicker().getImage(
@@ -180,7 +175,7 @@ class Profile extends StatelessWidget {
                           Text(
                             'Gallery',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -196,9 +191,13 @@ class Profile extends StatelessWidget {
                   ),
                 ),
                 enableDrag: true,
-                backgroundColor: Colors.red.shade300,
+                backgroundColor: Colors.white,
                 isScrollControlled: true,
               ),
+            ),
+            utils.listTile(
+              title: 'Change Password',
+              onTap: () => Get.to(ChangePassword()),
             ),
           ],
         ),

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:paginate_firestore/paginate_firestore.dart';
 
 class Utils {
   TextStyle textStyle({Color color, double fontSize}) {
@@ -14,13 +16,87 @@ class Utils {
     );
   }
 
-  bool validateInputText(String text) {
-    if (text.trim().length > 0 && !text.contains('.')) {
-      return true;
-    } else {
-      return false;
-    }
+  Widget searchBar({
+    TextEditingController controller,
+    Function onPressed,
+  }) {
+    return Container(
+      color: Colors.red,
+      padding: EdgeInsets.all(9),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: TextField(
+              controller: controller,
+              style: inputTextStyle(),
+              maxLines: 1,
+              decoration: searchBarDecoration(),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: IconButton(
+              icon:
+                  Icon(controller.text.length > 0 ? Icons.close : Icons.search),
+              onPressed: onPressed,
+            ),
+          ),
+        ],
+      ),
+    );
   }
+
+  InputDecoration searchBarDecoration() {
+    return InputDecoration(
+      isDense: true,
+      hintText: 'Search by Document ID',
+      contentPadding: EdgeInsets.all(9),
+      border: InputBorder.none,
+      fillColor: Colors.grey.shade100,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.grey.shade100,
+        ),
+      ),
+    );
+  }
+
+  Widget buildProducts({
+    Query query,
+    Widget Function(BuildContext, DocumentSnapshot) itemBuilder,
+    bool shrinkWrap = false,
+  }) {
+    return PaginateFirestore(
+      shrinkWrap: shrinkWrap,
+      emptyDisplay: nullWidget('No products found !'),
+      initialLoader: blankScreenLoading(),
+      bottomLoader: Padding(
+        padding: EdgeInsets.all(9),
+        child: progressIndicator(),
+      ),
+      itemsPerPage: 10,
+      itemBuilder: itemBuilder,
+      query: query,
+    );
+  }
+
+  bool validateInputText(String text) =>
+      (text.trim().length > 0 && !text.contains('.')) ? true : false;
 
   blankScreenLoading() {
     return Container(
@@ -229,7 +305,7 @@ class Utils {
         color: Colors.grey.shade100,
       ),
       child: ListTile(
-        title: nullWidget('Currently unavailable !'),
+        title: nullWidget('Something went wrong !'),
       ),
     );
   }

@@ -1,35 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:superuser/services/search_page.dart';
 import 'package:superuser/utils.dart';
 
-class AllProducts extends StatelessWidget {
+class SoldItems extends StatelessWidget {
   final Query query;
 
-  const AllProducts({Key key, this.query}) : super(key: key);
+  const SoldItems({Key key, this.query}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final utils = Utils();
     return Scaffold(
-      appBar: utils.appbar('All Products', actions: [
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            Map<dynamic, dynamic> map = {
-              'query': query,
-              'searchField': FieldPath.documentId,
-              'type': 'product'
-            };
-            Get.to(SearchPage(), arguments: map);
-          },
-        )
-      ]),
+      appBar: utils.appbar('Sold Items'),
       body: utils.container(
         child: utils.buildProducts(
-          shrinkWrap: true,
-          query: query.orderBy('timestamp', descending: true),
+          query: query,
           itemBuilder: (context, snapshot) {
             try {
               return utils.card(

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:superuser/services/forgot_password.dart';
 import 'package:superuser/utils.dart';
 
 class Authenticate extends StatefulWidget {
@@ -61,17 +63,32 @@ class _AuthenticateState extends State<Authenticate> {
                     controller: passwordController,
                   ),
                   SizedBox(height: 18),
-                  utils.getRaisedButton(
-                    title: 'Login',
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      if (emailController.text.length > 0 &&
-                          passwordController.text.length > 0) {
-                        login();
-                      } else {
-                        utils.showSnackbar('Invalid Credintials');
-                      }
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text(
+                          'forgot password ?',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () => Get.to(ForgotPassword()),
+                      ),
+                      utils.getRaisedButton(
+                        title: 'Login',
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          if (emailController.text.length > 0 &&
+                              passwordController.text.length > 0) {
+                            login();
+                          } else {
+                            utils.showSnackbar('Invalid Credintials');
+                          }
+                        },
+                      ),
+                    ],
                   )
                 ],
               ),

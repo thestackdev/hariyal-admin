@@ -10,23 +10,24 @@ class AddShowroom extends StatefulWidget {
 }
 
 class _AddShowroomState extends State<AddShowroom> {
+  final showrooms = Firestore.instance.collection('showrooms');
+  final DocumentSnapshot docSnap = Get.arguments;
+  final Map locationsMap = Controllers.to.locations.value.data;
+  final Utils utils = Utils();
+
   final titleController = TextEditingController();
   final addressController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
-  final Controllers controllers = Get.find();
-  final Utils utils = Utils();
+
   List states = [];
   List areas = [];
-  Map locationsMap = {};
   String selectedState;
   String selectedArea;
-  CollectionReference firestore = Firestore.instance.collection('showrooms');
-  DocumentSnapshot docSnap;
 
   @override
   void initState() {
-    docSnap = Get.arguments;
+    print(docSnap);
     if (docSnap != null) {
       titleController.text = docSnap['name'];
       addressController.text = docSnap['adress'];
@@ -49,8 +50,6 @@ class _AddShowroomState extends State<AddShowroom> {
 
   @override
   Widget build(BuildContext context) {
-    locationsMap = controllers.locations.value.data;
-
     if (selectedState != null) {
       areas = locationsMap[selectedState];
     }
@@ -90,13 +89,13 @@ class _AddShowroomState extends State<AddShowroom> {
               label: 'latitude',
               controller: latitudeController,
               textInputType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
+              TextInputType.numberWithOptions(signed: true, decimal: true),
             ),
             utils.inputTextField(
               label: 'longitude',
               controller: longitudeController,
               textInputType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
+              TextInputType.numberWithOptions(signed: true, decimal: true),
             ),
             SizedBox(height: 36),
             Row(
@@ -116,7 +115,7 @@ class _AddShowroomState extends State<AddShowroom> {
                         selectedArea != null &&
                         selectedState != null) {
                       if (docSnap == null) {
-                        firestore.document().setData({
+                        showrooms.document().setData({
                           'name': titleController.text,
                           'adress': addressController.text,
                           'state': selectedState,
@@ -125,7 +124,7 @@ class _AddShowroomState extends State<AddShowroom> {
                           'longitude': longitudeController.text,
                         });
                       } else {
-                        firestore.document(docSnap.documentID).updateData({
+                        showrooms.document(docSnap.documentID).updateData({
                           'name': titleController.text,
                           'adress': addressController.text,
                           'state': selectedState,
@@ -134,7 +133,7 @@ class _AddShowroomState extends State<AddShowroom> {
                           'longitude': longitudeController.text,
                         });
                       }
-                      Get.back(result: false);
+                      Get.back();
                     } else {
                       utils.showSnackbar('Invalid Entries');
                     }

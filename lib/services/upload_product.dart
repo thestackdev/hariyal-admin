@@ -40,6 +40,7 @@ class PushProduct {
       'soldTo': null,
       'soldReason': null,
       'interested_count': 0,
+      'timestamp': DateTime.now().microsecondsSinceEpoch,
     });
   }
 

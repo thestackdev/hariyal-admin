@@ -7,14 +7,12 @@ import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/utils.dart';
 
 class Showrooms extends StatelessWidget {
-  final Firestore firestore = Firestore.instance;
-  final Utils utils = Utils();
+  final products = Firestore.instance.collection('products');
+  final showrooms = Firestore.instance.collection('showrooms');
+  final utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    final CollectionReference products = firestore.collection('products');
-    final CollectionReference showrooms = firestore.collection('showrooms');
-
     deleteShowroom(String docID) {
       products.where('adress', isEqualTo: docID).getDocuments().then((value) {
         value.documents.forEach((element) {
@@ -28,13 +26,9 @@ class Showrooms extends StatelessWidget {
         'Showrooms',
         actions: <Widget>[
           IconButton(
-              icon: Icon(MdiIcons.plusOutline),
-              onPressed: () async {
-                final res = await Get.to(AddShowroom());
-                if (res == true) {
-                  utils.showSnackbar('Showroom Added');
-                }
-              }),
+            icon: Icon(MdiIcons.plusOutline),
+            onPressed: () => Get.toNamed('add_showroom'),
+          ),
         ],
       ),
       body: utils.container(

@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
-import '../services/edit_data_screen.dart';
+
+import 'edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
   @override
@@ -95,7 +96,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 9),
                           Text(
-                            GetUtils.capitalize(
+                            GetUtils.capitalizeFirst(
                                 '${snapshot.data['description']}'),
                             textAlign: TextAlign.justify,
                             style: utils.inputTextStyle(),

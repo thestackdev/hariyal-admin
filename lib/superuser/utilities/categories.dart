@@ -3,81 +3,78 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/superuser/utilities/sub_categories.dart';
 import 'package:superuser/utils.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  final CollectionReference products =
-      Firestore.instance.collection('products');
-  final Controllers controllers = Get.find();
-  final Utils utils = Utils();
+  final products = Firestore.instance.collection('products');
+  final utils = Utils();
 
   @override
   Widget build(BuildContext context) {
-    String text = '';
-    List items = [];
-    DocumentSnapshot snapshot;
+    return Obx(() {
+      final DocumentSnapshot snapshot = Controllers.to.categories.value;
+      final List items = snapshot.data.keys.toList();
 
-    addCategory() {
-      if (utils.validateInputText(text) &&
-          !items.contains(text.toLowerCase())) {
-        snapshot.reference.updateData({text.toLowerCase(): []});
-        Get.back();
-        utils.showSnackbar('Category Added');
-      } else {
-        Get.back();
-        utils.showSnackbar('Invalid entries');
+      String text = '';
+
+      void addCategory() {
+        if (utils.validateInputText(text) &&
+            !items.contains(text.toLowerCase())) {
+          snapshot.reference.updateData({text.toLowerCase(): []});
+          Get.back();
+          utils.showSnackbar('Category Added');
+        } else {
+          Get.back();
+          utils.showSnackbar('Invalid entries');
+        }
+
+        text = '';
       }
 
-      text = '';
-    }
-
-    deleteCategory(String data) {
-      products
-          .where('category.category', isEqualTo: data)
-          .getDocuments()
-          .then((value) {
-        value.documents.forEach((element) {
-          element.reference.updateData({
-            'category.category': null,
-            'category.subCategory': null,
-            'isDeleted': true,
+      void deleteCategory(String data) {
+        products
+            .where('category.category', isEqualTo: data)
+            .getDocuments()
+            .then((value) {
+          value.documents.forEach((element) {
+            element.reference.updateData({
+              'category.category': null,
+              'category.subCategory': null,
+              'isDeleted': true,
+            });
           });
         });
-      });
-    }
+      }
 
-    editCategory(String oldData, String newData) {
-      products
-          .where('category.category', isEqualTo: oldData)
-          .getDocuments()
-          .then((value) {
-        value.documents.forEach((element) {
-          element.reference.updateData({'category.category': newData});
+      void editCategory(String oldData, String newData) {
+        products
+            .where('category.category', isEqualTo: oldData)
+            .getDocuments()
+            .then((value) {
+          value.documents.forEach((element) {
+            element.reference.updateData({'category.category': newData});
+          });
         });
-      });
-    }
+      }
 
-    return Scaffold(
-      appBar: utils.appbar('Categories', actions: [
-        IconButton(
-          icon: Icon(MdiIcons.plusOutline),
-          onPressed: () => utils.getSimpleDialouge(
-            title: 'Add Category',
-            content: utils.dialogInput(
-                hintText: 'Type here',
-                onChnaged: (value) {
-                  text = value;
-                }),
-            noPressed: () => Get.back(),
-            yesPressed: () => addCategory(),
+      return Scaffold(
+        appBar: utils.appbar('Categories', actions: [
+          IconButton(
+            icon: Icon(MdiIcons.plusOutline),
+            onPressed: () => utils.getSimpleDialouge(
+              title: 'Add Category',
+              content: utils.dialogInput(
+                  hintText: 'Type here',
+                  onChnaged: (value) {
+                    text = value;
+                  }),
+              noPressed: () => Get.back(),
+              yesPressed: () => addCategory(),
+            ),
           ),
-        ),
-      ]),
-      body: utils.container(
-        child: Obx(() {
-          items = controllers.categories.value.data.keys.toList();
-          return ListView.builder(
+        ]),
+        body: utils.container(
+          child: ListView.builder(
             itemCount: items.length,
             itemBuilder: (context, index) => utils.dismissible(
               key: UniqueKey(),
@@ -111,8 +108,9 @@ class CategoriesScreen extends StatelessWidget {
                         List tempData = snapshot.data[items[index]];
 
                         snapshot.reference.updateData({text: tempData});
-                        snapshot.reference
-                            .updateData({items[index]: FieldValue.delete()});
+                        snapshot.reference.updateData(
+                          {items[index]: FieldValue.delete()},
+                        );
 
                         editCategory(items[index], text);
                         Get.back();
@@ -123,18 +121,17 @@ class CategoriesScreen extends StatelessWidget {
                       text = '';
                     },
                   );
-                }
-              },
-              child: utils.listTile(
-                title: items[index],
-                onTap: () => Get.to(SubCategories(
-                  mapKey: items[index],
-                )),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
+                    }
+                  },
+                  child: utils.listTile(
+                    title: items[index],
+                    onTap: () =>
+                        Get.toNamed('/sub_categories', arguments: items[index]),
+                  ),
+                ),
+          ),
+        ),
+      );
+    });
   }
 }

@@ -1,84 +1,71 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:superuser/get/controllers.dart';
+import 'package:superuser/services/all_products.dart';
 import 'package:superuser/services/push_data.dart';
+import 'package:superuser/services/orders.dart';
+import 'package:superuser/services/sold_items.dart';
 import 'package:superuser/utils.dart';
 import 'admin_extras.dart';
 
-class AdminHome extends StatefulWidget {
-  @override
-  _AdminHomeState createState() => _AdminHomeState();
-}
-
-class _AdminHomeState extends State<AdminHome>
-    with SingleTickerProviderStateMixin {
-  TabController tabController;
+class AdminHome extends StatelessWidget {
   final Utils utils = Utils();
-
-  @override
-  void initState() {
-    tabController = TabController(length: 3, vsync: this);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
+  final products = Firestore.instance.collection('products');
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 18,
-    );
-    return Scaffold(
-      appBar: utils.appbar(
-        'Admin Console',
-        bottom: TabBar(
-          labelStyle: textStyle,
-          controller: tabController,
-          indicatorColor: Colors.transparent,
-          tabs: [
-            Tab(text: 'Add Data'),
-            Tab(text: 'Products'),
-            Tab(text: 'Extras')
-          ],
-        ),
+    final List<Widget> screenList = [
+      Orders(),
+      SoldItems(
+        query: products
+            .where('author', isEqualTo: controllers.firebaseUser.value.uid)
+            .where('isSold', isEqualTo: true),
       ),
-      body: WillPopScope(
-        onWillPop: () async {
-          if (tabController.index == 0) {
-            return true;
-          } else {
-            tabController.animateTo(0);
-            handleState();
-            return false;
-          }
-        },
-        child: TabBarView(
-          controller: tabController,
-          children: [
-            PushData(),
-            utils.container(
-                /*  child: ViewMyProducts(
-                stream: Firestore.instance
-                    .collection('products')
-                    .where('author',
-                        isEqualTo:
-                            Provider.of<DocumentSnapshot>(context).documentID)
-                    .snapshots(),
-              ), */
-                ),
-            AdminExtras()
-          ],
+      PushData(),
+      AllProducts(
+        query: products.where('author',
+            isEqualTo: controllers.firebaseUser.value.uid),
+      ),
+      AdminExtras(),
+    ];
+    final items = [
+      bottomNavigationBar('Orders', MdiIcons.humanGreeting),
+      bottomNavigationBar('Sold Items', MdiIcons.humanMaleMale),
+      bottomNavigationBar('Add Items', MdiIcons.plusCircleOutline),
+      bottomNavigationBar('Products', MdiIcons.cashUsdOutline),
+      bottomNavigationBar('Extras', MdiIcons.receipt),
+    ];
+    return Obx(
+      () => Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (index) => controllers.changeScreen(index),
+          currentIndex: controllers.currentScreen.value,
+          elevation: 9,
+          type: BottomNavigationBarType.fixed,
+          items: items,
+        ),
+        body: WillPopScope(
+          child: screenList[controllers.currentScreen.value],
+          onWillPop: () async {
+            if (controllers.currentScreen.value == 0) {
+              return true;
+            } else {
+              controllers.changeScreen(0);
+              return false;
+            }
+          },
         ),
       ),
     );
   }
 
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
+  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) {
+    return BottomNavigationBarItem(
+      icon: Icon(icon),
+      title: Text(title),
+    );
   }
 }

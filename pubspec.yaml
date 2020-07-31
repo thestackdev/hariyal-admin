@@ -22,13 +22,14 @@ dependencies:
   cached_network_image:
   photo_view:
   flutter_spinkit:
-  lazy_load_scrollview:
   flutter_data_stream_builder:
   get:
   url_launcher:
   cloud_functions:
   image_picker:
   image_cropper:
+  paginate_firestore:
+  flappy_search_bar:
 
 dev_dependencies:
   flutter_test:

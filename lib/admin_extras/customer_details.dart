@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:superuser/superuser/product_details.dart';
+import 'package:superuser/services/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Customerdetails extends StatefulWidget {
-  final DocumentSnapshot docsnap;
-
-  Customerdetails({Key key, this.docsnap}) : super(key: key);
-
   @override
   _CustomerdetailsState createState() => _CustomerdetailsState();
 }
@@ -20,6 +16,7 @@ class Customerdetails extends StatefulWidget {
 class _CustomerdetailsState extends State<Customerdetails> {
   CollectionReference products = Firestore.instance.collection('products');
   CollectionReference interests = Firestore.instance.collection('interests');
+  final DocumentSnapshot snapshot = Get.arguments;
   final Utils utils = Utils();
 
   @override
@@ -62,7 +59,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
               child: TextFormField(
                 style: utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
-                  widget.docsnap['name'] ?? 'Something went wrong !',
+                  snapshot['name'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
@@ -77,7 +74,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                     child: TextFormField(
                       style: utils.inputTextStyle(),
                       initialValue: GetUtils.capitalize(
-                        widget.docsnap['phone'] ?? 'Something went wrong !',
+                        snapshot['phone'] ?? 'Something went wrong !',
                       ),
                       readOnly: true,
                       maxLines: null,
@@ -90,8 +87,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                 SizedBox(
                   child: IconButton(
                     icon: Icon(MdiIcons.phoneOutline),
-                    onPressed: () =>
-                        makeAPhone('tel: ${widget.docsnap['phone']}'),
+                    onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
                   ),
                 ),
               ],
@@ -104,7 +100,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                     child: TextFormField(
                       style: utils.inputTextStyle(),
                       initialValue:
-                          widget.docsnap['email'] ?? 'Something went wrong !',
+                          snapshot['email'] ?? 'Something went wrong !',
                       readOnly: true,
                       maxLines: null,
                       decoration: utils.inputDecoration(
@@ -117,9 +113,9 @@ class _CustomerdetailsState extends State<Customerdetails> {
                   child: IconButton(
                       icon: Icon(MdiIcons.emailOutline),
                       onPressed: () {
-                        if (widget.docsnap['email'] != 'default') {
+                        if (snapshot['email'] != 'default') {
                           writeAnEmail(
-                            widget.docsnap['email'],
+                            snapshot['email'],
                           );
                         } else {
                           utils.showSnackbar('Invalid Email Address');
@@ -134,7 +130,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
               child: TextFormField(
                 style: utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
-                  widget.docsnap['gender'] ?? 'Something went wrong !',
+                  snapshot['gender'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
@@ -149,7 +145,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                     child: TextFormField(
                       style: utils.inputTextStyle(),
                       initialValue: GetUtils.capitalize(
-                        widget.docsnap['alternatePhoneNumber'] ??
+                        snapshot['alternatePhoneNumber'] ??
                             'Something went wrong !',
                       ),
                       readOnly: true,
@@ -164,10 +160,9 @@ class _CustomerdetailsState extends State<Customerdetails> {
                   child: IconButton(
                       icon: Icon(MdiIcons.phoneOutline),
                       onPressed: () {
-                        if (widget.docsnap['alternatePhoneNumber'] !=
-                            'default') {
+                        if (snapshot['alternatePhoneNumber'] != 'default') {
                           makeAPhone(
-                              'tel: ${widget.docsnap['alternatePhoneNumber']}');
+                              'tel: ${snapshot['alternatePhoneNumber']}');
                         } else {
                           utils.showSnackbar('No Phone Number');
                         }
@@ -181,8 +176,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
               child: TextFormField(
                 style: utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
-                  widget.docsnap['permanentAddress'] ??
-                      'Something went wrong !',
+                  snapshot['permanentAddress'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
@@ -194,7 +188,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
               child: TextFormField(
                 style: utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
-                  widget.docsnap['location']['cityDistrict'] ??
+                  snapshot['location']['cityDistrict'] ??
                       'Something went wrong !',
                 ),
                 readOnly: true,
@@ -207,8 +201,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
               child: TextFormField(
                 style: utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
-                  widget.docsnap['location']['state'] ??
-                      'Something went wrong !',
+                  snapshot['location']['state'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
@@ -236,7 +229,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
                   loadingBuilder: (context) => utils.progressIndicator(),
                   stream: interests
                       .orderBy('timestamp', descending: true)
-                      .where('author', isEqualTo: widget.docsnap.documentID)
+                      .where('author', isEqualTo: snapshot.documentID)
                       .snapshots(),
                   builder: (context, interest) {
                     print(interest.documents.length);

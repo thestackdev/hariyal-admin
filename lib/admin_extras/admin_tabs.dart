@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
-import 'package:superuser/services/view_products.dart';
+import 'package:get/get.dart';
+import 'package:superuser/services/product_details.dart';
 import 'package:superuser/utils.dart';
 
 class AdminExtras extends StatefulWidget {
@@ -21,7 +22,6 @@ class _AdminExtrasState extends State<AdminExtras> {
 
   @override
   Widget build(BuildContext context) {
-    // uid = context.watch<DocumentSnapshot>().documentID;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -32,12 +32,25 @@ class _AdminExtrasState extends State<AdminExtras> {
         body: utils.container(
           child: TabBarView(
             children: <Widget>[
-              ViewMyProducts(
-                stream: firestore
-                    .collection('products')
-                    .where('author', isEqualTo: widget.adminUid)
-                    .snapshots(),
-              ),
+              utils.buildProducts(
+                  query: firestore
+                      .collection('products')
+                      .where('author', isEqualTo: widget.adminUid),
+                  itemBuilder: (context, snapshot) {
+                    try {
+                      return utils.card(
+                        title: snapshot.data['title'],
+                        description: snapshot.data['description'],
+                        imageUrl: snapshot.data['images'][0],
+                        onTap: () => Get.to(
+                          ProductDetails(),
+                          arguments: snapshot.documentID,
+                        ),
+                      );
+                    } catch (e) {
+                      return utils.errorListTile();
+                    }
+                  }),
               getPrivilages(),
             ],
           ),

@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 class Controllers extends GetxController {
   static Controllers to = Get.find<Controllers>();
 
-  RxBool isLogged = false.obs;
   RxInt currentScreen = 0.obs;
+  RxString uid = RxString();
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final CollectionReference reference = Firestore.instance.collection('extras');
@@ -21,17 +21,10 @@ class Controllers extends GetxController {
   void changeScreen(int num) => currentScreen.value = num;
 
   @override
-  void onInit() async {
-    ever(isLogged, handleAuth);
+  void onInit() {
+    ever(firebaseUser, handleAuth);
 
-    firebaseUser.value = await firebaseAuth.currentUser();
-
-    isLogged.value = firebaseUser.value != null;
-
-    firebaseAuth.onAuthStateChanged.listen((event) {
-      isLogged.value = event != null;
-      firebaseUser.value = event;
-    });
+    firebaseUser.bindStream(firebaseAuth.onAuthStateChanged);
 
     reference.snapshots().obs.value.listen((event) {
       event.documents.forEach((element) {
@@ -48,16 +41,12 @@ class Controllers extends GetxController {
     super.onInit();
   }
 
-  handleAuth(isLoggedIn) async {
-    if (isLoggedIn == false) {
+  handleAuth(firebaseUser) {
+    if (firebaseUser == null) {
       Get.offAllNamed('/authenticate');
     } else {
-      userRef
-          .document(firebaseUser.value.uid)
-          .obs
-          .value
-          .snapshots()
-          .listen((event) {
+      uid.value = firebaseUser.uid;
+      userRef.document(firebaseUser.uid).obs.value.snapshots().listen((event) {
         userData.value = event;
         if (event.data['isSuperuser']) {
           Get.offAllNamed('/superuser_home');
