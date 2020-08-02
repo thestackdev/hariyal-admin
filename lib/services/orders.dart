@@ -12,12 +12,10 @@ class Orders extends StatelessWidget {
       appBar: controllers.utils.appbar('Orders'),
       body: controllers.utils.container(
         child: DataStreamBuilder<QuerySnapshot>(
-          loadingBuilder: (context) => controllers.utils.progressIndicator(),
-          errorBuilder: (context, error) => controllers.utils.nullWidget(),
           stream: controllers.orders.snapshots(),
           builder: (context, snapshot) {
             if (snapshot.documents.length == 0) {
-              return controllers.utils.nullWidget();
+              return controllers.utils.nullWidget('Nothing Found');
             } else {
               return ListView.builder(
                 itemCount: snapshot.documents.length,

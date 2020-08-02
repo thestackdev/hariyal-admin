@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:superuser/utils.dart';
+import 'package:superuser/get/controllers.dart';
 
 class AddAdmin extends StatefulWidget {
   @override
@@ -11,12 +10,11 @@ class AddAdmin extends StatefulWidget {
 }
 
 class _AddAdminState extends State<AddAdmin> {
+  final controllers = Controllers.to;
   final email = TextEditingController();
   final password = TextEditingController();
   final name = TextEditingController();
   bool loading = false;
-  final CollectionReference admin = Firestore.instance.collection('admin');
-  final Utils utils = Utils();
 
   @override
   void dispose() {
@@ -41,9 +39,9 @@ class _AddAdminState extends State<AddAdmin> {
           email: email.text,
           password: password.text,
         );
-        await admin.document(result.user.uid).setData(
+        await controllers.admin.document(result.user.uid).setData(
           {
-            'since': DateTime.now().millisecondsSinceEpoch,
+            'timestamp': DateTime.now().millisecondsSinceEpoch,
             'name': name.text.toLowerCase(),
             'isSuperuser': false,
             'isAdmin': true,
@@ -57,32 +55,32 @@ class _AddAdminState extends State<AddAdmin> {
       } catch (error) {
         loading = false;
         handleState();
-        utils.errorMessageHelper(error.code);
+        controllers.utils.errorMessageHelper(error.code);
       }
-      utils.showSnackbar('Admin Added Successfully !');
+      controllers.utils.showSnackbar('Admin Added Successfully !');
     }
 
     return Scaffold(
-      appBar: utils.appbar('Add Admin'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Add Admin'),
+      body: controllers.utils.container(
         child: loading
-            ? utils.progressIndicator()
+            ? controllers.utils.progressIndicator()
             : ListView(
                 children: <Widget>[
-                  utils.inputTextField(
+                  controllers.utils.inputTextField(
                     label: 'Full name',
                     controller: name,
                   ),
-                  utils.inputTextField(
+                  controllers.utils.inputTextField(
                     controller: email,
                     label: 'Email',
                   ),
-                  utils.inputTextField(
+                  controllers.utils.inputTextField(
                     controller: password,
                     label: 'Password',
                   ),
                   SizedBox(height: 18),
-                  utils.getRaisedButton(
+                  controllers.utils.getRaisedButton(
                     title: 'Add Admin',
                     onPressed: () async {
                       FocusScope.of(context).unfocus();
@@ -91,7 +89,7 @@ class _AddAdminState extends State<AddAdmin> {
                           name.text.length > 0) {
                         register();
                       } else {
-                        utils.showSnackbar('Invalid entries');
+                        controllers.utils.showSnackbar('Invalid entries');
                       }
                     },
                   ),

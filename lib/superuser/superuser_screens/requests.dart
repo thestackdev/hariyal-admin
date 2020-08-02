@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 
@@ -10,14 +12,14 @@ class Requests extends StatelessWidget {
     return Scaffold(
       appBar: controllers.utils.appbar('Requests'),
       body: controllers.utils.container(
-        child: controllers.utils.streamBuilder(
+        child: DataStreamBuilder<QuerySnapshot>(
           stream: controllers.products
               .orderBy('timestamp', descending: true)
               .where('authored', isEqualTo: false)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.documents.length == 0) {
-              return controllers.utils.nullWidget();
+              return controllers.utils.nullWidget('Nothing Found');
             }
             return ListView.builder(
               itemCount: snapshot.documents.length,
@@ -35,7 +37,7 @@ class Requests extends StatelessWidget {
                         .updateData({'authored': true}),
                   );
                 } catch (e) {
-                  return controllers.utils.errorListTile();
+                  return controllers.utils.nullWidget(e.toString());
                 }
               },
             );

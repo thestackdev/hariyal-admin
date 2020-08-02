@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
@@ -8,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/change_password.dart';
-import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_view.dart';
 
 class Profile extends StatefulWidget {
@@ -18,10 +16,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final controllers = Controllers.to;
-  final admin = Firestore.instance.collection('admin');
-  final utils = Utils();
   final controller = TextEditingController();
-  final storage = FirebaseStorage.instance.ref().child('profile_pictures');
 
   @override
   void initState() {
@@ -40,24 +35,28 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return DataStreamBuilder<DocumentSnapshot>(
-        stream: admin.document(controllers.firebaseUser.value.uid).snapshots(),
+        stream: controllers.admin
+            .document(controllers.firebaseUser.value.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           print(controllers.firebaseUser.value.uid);
           void changeName() {
             Get.back();
-            if (utils.validateInputText(controller.text)) {
+            if (controllers.utils.validateInputText(controller.text)) {
               snapshot.reference
                   .updateData({'name': controller.text.toLowerCase()});
-              utils.showSnackbar('Changes updated');
+              controllers.utils.showSnackbar('Changes updated');
               controller.clear();
             } else {
-              utils.showSnackbar('Given name is not valid');
+              controllers.utils.showSnackbar('Given name is not valid');
             }
           }
 
           uploadImage(final PickedFile asset) async {
             try {
-              storage
+              controllers.firebaseStorage
+                  .ref()
+                  .child('profile_pictures')
                   .child(snapshot.documentID)
                   .putData(await asset
                       .readAsBytes()
@@ -69,13 +68,13 @@ class _ProfileState extends State<Profile> {
                 });
               });
             } catch (e) {
-              utils.showSnackbar('Something went wrong');
+              controllers.utils.showSnackbar('Something went wrong');
             }
           }
 
           return Scaffold(
-            appBar: utils.appbar('Profile'),
-            body: utils.container(
+            appBar: controllers.utils.appbar('Profile'),
+            body: controllers.utils.container(
               child: ListView(
                 children: <Widget>[
                   GestureDetector(
@@ -120,9 +119,9 @@ class _ProfileState extends State<Profile> {
                       ),
                       trailing: IconButton(
                         icon: Icon(Icons.edit, color: Colors.red),
-                        onPressed: () => utils.getSimpleDialouge(
+                        onPressed: () => controllers.utils.getSimpleDialouge(
                           title: 'Change name',
-                          content: utils.dialogInput(
+                          content: controllers.utils.dialogInput(
                             controller: controller,
                             hintText: 'Type here',
                           ),
@@ -132,7 +131,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  utils.listTile(
+                  controllers.utils.listTile(
                     title: 'Change Profile Picture',
                     onTap: () => Get.bottomSheet(
                       Wrap(
@@ -154,7 +153,7 @@ class _ProfileState extends State<Profile> {
                                     );
                                     Get.back();
                                     if (asset != null) {
-                                      utils.showSnackbar(
+                                      controllers.utils.showSnackbar(
                                         'Changes will be displayed in a while',
                                       );
                                       uploadImage(asset);
@@ -186,7 +185,7 @@ class _ProfileState extends State<Profile> {
                                     );
                                     Get.back();
                                     if (asset != null) {
-                                      utils.showSnackbar(
+                                      controllers.utils.showSnackbar(
                                         'Changes will be displayed in a while',
                                       );
                                       uploadImage(asset);
@@ -216,7 +215,7 @@ class _ProfileState extends State<Profile> {
                       isScrollControlled: true,
                     ),
                   ),
-                  utils.listTile(
+                  controllers.utils.listTile(
                     title: 'Change Password',
                     onTap: () => Get.to(ChangePassword()),
                   ),

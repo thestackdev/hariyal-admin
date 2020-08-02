@@ -4,11 +4,9 @@ import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
-import 'package:superuser/utils.dart';
 
 class AdminExtras extends StatelessWidget {
   final String adminUid = Get.arguments;
-  final Utils utils = Utils();
   final controllers = Controllers.to;
 
   @override
@@ -16,20 +14,20 @@ class AdminExtras extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: utils.appbar(
+        appBar: controllers.utils.appbar(
           'Admin Extras',
-          bottom: utils.tabDecoration('Products', 'Privileges'),
+          bottom: controllers.utils.tabDecoration('Products', 'Privileges'),
         ),
-        body: utils.container(
+        body: controllers.utils.container(
           child: TabBarView(
             children: <Widget>[
-              utils.buildProducts(
+              controllers.utils.buildProducts(
                   query: controllers.products
                       .orderBy('timestamp', descending: true)
                       .where('author', isEqualTo: adminUid),
                   itemBuilder: (context, snapshot) {
                     try {
-                      return utils.card(
+                      return controllers.utils.card(
                         title: snapshot.data['title'],
                         description: snapshot.data['description'],
                         imageUrl: snapshot.data['images'][0],
@@ -39,7 +37,7 @@ class AdminExtras extends StatelessWidget {
                         ),
                       );
                     } catch (e) {
-                      return utils.errorListTile();
+                      return controllers.utils.nullWidget(e.toString());
                     }
                   }),
               getPrivilages(),
@@ -52,8 +50,6 @@ class AdminExtras extends StatelessWidget {
 
   getPrivilages() {
     return DataStreamBuilder<DocumentSnapshot>(
-      errorBuilder: (context, error) => utils.nullWidget(),
-      loadingBuilder: (context) => utils.progressIndicator(),
       stream: controllers.admin.document(adminUid).snapshots(),
       builder: (context, snapshot) {
         return ListView(

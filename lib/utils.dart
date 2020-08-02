@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -18,16 +17,33 @@ class Utils {
     );
   }
 
-  streamBuilder({
-    Stream stream,
-    Widget Function(BuildContext, dynamic) builder,
-  }) {
-    return DataStreamBuilder(
-      loadingBuilder: (context) => progressIndicator(),
-      errorBuilder: (context, error) => errorListTile(),
-      stream: stream,
-      initialData: null,
-      builder: builder,
+  InputDecoration authDecoration(
+      {String label, Icon icon, Function onPressed}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(
+        color: Colors.red.shade500,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
+      suffix: IconButton(icon: icon, onPressed: onPressed),
+      isDense: true,
+      contentPadding: EdgeInsets.all(9),
+      border: InputBorder.none,
+      fillColor: Colors.grey.shade50,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(9),
+        borderSide: BorderSide.none,
+      ),
     );
   }
 
@@ -80,35 +96,6 @@ class Utils {
     );
   }
 
-  InputDecoration searchBarDecoration() {
-    return InputDecoration(
-      isDense: true,
-      hintText: 'Search by Document ID',
-      contentPadding: EdgeInsets.all(9),
-      border: InputBorder.none,
-      fillColor: Colors.grey.shade100,
-      filled: true,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
-      ),
-      disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
-      ),
-    );
-  }
-
   Widget buildProducts({
     Query query,
     Widget Function(BuildContext, DocumentSnapshot) itemBuilder,
@@ -116,7 +103,7 @@ class Utils {
   }) {
     return PaginateFirestore(
       shrinkWrap: shrinkWrap,
-      emptyDisplay: nullWidget(),
+      emptyDisplay: nullWidget('Something went wrong'),
       initialLoader: blankScreenLoading(),
       bottomLoader: Padding(
         padding: EdgeInsets.all(9),
@@ -237,21 +224,15 @@ class Utils {
         filled: true,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide(
-            color: Colors.grey.shade100,
-          ),
+          borderSide: BorderSide.none,
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide(
-            color: Colors.grey.shade100,
-          ),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide(
-            color: Colors.grey.shade100,
-          ),
+          borderSide: BorderSide.none,
         ),
       ),
     );
@@ -334,19 +315,6 @@ class Utils {
         ),
         title: Text(GetUtils.capitalize(title)),
         subtitle: Text(description),
-      ),
-    );
-  }
-
-  Widget errorListTile() {
-    return Container(
-      margin: EdgeInsets.all(9),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(9),
-        color: Colors.grey.shade100,
-      ),
-      child: ListTile(
-        title: nullWidget(),
       ),
     );
   }
@@ -457,17 +425,16 @@ class Utils {
         style: textStyle(fontSize: 23),
       ),
       centerTitle: true,
-      elevation: 0,
       bottom: bottom,
     );
   }
 
-  Widget nullWidget() {
+  Widget nullWidget(String label) {
     return Center(
       child: Text(
-        'Nothing found',
+        label,
         style: textStyle(color: Colors.grey),
-        textScaleFactor: 1.5,
+        textScaleFactor: 1.2,
         textAlign: TextAlign.center,
       ),
     );

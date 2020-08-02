@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/forgot_password.dart';
 
@@ -14,6 +15,7 @@ class _AuthenticateState extends State<Authenticate> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool loading = false;
+  bool isHidden = true;
 
   final contentStyle = TextStyle(
     color: Colors.grey,
@@ -53,13 +55,42 @@ class _AuthenticateState extends State<Authenticate> {
                     padding: const EdgeInsets.all(25),
                     child: Text('Hey Admin !', style: contentStyle),
                   ),
-                  controllers.utils.inputTextField(
-                    label: 'Email',
-                    controller: emailController,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                    child: TextField(
+                      controller: emailController,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                        letterSpacing: 1.2,
+                      ),
+                      decoration: controllers.utils.authDecoration(
+                          label: 'Email',
+                          icon: Icon(OMIcons.email, color: Colors.red),
+                          onPressed: () {}),
+                    ),
                   ),
-                  controllers.utils.inputTextField(
-                    label: 'Password',
-                    controller: passwordController,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                    child: TextField(
+                      obscureText: isHidden,
+                      controller: passwordController,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
+                        letterSpacing: 1.2,
+                      ),
+                      decoration: controllers.utils.authDecoration(
+                          label: 'Password',
+                          icon: Icon(
+                            isHidden ? OMIcons.lock : OMIcons.lockOpen,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            isHidden = !isHidden;
+                            handleSetState();
+                          }),
+                    ),
                   ),
                   SizedBox(height: 18),
                   Row(
@@ -79,8 +110,8 @@ class _AuthenticateState extends State<Authenticate> {
                         title: 'Login',
                         onPressed: () {
                           FocusScope.of(context).unfocus();
-                          if (emailController.text.length > 0 &&
-                              passwordController.text.length > 0) {
+                          if (GetUtils.isEmail(emailController.text) &&
+                              passwordController.text.isNotEmpty) {
                             login();
                           } else {
                             controllers.utils
@@ -114,9 +145,5 @@ class _AuthenticateState extends State<Authenticate> {
     }
   }
 
-  handleSetState() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  handleSetState() => (mounted) ? setState(() {}) : null;
 }

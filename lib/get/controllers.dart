@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import '../utils.dart';
 
@@ -12,6 +13,8 @@ class Controllers extends GetxController {
 
   final firebaseAuth = FirebaseAuth.instance;
   final firestore = Firestore.instance;
+  final firebaseStorage = FirebaseStorage.instance;
+
   final utils = Utils();
 
   CollectionReference extras;
@@ -33,6 +36,10 @@ class Controllers extends GetxController {
 
   @override
   void onInit() {
+    ever(firebaseUser, handleAuth);
+
+    firebaseUser.bindStream(firebaseAuth.onAuthStateChanged);
+
     extras = firestore.collection('extras');
     admin = firestore.collection('admin');
     products = firestore.collection('products');
@@ -41,10 +48,6 @@ class Controllers extends GetxController {
     showrooms = firestore.collection('showrooms');
     orders = firestore.collection('orders');
     reports = firestore.collection('reports');
-
-    ever(firebaseUser, handleAuth);
-
-    firebaseUser.bindStream(firebaseAuth.onAuthStateChanged);
 
     extras.snapshots().obs.value.listen((event) {
       event.documents.forEach((element) {

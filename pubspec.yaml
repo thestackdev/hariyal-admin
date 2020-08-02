@@ -29,6 +29,8 @@ dependencies:
   image_cropper:
   paginate_firestore:
   flappy_search_bar: 
+  pattern_formatter:
+  outline_material_icons:
 
 dev_dependencies:
   flutter_test:

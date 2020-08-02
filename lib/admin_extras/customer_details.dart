@@ -5,14 +5,12 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
-import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Customerdetails extends StatelessWidget {
   final controllers = Controllers.to;
   final DocumentSnapshot snapshot = Get.arguments;
-  final Utils utils = Utils();
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +19,10 @@ class Customerdetails extends StatelessWidget {
         if (await canLaunch(url)) {
           await launch(url);
         } else {
-          utils.showSnackbar('Something went wrong');
+          controllers.utils.showSnackbar('Something went wrong');
         }
       } catch (e) {
-        utils.showSnackbar(e.toString());
+        controllers.utils.showSnackbar(e.toString());
       }
     }
 
@@ -37,28 +35,28 @@ class Customerdetails extends StatelessWidget {
         if (await canLaunch(_emailLaunchUri.toString())) {
           await launch(_emailLaunchUri.toString());
         } else {
-          utils.showSnackbar('Something went wrong');
+          controllers.utils.showSnackbar('Something went wrong');
         }
       } catch (e) {
-        utils.showSnackbar(e.toString());
+        controllers.utils.showSnackbar(e.toString());
       }
     }
 
     detailsPage() {
-      return utils.container(
+      return controllers.utils.container(
         child: ListView(
           children: <Widget>[
             SizedBox(height: 30),
             Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
-                style: utils.inputTextStyle(),
+                style: controllers.utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
                   snapshot['name'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
-                decoration: utils.inputDecoration(label: 'Name'),
+                decoration: controllers.utils.inputDecoration(label: 'Name'),
               ),
             ),
             Row(
@@ -67,13 +65,13 @@ class Customerdetails extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(12),
                     child: TextFormField(
-                      style: utils.inputTextStyle(),
+                      style: controllers.utils.inputTextStyle(),
                       initialValue: GetUtils.capitalize(
                         snapshot['phone'] ?? 'Something went wrong !',
                       ),
                       readOnly: true,
                       maxLines: null,
-                      decoration: utils.inputDecoration(
+                      decoration: controllers.utils.inputDecoration(
                         label: 'Phone',
                       ),
                     ),
@@ -93,12 +91,12 @@ class Customerdetails extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(12),
                     child: TextFormField(
-                      style: utils.inputTextStyle(),
+                      style: controllers.utils.inputTextStyle(),
                       initialValue:
                           snapshot['email'] ?? 'Something went wrong !',
                       readOnly: true,
                       maxLines: null,
-                      decoration: utils.inputDecoration(
+                      decoration: controllers.utils.inputDecoration(
                         label: 'Email',
                       ),
                     ),
@@ -113,7 +111,8 @@ class Customerdetails extends StatelessWidget {
                             snapshot['email'],
                           );
                         } else {
-                          utils.showSnackbar('Invalid Email Address');
+                          controllers.utils
+                              .showSnackbar('Invalid Email Address');
                         }
                       }),
                 ),
@@ -123,13 +122,13 @@ class Customerdetails extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
-                style: utils.inputTextStyle(),
+                style: controllers.utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
                   snapshot['gender'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
-                decoration: utils.inputDecoration(label: 'Gender'),
+                decoration: controllers.utils.inputDecoration(label: 'Gender'),
               ),
             ),
             Row(
@@ -138,14 +137,14 @@ class Customerdetails extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(12),
                     child: TextFormField(
-                      style: utils.inputTextStyle(),
+                      style: controllers.utils.inputTextStyle(),
                       initialValue: GetUtils.capitalize(
                         snapshot['alternatePhoneNumber'] ??
                             'Something went wrong !',
                       ),
                       readOnly: true,
                       maxLines: null,
-                      decoration: utils.inputDecoration(
+                      decoration: controllers.utils.inputDecoration(
                         label: 'Alternate Phone',
                       ),
                     ),
@@ -159,7 +158,7 @@ class Customerdetails extends StatelessWidget {
                           makeAPhone(
                               'tel: ${snapshot['alternatePhoneNumber']}');
                         } else {
-                          utils.showSnackbar('No Phone Number');
+                          controllers.utils.showSnackbar('No Phone Number');
                         }
                       }),
                 ),
@@ -169,38 +168,40 @@ class Customerdetails extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
-                style: utils.inputTextStyle(),
+                style: controllers.utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
                   snapshot['permanentAddress'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
-                decoration: utils.inputDecoration(label: 'Permanent Address'),
+                decoration: controllers.utils
+                    .inputDecoration(label: 'Permanent Address'),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
-                style: utils.inputTextStyle(),
+                style: controllers.utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
                   snapshot['location']['cityDistrict'] ??
                       'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
-                decoration: utils.inputDecoration(label: 'City/District'),
+                decoration:
+                    controllers.utils.inputDecoration(label: 'City/District'),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
-                style: utils.inputTextStyle(),
+                style: controllers.utils.inputTextStyle(),
                 initialValue: GetUtils.capitalize(
                   snapshot['location']['state'] ?? 'Something went wrong !',
                 ),
                 readOnly: true,
                 maxLines: null,
-                decoration: utils.inputDecoration(label: 'State'),
+                decoration: controllers.utils.inputDecoration(label: 'State'),
               ),
             ),
           ],
@@ -211,27 +212,25 @@ class Customerdetails extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: utils.appbar(
+        appBar: controllers.utils.appbar(
           'Customer Console',
-          bottom: utils.tabDecoration('Details', 'Interests'),
+          bottom: controllers.utils.tabDecoration('Details', 'Interests'),
         ),
         body: TabBarView(children: <Widget>[
           detailsPage(),
-          utils.container(
-              child: utils.buildProducts(
+          controllers.utils.container(
+              child: controllers.utils.buildProducts(
                   query: controllers.interests
                       .orderBy('timestamp', descending: true)
                       .where('author', isEqualTo: snapshot.documentID),
                   itemBuilder: (context, snapshot) {
                     return DataStreamBuilder<DocumentSnapshot>(
-                        errorBuilder: (context, error) => utils.nullWidget(),
-                        loadingBuilder: (context) => utils.progressIndicator(),
                         stream: controllers.products
                             .document(snapshot['productId'])
                             .snapshots(),
                         builder: (context, product) {
                           try {
-                            return utils.listTile(
+                            return controllers.utils.listTile(
                               title: '${product.data['title']}',
                               leading: SizedBox(
                                 width: 70,
@@ -246,7 +245,7 @@ class Customerdetails extends StatelessWidget {
                               ),
                             );
                           } catch (e) {
-                            return utils.errorListTile();
+                            return controllers.utils.nullWidget(e.toString());
                           }
                         });
                   }))

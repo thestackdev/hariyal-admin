@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/mark_as_sold.dart';
-import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
 import 'package:intl/intl.dart';
@@ -16,23 +15,19 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  final utils = Utils();
+  final controllers = Controllers.to;
   bool loading = false;
-  final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-  final products = Firestore.instance.collection('products');
   final String docId = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: utils.appbar('Product Details'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Product Details'),
+      body: controllers.utils.container(
         child: loading
-            ? utils.progressIndicator()
+            ? controllers.utils.progressIndicator()
             : DataStreamBuilder<DocumentSnapshot>(
-                errorBuilder: (context, error) => utils.nullWidget(),
-                loadingBuilder: (context) => utils.progressIndicator(),
-                stream: products.document(docId).snapshots(),
+                stream: controllers.products.document(docId).snapshots(),
                 builder: (context, snapshot) {
                   return Stack(
                     children: [
@@ -66,7 +61,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               SelectableText(
                                 '${snapshot.documentID}',
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
                           ),
@@ -86,7 +81,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 GetUtils.capitalizeFirst(
                                     '${snapshot.data['category']['category']}'),
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
                           ),
@@ -106,7 +101,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 GetUtils.capitalizeFirst(
                                     '${snapshot.data['category']['subCategory']}'),
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
                           ),
@@ -126,7 +121,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 GetUtils.capitalizeFirst(
                                     '${snapshot.data['location']['state']}'),
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
                           ),
@@ -146,7 +141,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 GetUtils.capitalizeFirst(
                                     '${snapshot.data['location']['area']}'),
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
                           ),
@@ -166,9 +161,48 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 GetUtils.capitalizeFirst(
                                     '${snapshot.data['title']}'),
                                 textAlign: TextAlign.justify,
-                                style: utils.inputTextStyle(),
+                                style: controllers.utils.inputTextStyle(),
                               ),
                             ],
+                          ),
+                          SizedBox(height: 18),
+                          Text(
+                            'Added Date',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 9),
+                          Flexible(
+                            child: Text(
+                              DateFormat.yMMMd().format(
+                                  DateTime.fromMicrosecondsSinceEpoch(
+                                      snapshot['timestamp'])),
+                              style: controllers.utils.inputTextStyle(),
+                            ),
+                          ),
+                          SizedBox(height: 18),
+                          Text(
+                            'Author',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 9),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: () => Get.toNamed('/admin_extras',
+                                  arguments: snapshot.data['author']),
+                              child: Text(
+                                GetUtils.capitalizeFirst(
+                                    '${snapshot.data['author']}'),
+                                style: controllers.utils.inputTextStyle(),
+                              ),
+                            ),
                           ),
                           SizedBox(height: 18),
                           Text(
@@ -184,7 +218,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             GetUtils.capitalizeFirst(
                                 '${snapshot.data['description']}'),
                             textAlign: TextAlign.justify,
-                            style: utils.inputTextStyle(),
+                            style: controllers.utils.inputTextStyle(),
                           ),
                           SizedBox(height: 18),
                           Text(
@@ -201,7 +235,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               snapshot.data['price'],
                             ),
                             textAlign: TextAlign.justify,
-                            style: utils.inputTextStyle(),
+                            style: controllers.utils.inputTextStyle(),
                           ),
                           SizedBox(height: 18),
                           Text(
@@ -245,7 +279,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(height: 18),
                           if (snapshot.data['isSold'] == false) ...[
-                            utils.getRaisedButton(
+                            controllers.utils.getRaisedButton(
                                 title: 'Mark as sold',
                                 onPressed: () =>
                                     Get.to(MarkAsSold(), arguments: snapshot))
@@ -263,9 +297,28 @@ class _ProductDetailsState extends State<ProductDetails> {
                               snapshot.data['soldReason'] ??=
                                   'Something went wrong',
                               textAlign: TextAlign.justify,
-                              style: utils.inputTextStyle(),
+                              style: controllers.utils.inputTextStyle(),
                             ),
-                            utils.getRaisedButton(
+                            SizedBox(height: 18),
+                            Text(
+                              'Sold Date',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 9),
+                            Flexible(
+                              child: Text(
+                                DateFormat.yMMMd().format(
+                                    DateTime.fromMicrosecondsSinceEpoch(
+                                        snapshot['sold_timestamp'])),
+                                style: controllers.utils.inputTextStyle(),
+                              ),
+                            ),
+                            SizedBox(height: 18),
+                            controllers.utils.getRaisedButton(
                                 title: 'Mark as Available',
                                 onPressed: () {
                                   snapshot.reference.updateData({
@@ -285,10 +338,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Expanded(
-                              child: utils.materialButton(
+                              child: controllers.utils.materialButton(
                                 color: Colors.red.shade500,
                                 title: 'Delete',
-                                onPressed: () => utils.getSimpleDialouge(
+                                onPressed: () =>
+                                    controllers.utils.getSimpleDialouge(
                                   title: 'Are you sure',
                                   content: Text(
                                     'Do you want to delete this product ?',
@@ -305,7 +359,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                             ),
                             Expanded(
-                              child: utils.materialButton(
+                              child: controllers.utils.materialButton(
                                 color: Colors.grey.shade500,
                                 title: 'Edit',
                                 onPressed: () => editProduct(snapshot),
@@ -323,7 +377,9 @@ class _ProductDetailsState extends State<ProductDetails> {
 
   deleteProduct(DocumentSnapshot snapshot) async {
     Get.back();
-    products.document(snapshot.documentID).updateData({'isdeleted': true});
+    controllers.products
+        .document(snapshot.documentID)
+        .updateData({'isdeleted': true});
     Get.back();
   }
 

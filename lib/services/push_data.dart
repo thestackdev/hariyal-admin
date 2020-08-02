@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
@@ -311,10 +312,13 @@ class _PushDataState extends State<PushData> {
                           label: 'Price',
                           controller: price,
                           inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            ThousandsFormatter(),
                           ],
                           textInputType: TextInputType.numberWithOptions(
-                              decimal: true, signed: true),
+                            decimal: true,
+                            signed: true,
+                          ),
                         ),
                         controllers.utils.inputTextField(
                           label: 'Title',
@@ -377,7 +381,7 @@ class _PushDataState extends State<PushData> {
         state: selectedState,
         area: selectedArea,
         adressID: addressID,
-        price: double.parse(price.text),
+        price: double.parse(price.text.replaceAll(',', '')),
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
@@ -389,6 +393,7 @@ class _PushDataState extends State<PushData> {
       handleSetState();
       controllers.utils.showSnackbar('Item Added Sucessfully');
     } else {
+      print(price.text);
       if (images.length == 0) {
         controllers.utils.showSnackbar('Please select atleast 1 image');
       }

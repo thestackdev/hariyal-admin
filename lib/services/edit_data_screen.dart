@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
@@ -408,7 +409,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
                             label: 'Price',
                             controller: price,
                             inputFormatters: <TextInputFormatter>[
-                              WhitelistingTextInputFormatter.digitsOnly
+                              WhitelistingTextInputFormatter.digitsOnly,
+                              ThousandsFormatter(),
                             ],
                             textInputType: TextInputType.numberWithOptions(
                                 decimal: true, signed: true),
@@ -494,7 +496,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
           state: selectedState,
           area: selectedArea,
           adressID: addressID,
-          price: price.text,
+          price: double.parse(price.text.replaceAll(',', '')),
           title: title.text.toLowerCase(),
           description: description.text,
           specifications: inputSpecifications,

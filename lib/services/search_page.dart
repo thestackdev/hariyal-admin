@@ -5,8 +5,8 @@ import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import '../utils.dart';
 import 'package:intl/intl.dart';
+import 'package:superuser/get/controllers.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -15,8 +15,8 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final controller = SearchBarController<DocumentSnapshot>();
+  final controllers = Controllers.to;
   final Map map = Get.arguments;
-  final utils = Utils();
   Query query;
   dynamic searchField;
   String type;
@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
             searchBarStyle: SearchBarStyle(
               borderRadius: BorderRadius.circular(9),
             ),
-            loader: utils.blankScreenLoading(),
+            loader: controllers.utils.blankScreenLoading(),
             hintText: 'Search...',
             onError: (error) => Center(
                   child: Text('Something went wrong', style: textStyle),
@@ -63,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
               try {
                 switch (type) {
                   case 'product':
-                    return utils.card(
+                    return controllers.utils.card(
                       title: snapshot.data['title'],
                       description: snapshot.data['description'],
                       imageUrl: snapshot.data['images'][0],
@@ -74,7 +74,7 @@ class _SearchPageState extends State<SearchPage> {
                     );
                     break;
                   case 'customer':
-                    return utils.listTile(
+                    return controllers.utils.listTile(
                       leading: CircleAvatar(
                         backgroundImage: CachedNetworkImageProvider(
                           snapshot['image'],
@@ -87,7 +87,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   case 'admin':
-                    return utils.listTile(
+                    return controllers.utils.listTile(
                       title: snapshot.data['name'],
                       subtitle:
                           'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['since']))}',
@@ -97,10 +97,10 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   default:
-                    return utils.errorListTile();
+                    return controllers.utils.nullWidget('Nothing Found');
                 }
               } catch (e) {
-                return utils.errorListTile();
+                return controllers.utils.nullWidget('Nothing Found');
               }
             }),
       ),

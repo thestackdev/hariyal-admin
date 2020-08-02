@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
@@ -10,22 +12,25 @@ class Showrooms extends StatelessWidget {
   Widget build(BuildContext context) {
     deleteShowroom(String docID) {
       controllers.showrooms
-          .where('adress', isEqualTo: docID)
+          .where('address', isEqualTo: docID)
           .getDocuments()
           .then((value) {
         value.documents.forEach((element) {
-          element.reference.updateData({'adress': null, 'isDeleted': true});
+          element.reference.updateData({'address': null, 'isDeleted': true});
         });
       });
     }
 
     Widget active() {
-      return controllers.utils.container(
-        child: controllers.utils.buildProducts(
-            query: controllers.showrooms
-                .orderBy('timestamp', descending: true)
-                .where('active', isEqualTo: true),
-            itemBuilder: (context, snapshot) {
+      return DataStreamBuilder<QuerySnapshot>(
+        stream: controllers.showrooms
+            .orderBy('timestamp', descending: true)
+            .where('active', isEqualTo: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          return ListView.builder(
+            itemCount: snapshot.documents.length,
+            itemBuilder: (BuildContext context, int index) {
               return controllers.utils.dismissible(
                 confirmDismiss: (direction) async {
                   if (direction == DismissDirection.startToEnd) {
@@ -33,8 +38,9 @@ class Showrooms extends StatelessWidget {
                       title: 'Confirm',
                       content: Text('Delete this Showroom ?'),
                       yesPressed: () {
-                        deleteShowroom(snapshot.documentID);
-                        snapshot.reference.updateData({'active': false});
+                        deleteShowroom(snapshot.documents[index].documentID);
+                        snapshot.documents[index].reference
+                            .updateData({'active': false});
                         Get.back();
                       },
                       noPressed: () => Get.back(),
@@ -50,29 +56,39 @@ class Showrooms extends StatelessWidget {
                 child: controllers.utils.listTile(
                   onTap: () => Get.toNamed(
                     'showroom_details',
-                    arguments: snapshot.data,
+                    arguments: snapshot.documents[index].data,
                   ),
-                  title: snapshot['name'],
-                  subtitle: 'Address : ' + snapshot['address'],
+                  title: snapshot.documents[index]['name'],
+                  subtitle: 'Address : ' + snapshot.documents[index]['address'],
                 ),
               );
-            }),
+            },
+          );
+        },
       );
     }
 
     Widget inActive() {
-      return controllers.utils.container(
-        child: controllers.utils.buildProducts(
-          query: controllers.showrooms
-              .orderBy('timestamp', descending: true)
-              .where('active', isEqualTo: false),
-          itemBuilder: (context, snapshot) {
-            return controllers.utils.listTile(
-              title: snapshot['name'],
-              subtitle: 'Address : ' + snapshot['adress'],
-            );
-          },
-        ),
+      return DataStreamBuilder<QuerySnapshot>(
+        stream: controllers.showrooms
+            .orderBy('timestamp', descending: true)
+            .where('active', isEqualTo: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          return ListView.builder(
+            itemCount: snapshot.documents.length,
+            itemBuilder: (BuildContext context, int index) {
+              return controllers.utils.listTile(
+                onTap: () => Get.toNamed(
+                  'showroom_details',
+                  arguments: snapshot.documents[index].data,
+                ),
+                title: snapshot.documents[index]['name'],
+                subtitle: 'Address : ' + snapshot.documents[index]['address'],
+              );
+            },
+          );
+        },
       );
     }
 
@@ -89,11 +105,13 @@ class Showrooms extends StatelessWidget {
           ],
           bottom: controllers.utils.tabDecoration('Active', 'InActive'),
         ),
-        body: TabBarView(
-          children: <Widget>[
-            active(),
-            inActive(),
-          ],
+        body: controllers.utils.container(
+          child: TabBarView(
+            children: <Widget>[
+              active(),
+              inActive(),
+            ],
+          ),
         ),
       ),
     );

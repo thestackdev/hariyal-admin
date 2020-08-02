@@ -27,7 +27,7 @@ class SoldItems extends StatelessWidget {
                 ),
               );
             } catch (e) {
-              return controllers.utils.errorListTile();
+              return controllers.utils.nullWidget(e.toString());
             }
           },
         ),

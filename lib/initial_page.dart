@@ -4,8 +4,15 @@ class InitialRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child: Center(child: CircularProgressIndicator()),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        image: DecorationImage(
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          image: AssetImage('assets/hariyal.png'),
+        ),
+      ),
+      child: Center(),
     );
   }
 }

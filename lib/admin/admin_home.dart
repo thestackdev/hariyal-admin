@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -6,12 +5,9 @@ import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/orders.dart';
 import 'package:superuser/services/sold_items.dart';
-import 'package:superuser/utils.dart';
 import 'admin_extras.dart';
 
 class AdminHome extends StatelessWidget {
-  final Utils utils = Utils();
-  final products = Firestore.instance.collection('products');
   final controllers = Controllers.to;
 
   @override
@@ -19,7 +15,7 @@ class AdminHome extends StatelessWidget {
     final List<Widget> screenList = [
       Orders(),
       SoldItems(
-        query: products
+        query: controllers.products
             .where('author', isEqualTo: controllers.firebaseUser.value.uid)
             .where('isSold', isEqualTo: true),
       ),

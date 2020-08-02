@@ -20,7 +20,7 @@ class Interests extends StatelessWidget {
       appBar: utils.appbar('Interests'),
       body: utils.container(
         child: PaginateFirestore(
-          emptyDisplay: utils.nullWidget(),
+          emptyDisplay: utils.nullWidget('Nothing Found'),
           initialLoader: utils.blankScreenLoading(),
           bottomLoader: Padding(
             padding: EdgeInsets.all(9),

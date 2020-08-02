@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/search_page.dart';
-import 'package:superuser/utils.dart';
 
 class AllProducts extends StatelessWidget {
   final Query query;
@@ -12,9 +11,9 @@ class AllProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utils = Utils();
+    final controllers = Controllers.to;
     return Scaffold(
-      appBar: utils.appbar('All Products', actions: [
+      appBar: controllers.utils.appbar('All Products', actions: [
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
@@ -28,13 +27,13 @@ class AllProducts extends StatelessWidget {
           },
         )
       ]),
-      body: utils.container(
-        child: utils.buildProducts(
+      body: controllers.utils.container(
+        child: controllers.utils.buildProducts(
           shrinkWrap: true,
           query: query,
           itemBuilder: (context, snapshot) {
             try {
-              return utils.card(
+              return controllers.utils.card(
                 title: snapshot.data['title'],
                 description: snapshot.data['description'],
                 imageUrl: snapshot.data['images'][0],
@@ -44,7 +43,7 @@ class AllProducts extends StatelessWidget {
                 ),
               );
             } catch (e) {
-              return utils.errorListTile();
+              return controllers.utils.nullWidget(e.toString());
             }
           },
         ),

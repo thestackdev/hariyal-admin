@@ -40,7 +40,7 @@ class AllCustomers extends StatelessWidget {
                     Get.toNamed('customer_deatils', arguments: snapshot),
               );
             } catch (e) {
-              return utils.errorListTile();
+              return utils.nullWidget(e.toString());
             }
           },
         ),

@@ -8,7 +8,9 @@ import 'package:superuser/get/pages.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Get.put(Controllers());
+  Future.delayed(Duration(seconds: 2), () {
+    Get.put(Controllers());
+  });
 
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(statusBarColor: Colors.transparent),
@@ -18,15 +20,16 @@ void main() {
     GetMaterialApp(
       defaultTransition: Transition.rightToLeftWithFade,
       enableLog: false,
+      getPages: Pages.routes,
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'Ubuntu',
         primarySwatch: Colors.red,
         scaffoldBackgroundColor: Colors.red,
+        appBarTheme: AppBarTheme(elevation: 0),
       ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/initialPage',
-      getPages: Pages.routes,
     ),
   );
 }

@@ -1,12 +1,9 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:superuser/get/controllers.dart';
 
 class PushProduct {
+  final controllers = Controllers.to;
   List imageUrls = [];
-  final _storage = FirebaseStorage.instance.ref().child('products');
-  CollectionReference _reference = Firestore.instance.collection('products');
 
   uploadProduct({
     List<File> images,
@@ -27,7 +24,7 @@ class PushProduct {
       imageUrls.add(await uploadProductImages(element));
     });
 
-    await _reference.document().setData({
+    await controllers.products.document().setData({
       'title': title,
       'description': description,
       'images': imageUrls,
@@ -76,7 +73,7 @@ class PushProduct {
       }
     }
 
-    await _reference.document(docID).updateData({
+    await controllers.products.document(docID).updateData({
       'title': title,
       'description': description,
       'images': imageUrls,
@@ -90,7 +87,9 @@ class PushProduct {
 
   Future<String> uploadProductImages(File images) async {
     try {
-      return _storage
+      return controllers.firebaseStorage
+          .ref()
+          .child('products')
           .child(DateTime.now().microsecondsSinceEpoch.toString())
           .putFile(images)
           .onComplete
