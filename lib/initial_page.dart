@@ -9,6 +9,7 @@ class InitialRoute extends StatelessWidget {
         child: Image.asset(
           'assets/hariyal.png',
           width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           fit: BoxFit.fill,
         ),
       ),
