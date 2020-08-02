@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:superuser/admin/admin_home.dart';
+import 'package:superuser/admin_extras/admin_tabs.dart';
 import 'package:superuser/admin_extras/customer_details.dart';
 import 'package:superuser/authenticate.dart';
 import 'package:superuser/initial_page.dart';
@@ -7,6 +8,8 @@ import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/all_products.dart';
 import 'package:superuser/services/product_details.dart';
 import 'package:superuser/services/profile.dart';
+import 'package:superuser/services/search_page.dart';
+import 'package:superuser/services/showroom_details.dart';
 import 'package:superuser/superuser/interests.dart';
 import 'package:superuser/superuser/superuser_home.dart';
 import 'package:superuser/superuser/superuser_screens/admins.dart';
@@ -16,6 +19,7 @@ import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/superuser/utilities/areas.dart';
 import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/shorooms.dart';
+import 'package:superuser/superuser/utilities/specificationData.dart';
 import 'package:superuser/superuser/utilities/specifications.dart';
 import 'package:superuser/superuser/utilities/states.dart';
 import 'package:superuser/superuser/utilities/sub_categories.dart';
@@ -101,6 +105,27 @@ class Pages {
     GetPage(
       name: '/product_details',
       page: () => ProductDetails(),
+    ),
+    GetPage(
+      name: '/search',
+      page: () => SearchPage(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: '/admin_extras',
+      page: () => AdminExtras(),
+    ),
+    GetPage(
+      name: '/add_showroom',
+      page: () => AddShowroom(),
+    ),
+    GetPage(
+      name: '/showroom_details',
+      page: () => ShowroomDetails(),
+    ),
+    GetPage(
+      name: '/specifications_data',
+      page: () => SpecificationData(),
     ),
   ];
 }

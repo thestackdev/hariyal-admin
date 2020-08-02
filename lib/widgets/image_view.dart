@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:superuser/utils.dart';
+import 'package:superuser/get/controllers.dart';
 
 class HariyalImageView extends StatefulWidget {
   final List imageUrls;
@@ -15,7 +15,7 @@ class HariyalImageView extends StatefulWidget {
 
 class _HariyalImageViewState extends State<HariyalImageView> {
   int currentIndex = 0;
-  Utils utils = Utils();
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +41,9 @@ class _HariyalImageViewState extends State<HariyalImageView> {
         },
         itemCount: widget.imageUrls.length,
         loadingBuilder: (context, event) => Center(
-          child: utils.progressIndicator(),
+          child: controllers.utils.progressIndicator(),
         ),
-        loadFailedChild: utils.nullWidget('Unable to load Image !'),
+        loadFailedChild: controllers.utils.nullWidget(),
         pageController: PageController(
           initialPage: 0,
           keepPage: true,
@@ -56,9 +56,5 @@ class _HariyalImageViewState extends State<HariyalImageView> {
     );
   }
 
-  handleState() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  handleState() => (mounted) ? setState(() => null) : null;
 }

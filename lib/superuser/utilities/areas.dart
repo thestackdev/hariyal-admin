@@ -3,13 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/utils.dart';
 
 class Areas extends StatelessWidget {
   final String mapKey = Get.arguments;
-  final utils = Utils();
-  final products = Firestore.instance.collection('products');
-  final showrooms = Firestore.instance.collection('showrooms');
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +16,23 @@ class Areas extends StatelessWidget {
       String text = '';
 
       addArea() {
-        if (utils.validateInputText(text) &&
+        if (controllers.utils.validateInputText(text) &&
             !items.contains(text.toLowerCase())) {
           snapshot.reference.updateData({
             mapKey: FieldValue.arrayUnion([text.toLowerCase()])
           });
           Get.back();
-          utils.showSnackbar('Area Added');
+          controllers.utils.showSnackbar('Area Added');
         } else {
           Get.back();
-          utils.showSnackbar('Invalid entries');
+          controllers.utils.showSnackbar('Invalid entries');
         }
 
         text = '';
       }
 
       deleteArea(String data) {
-        products
+        controllers.products
             .where('location.area', isEqualTo: data)
             .getDocuments()
             .then((value) {
@@ -46,7 +43,10 @@ class Areas extends StatelessWidget {
             });
           });
         });
-        showrooms.where('area', isEqualTo: data).getDocuments().then((value) {
+        controllers.showrooms
+            .where('area', isEqualTo: data)
+            .getDocuments()
+            .then((value) {
           value.documents.forEach((element) {
             element.reference.updateData({
               'area': null,
@@ -56,7 +56,7 @@ class Areas extends StatelessWidget {
       }
 
       editArea(String oldData, String newData) {
-        products
+        controllers.products
             .where('location.area', isEqualTo: oldData)
             .getDocuments()
             .then((value) {
@@ -64,7 +64,7 @@ class Areas extends StatelessWidget {
             element.reference.updateData({'location.area': newData});
           });
         });
-        showrooms
+        controllers.showrooms
             .where('area', isEqualTo: oldData)
             .getDocuments()
             .then((value) {
@@ -77,12 +77,12 @@ class Areas extends StatelessWidget {
       }
 
       return Scaffold(
-        appBar: utils.appbar(mapKey, actions: [
+        appBar: controllers.utils.appbar(mapKey, actions: [
           IconButton(
             icon: Icon(MdiIcons.plusOutline),
-            onPressed: () => utils.getSimpleDialouge(
+            onPressed: () => controllers.utils.getSimpleDialouge(
               title: 'Add Areas',
-              content: utils.dialogInput(
+              content: controllers.utils.dialogInput(
                   hintText: 'Type here',
                   onChnaged: (value) {
                     text = value;
@@ -92,14 +92,14 @@ class Areas extends StatelessWidget {
             ),
           ),
         ]),
-        body: utils.container(
+        body: controllers.utils.container(
           child: ListView.builder(
             itemCount: items.length,
-            itemBuilder: (context, index) => utils.dismissible(
+            itemBuilder: (context, index) => controllers.utils.dismissible(
               key: UniqueKey(),
               confirmDismiss: (direction) async {
                 if (direction == DismissDirection.startToEnd) {
-                  return await utils.getSimpleDialouge(
+                  return await controllers.utils.getSimpleDialouge(
                     title: 'Confirm',
                     content: Text('Delete this Area ?'),
                     yesPressed: () {
@@ -112,9 +112,9 @@ class Areas extends StatelessWidget {
                     noPressed: () => Get.back(),
                   );
                 } else {
-                  return await utils.getSimpleDialouge(
+                  return await controllers.utils.getSimpleDialouge(
                     title: 'Edit Area',
-                    content: utils.dialogInput(
+                    content: controllers.utils.dialogInput(
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
@@ -122,7 +122,7 @@ class Areas extends StatelessWidget {
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {
-                      if (utils.validateInputText(text) &&
+                      if (controllers.utils.validateInputText(text) &&
                           text != items[index] &&
                           !items.contains(text.toLowerCase())) {
                         editArea(items[index], text);
@@ -136,14 +136,15 @@ class Areas extends StatelessWidget {
                         Get.back();
                       } else {
                         Get.back();
-                        utils.showSnackbar('Invalid entries');
+                        controllers.utils.showSnackbar('Invalid entries');
                       }
                       text = '';
                     },
                   );
                 }
               },
-              child: utils.listTile(title: items[index], isTrailingNull: false),
+              child: controllers.utils
+                  .listTile(title: items[index], isTrailingNull: false),
             ),
           ),
         ),

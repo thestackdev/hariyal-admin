@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
-import 'package:superuser/utils.dart';
-
 import '../services/orders.dart';
 import '../services/sold_items.dart';
 import 'superuser_screens/reports.dart';
@@ -13,10 +10,6 @@ import 'superuser_screens/requests.dart';
 
 class SuperuserHome extends StatelessWidget {
   final controllers = Controllers.to;
-  final utils = Utils();
-  final soldItems = Firestore.instance
-      .collection('products')
-      .where('isSold', isEqualTo: true);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +24,11 @@ class SuperuserHome extends StatelessWidget {
       Orders(),
       Requests(),
       PushData(),
-      SoldItems(query: soldItems),
+      SoldItems(
+        query: controllers.products
+            .orderBy('sold_timestamp', descending: true)
+            .where('isSold', isEqualTo: true),
+      ),
       Reports(),
     ];
     return Obx(() {

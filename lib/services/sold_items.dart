@@ -1,24 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:superuser/utils.dart';
+import 'package:superuser/get/controllers.dart';
 
 class SoldItems extends StatelessWidget {
   final Query query;
-
   const SoldItems({Key key, this.query}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final utils = Utils();
+    final controllers = Controllers.to;
     return Scaffold(
-      appBar: utils.appbar('Sold Items'),
-      body: utils.container(
-        child: utils.buildProducts(
+      appBar: controllers.utils.appbar('Sold Items'),
+      body: controllers.utils.container(
+        child: controllers.utils.buildProducts(
           query: query,
           itemBuilder: (context, snapshot) {
             try {
-              return utils.card(
+              return controllers.utils.card(
                 title: snapshot.data['title'],
                 description: snapshot.data['description'],
                 imageUrl: snapshot.data['images'][0],
@@ -28,7 +27,7 @@ class SoldItems extends StatelessWidget {
                 ),
               );
             } catch (e) {
-              return utils.errorListTile();
+              return controllers.utils.errorListTile();
             }
           },
         ),

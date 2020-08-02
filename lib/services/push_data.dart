@@ -1,24 +1,21 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
-import 'package:superuser/utils.dart';
 
 class PushData extends StatefulWidget {
-  final Controllers controllers = Get.find();
-
   @override
   _PushDataState createState() => _PushDataState();
 }
 
 class _PushDataState extends State<PushData> {
+  final controllers = Controllers.to;
   List<File> images = [];
   String selectedCategory;
   String selectedSubCategory;
@@ -31,8 +28,6 @@ class _PushDataState extends State<PushData> {
   List specificationsList = [];
   String addressID;
   bool loading = false;
-  final Utils utils = Utils();
-
   Map categoryMap = {};
   Map locationsMap = {};
   Map specificationsMap = {};
@@ -44,13 +39,12 @@ class _PushDataState extends State<PushData> {
   final title = TextEditingController();
   final description = TextEditingController();
   final showroomAddressController = TextEditingController();
-  Firestore firestore = Firestore.instance;
 
   @override
   void initState() {
-    categoryMap = widget.controllers.categories.value.data;
-    locationsMap = widget.controllers.locations.value.data;
-    specificationsMap = widget.controllers.specifications.value.data;
+    categoryMap = controllers.categories.value.data;
+    locationsMap = controllers.locations.value.data;
+    specificationsMap = controllers.specifications.value.data;
     super.initState();
   }
 
@@ -73,10 +67,10 @@ class _PushDataState extends State<PushData> {
     }
 
     return Scaffold(
-      appBar: utils.appbar('Add Product'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Add Product'),
+      body: controllers.utils.container(
         child: loading
-            ? utils.progressIndicator()
+            ? controllers.utils.progressIndicator()
             : ListView(
                 children: <Widget>[
                   SizedBox(height: 9),
@@ -97,7 +91,7 @@ class _PushDataState extends State<PushData> {
                               : IconButton(
                                   onPressed: () async {
                                     dynamic source;
-                                    await utils.getSimpleDialouge(
+                                    await controllers.utils.getSimpleDialouge(
                                         title: 'Select an option',
                                         yesText: 'Select from gallery',
                                         noText: 'Take a picture',
@@ -126,14 +120,14 @@ class _PushDataState extends State<PushData> {
                                             CropAspectRatioPreset.ratio16x9
                                           ],
                                           androidUiSettings: AndroidUiSettings(
-                                              toolbarTitle: 'Crop Image',
-                                              toolbarColor:
-                                                  Theme.of(context).accentColor,
-                                              toolbarWidgetColor: Colors.white,
-                                              initAspectRatio:
-                                                  CropAspectRatioPreset
-                                                      .original,
-                                              lockAspectRatio: false),
+                                            toolbarTitle: 'Crop Image',
+                                            toolbarColor:
+                                                Theme.of(context).accentColor,
+                                            toolbarWidgetColor: Colors.white,
+                                            initAspectRatio:
+                                                CropAspectRatioPreset.original,
+                                            lockAspectRatio: false,
+                                          ),
                                         );
                                         if (croppedFile == null) {
                                           return;
@@ -200,7 +194,7 @@ class _PushDataState extends State<PushData> {
                     key: globalKey,
                     child: Column(
                       children: <Widget>[
-                        utils.productInputDropDown(
+                        controllers.utils.productInputDropDown(
                             label: 'Category',
                             value: selectedCategory,
                             items: categoryMap.keys.toList(),
@@ -218,14 +212,14 @@ class _PushDataState extends State<PushData> {
                         GestureDetector(
                           onTap: () {
                             if (selectedCategory == null) {
-                              utils
+                              controllers.utils
                                   .showSnackbar('Please select category first');
                             } else if (subCategory.length == 0) {
-                              utils.showSnackbar(
+                              controllers.utils.showSnackbar(
                                   'No subcategories in $selectedCategory');
                             }
                           },
-                          child: utils.productInputDropDown(
+                          child: controllers.utils.productInputDropDown(
                               label: 'Sub-Category',
                               value: selectedSubCategory,
                               items: subCategory,
@@ -234,7 +228,7 @@ class _PushDataState extends State<PushData> {
                                 handleSetState();
                               }),
                         ),
-                        utils.productInputDropDown(
+                        controllers.utils.productInputDropDown(
                             label: 'State',
                             value: selectedState,
                             items: locationsMap.keys.toList(),
@@ -249,12 +243,14 @@ class _PushDataState extends State<PushData> {
                         GestureDetector(
                           onTap: () {
                             if (selectedState == null) {
-                              utils.showSnackbar('Please select state first');
+                              controllers.utils
+                                  .showSnackbar('Please select state first');
                             } else if (subCategory.length == 0) {
-                              utils.showSnackbar('No areas in $selectedState');
+                              controllers.utils
+                                  .showSnackbar('No areas in $selectedState');
                             }
                           },
-                          child: utils.productInputDropDown(
+                          child: controllers.utils.productInputDropDown(
                               label: 'Area',
                               value: selectedArea,
                               items: areasList,
@@ -263,11 +259,11 @@ class _PushDataState extends State<PushData> {
                                 selectedShowroom = null;
                                 showroomAddressController.clear();
                                 showroomList.clear();
-                                utils.showSnackbar(
+                                controllers.utils.showSnackbar(
                                     'Loading showrooms in $selectedArea...');
 
-                                await firestore
-                                    .collection('showrooms')
+                                await controllers.showrooms
+                                    .where('active', isEqualTo: true)
                                     .where('area', isEqualTo: newValue)
                                     .getDocuments()
                                     .then((value) {
@@ -279,13 +275,14 @@ class _PushDataState extends State<PushData> {
                         GestureDetector(
                           onTap: () {
                             if (selectedArea == null) {
-                              utils.showSnackbar('Please select area first');
+                              controllers.utils
+                                  .showSnackbar('Please select area first');
                             } else if (showroomList.length == 0) {
-                              utils.showSnackbar(
+                              controllers.utils.showSnackbar(
                                   'No showrooms in $selectedArea');
                             }
                           },
-                          child: utils.productInputDropDown(
+                          child: controllers.utils.productInputDropDown(
                               label: 'Showroom',
                               items: showroomList,
                               value: selectedShowroom,
@@ -295,7 +292,7 @@ class _PushDataState extends State<PushData> {
                                 showroomList.forEach((element) {
                                   if (element['name'] == newValue) {
                                     showroomAddressController.text =
-                                        element['adress'];
+                                        element['address'];
                                     addressID = element.documentID;
                                     return false;
                                   } else {
@@ -305,59 +302,63 @@ class _PushDataState extends State<PushData> {
                                 handleSetState();
                               }),
                         ),
-                        utils.inputTextField(
+                        controllers.utils.inputTextField(
                           label: 'Showroom Address',
                           controller: showroomAddressController,
                           readOnly: true,
                         ),
-                        utils.inputTextField(
+                        controllers.utils.inputTextField(
                           label: 'Price',
                           controller: price,
+                          inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                          ],
                           textInputType: TextInputType.numberWithOptions(
                               decimal: true, signed: true),
                         ),
-                        utils.inputTextField(
+                        controllers.utils.inputTextField(
                           label: 'Title',
                           controller: title,
                         ),
-                        utils.inputTextField(
+                        controllers.utils.inputTextField(
                           label: 'Description',
                           controller: description,
                         ),
-                        if (specificationsList.length > 0)
+                        if (specificationsList.length > 0) ...[
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Add Specifications',
-                              style: utils.textStyle(
+                              style: controllers.utils.textStyle(
                                 color: Colors.red,
                                 fontSize: 19,
                               ),
                             ),
                           ),
-                        ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: specificationsList.length,
-                          itemBuilder: (context, index) {
-                            return utils.inputTextField(
-                              label: specificationsList[index],
-                              onChanged: (value) {
-                                inputSpecifications[specificationsList[index]] =
-                                    value;
-                              },
-                            );
-                          },
-                        ),
+                          ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: specificationsList.length,
+                            itemBuilder: (context, index) {
+                              return controllers.utils.inputTextField(
+                                label: specificationsList[index],
+                                onChanged: (value) {
+                                  inputSpecifications[
+                                      specificationsList[index]] = value;
+                                },
+                              );
+                            },
+                          ),
+                        ]
                       ],
                     ),
                   ),
                   SizedBox(height: 18),
-                  utils.getRaisedButton(
+                  controllers.utils.getRaisedButton(
                     title: 'Add Product',
                     onPressed: onPressed,
                   ),
-                  SizedBox(height: 50),
+                  SizedBox(height: 30),
                 ],
               ),
       ),
@@ -365,13 +366,8 @@ class _PushDataState extends State<PushData> {
   }
 
   onPressed() async {
-    if (globalKey.currentState.validate() &&
-        images.length > 0 &&
-        title != null &&
-        price.text.length > 0 &&
-        title.text.length > 0 &&
-        description.text.length > 0) {
-      FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();
+    if (globalKey.currentState.validate() && images.length > 0) {
       loading = true;
       handleSetState();
       await PushProduct().uploadProduct(
@@ -381,18 +377,21 @@ class _PushDataState extends State<PushData> {
         state: selectedState,
         area: selectedArea,
         adressID: addressID,
-        price: price.text,
+        price: double.parse(price.text),
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
-        // uid: Provider.of<DocumentSnapshot>(context, listen: false).documentID,
+        uid: controllers.firebaseUser.value.uid,
+        authored: controllers.isSuperuser.value,
       );
       clearAllData();
       loading = false;
       handleSetState();
-      utils.showSnackbar('Item Added Sucessfully');
+      controllers.utils.showSnackbar('Item Added Sucessfully');
     } else {
-      utils.showSnackbar('Invalid Selections');
+      if (images.length == 0) {
+        controllers.utils.showSnackbar('Please select atleast 1 image');
+      }
     }
   }
 
@@ -403,12 +402,12 @@ class _PushDataState extends State<PushData> {
     selectedArea = null;
     selectedShowroom = null;
     showroomAddressController.clear();
-    inputSpecifications.clear();
     images.clear();
     price.clear();
     title.clear();
     description.clear();
     specificationsList.clear();
+    inputSpecifications.clear();
   }
 
   handleSetState() => (mounted) ? setState(() => null) : null;

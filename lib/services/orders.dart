@@ -1,24 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
-import 'package:superuser/utils.dart';
+import 'package:superuser/get/controllers.dart';
 
 class Orders extends StatelessWidget {
-  final CollectionReference orders = Firestore.instance.collection('orders');
-  final Utils utils = Utils();
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: utils.appbar('Orders'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Orders'),
+      body: controllers.utils.container(
         child: DataStreamBuilder<QuerySnapshot>(
-          loadingBuilder: (context) => utils.progressIndicator(),
-          errorBuilder: (context, error) => utils.nullWidget(error.toString()),
-          stream: orders.snapshots(),
+          loadingBuilder: (context) => controllers.utils.progressIndicator(),
+          errorBuilder: (context, error) => controllers.utils.nullWidget(),
+          stream: controllers.orders.snapshots(),
           builder: (context, snapshot) {
             if (snapshot.documents.length == 0) {
-              return utils.nullWidget('No Orders Found !');
+              return controllers.utils.nullWidget();
             } else {
               return ListView.builder(
                 itemCount: snapshot.documents.length,

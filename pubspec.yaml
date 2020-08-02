@@ -18,7 +18,6 @@ dependencies:
   cloud_firestore:
   material_design_icons_flutter:
   firebase_storage:
-  date_time_format:
   cached_network_image:
   photo_view:
   flutter_spinkit:
@@ -29,7 +28,7 @@ dependencies:
   image_picker:
   image_cropper:
   paginate_firestore:
-  flappy_search_bar:
+  flappy_search_bar: 
 
 dev_dependencies:
   flutter_test:

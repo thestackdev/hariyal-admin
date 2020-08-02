@@ -5,8 +5,8 @@ import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 import '../utils.dart';
+import 'package:intl/intl.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -33,7 +33,6 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    FocusScope.of(context).requestFocus();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -53,7 +52,9 @@ class _SearchPageState extends State<SearchPage> {
             searchBarController: controller,
             placeHolder: Center(),
             cancellationWidget: Icon(MdiIcons.closeOutline),
-            emptyWidget: Text('Nothing found', style: textStyle),
+            emptyWidget: Center(
+              child: Text('Nothing found', style: textStyle),
+            ),
             onCancelled: () {},
             mainAxisSpacing: 1,
             crossAxisSpacing: 1,
@@ -85,6 +86,16 @@ class _SearchPageState extends State<SearchPage> {
                         arguments: snapshot,
                       ),
                     );
+                  case 'admin':
+                    return utils.listTile(
+                      title: snapshot.data['name'],
+                      subtitle:
+                          'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['since']))}',
+                      onTap: () => Get.offNamed(
+                        '/admin_extras',
+                        arguments: snapshot.documentID,
+                      ),
+                    );
                   default:
                     return utils.errorListTile();
                 }
@@ -98,9 +109,6 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<List<DocumentSnapshot>> onSearch(String text) =>
       query.where(searchField, isEqualTo: text).getDocuments().then((value) {
-        value.documents.forEach((element) {
-          print(element.data);
-        });
         return value.documents;
       });
 }

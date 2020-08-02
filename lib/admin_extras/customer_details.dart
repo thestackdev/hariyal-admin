@@ -3,19 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
 import 'package:superuser/utils.dart';
 import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Customerdetails extends StatefulWidget {
-  @override
-  _CustomerdetailsState createState() => _CustomerdetailsState();
-}
-
-class _CustomerdetailsState extends State<Customerdetails> {
-  CollectionReference products = Firestore.instance.collection('products');
-  CollectionReference interests = Firestore.instance.collection('interests');
+class Customerdetails extends StatelessWidget {
+  final controllers = Controllers.to;
   final DocumentSnapshot snapshot = Get.arguments;
   final Utils utils = Utils();
 
@@ -35,7 +30,7 @@ class _CustomerdetailsState extends State<Customerdetails> {
 
     void writeAnEmail(String email) async {
       final Uri _emailLaunchUri = Uri(
-          scheme: 'Mail From Hariyal',
+          scheme: 'mailto',
           path: email,
           queryParameters: {'subject': 'Hariyal'});
       try {
@@ -220,60 +215,42 @@ class _CustomerdetailsState extends State<Customerdetails> {
           'Customer Console',
           bottom: utils.tabDecoration('Details', 'Interests'),
         ),
-        body: TabBarView(
-          children: <Widget>[
-            detailsPage(),
-            utils.container(
-              child: DataStreamBuilder<QuerySnapshot>(
-                  errorBuilder: (context, error) => utils.nullWidget(error),
-                  loadingBuilder: (context) => utils.progressIndicator(),
-                  stream: interests
+        body: TabBarView(children: <Widget>[
+          detailsPage(),
+          utils.container(
+              child: utils.buildProducts(
+                  query: controllers.interests
                       .orderBy('timestamp', descending: true)
-                      .where('author', isEqualTo: snapshot.documentID)
-                      .snapshots(),
-                  builder: (context, interest) {
-                    print(interest.documents.length);
-                    if (interest.documents.length == 0 || interest == null) {
-                      return utils.nullWidget('No interests found !');
-                    } else {
-                      return ListView.builder(
-                          itemCount: interest.documents.length,
-                          itemBuilder: (context, index) {
-                            return DataStreamBuilder<DocumentSnapshot>(
-                                errorBuilder: (context, error) =>
-                                    utils.nullWidget(error),
-                                loadingBuilder: (context) =>
-                                    utils.progressIndicator(),
-                                stream: products
-                                    .document(
-                                        interest.documents[index]['productId'])
-                                    .snapshots(),
-                                builder: (context, product) {
-                                  try {
-                                    return utils.listTile(
-                                      title: '${product.data['title']}',
-                                      leading: SizedBox(
-                                        width: 70,
-                                        child: PNetworkImage(
-                                          product.data['images'][0],
-                                          fit: BoxFit.fitHeight,
-                                        ),
-                                      ),
-                                      onTap: () => Get.to(
-                                        ProductDetails(),
-                                        arguments: product.documentID,
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    return utils.errorListTile();
-                                  }
-                                });
-                          });
-                    }
-                  }),
-            ),
-          ],
-        ),
+                      .where('author', isEqualTo: snapshot.documentID),
+                  itemBuilder: (context, snapshot) {
+                    return DataStreamBuilder<DocumentSnapshot>(
+                        errorBuilder: (context, error) => utils.nullWidget(),
+                        loadingBuilder: (context) => utils.progressIndicator(),
+                        stream: controllers.products
+                            .document(snapshot['productId'])
+                            .snapshots(),
+                        builder: (context, product) {
+                          try {
+                            return utils.listTile(
+                              title: '${product.data['title']}',
+                              leading: SizedBox(
+                                width: 70,
+                                child: PNetworkImage(
+                                  product.data['images'][0],
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                              onTap: () => Get.to(
+                                ProductDetails(),
+                                arguments: product.documentID,
+                              ),
+                            );
+                          } catch (e) {
+                            return utils.errorListTile();
+                          }
+                        });
+                  }))
+        ]),
       ),
     );
   }

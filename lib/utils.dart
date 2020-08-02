@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -16,32 +18,63 @@ class Utils {
     );
   }
 
-  Widget searchBar({
-    TextEditingController controller,
-    Function onPressed,
+  streamBuilder({
+    Stream stream,
+    Widget Function(BuildContext, dynamic) builder,
   }) {
-    return Container(
-      color: Colors.red,
-      padding: EdgeInsets.all(9),
-      child: Row(
+    return DataStreamBuilder(
+      loadingBuilder: (context) => progressIndicator(),
+      errorBuilder: (context, error) => errorListTile(),
+      stream: stream,
+      initialData: null,
+      builder: builder,
+    );
+  }
+
+  Widget requestCard({
+    String title,
+    String description,
+    String imageUrl,
+    Function onTap,
+    Function approve,
+  }) {
+    return Card(
+      margin: EdgeInsets.all(12),
+      elevation: 3,
+      shadowColor: Colors.deepPurple,
+      child: Column(
         children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: TextField(
-              controller: controller,
-              style: inputTextStyle(),
-              maxLines: 1,
-              decoration: searchBarDecoration(),
+          ListTile(
+            onTap: onTap,
+            leading: CachedNetworkImage(
+              imageUrl: imageUrl,
+              height: 90,
+              width: 90,
+              filterQuality: FilterQuality.low,
             ),
+            title: Text(GetUtils.capitalize(title)),
+            subtitle: Text(description),
           ),
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              icon:
-                  Icon(controller.text.length > 0 ? Icons.close : Icons.search),
-              onPressed: onPressed,
+          Padding(
+            padding: const EdgeInsets.all(9),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: MaterialButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    color: Colors.green,
+                    onPressed: approve,
+                    child: Text(
+                      'Approve',
+                      style: textStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );
@@ -83,7 +116,7 @@ class Utils {
   }) {
     return PaginateFirestore(
       shrinkWrap: shrinkWrap,
-      emptyDisplay: nullWidget('No products found !'),
+      emptyDisplay: nullWidget(),
       initialLoader: blankScreenLoading(),
       bottomLoader: Padding(
         padding: EdgeInsets.all(9),
@@ -185,9 +218,13 @@ class Utils {
     String hintText,
     Function(String) onChnaged,
     String initialValue,
+    TextEditingController controller,
+    Function(String) validator,
   }) {
     return TextFormField(
       initialValue: initialValue,
+      controller: controller,
+      validator: (value) => value == null ? 'Field can\'t be empty' : null,
       onChanged: onChnaged,
       decoration: InputDecoration(
         hintText: hintText,
@@ -226,7 +263,6 @@ class Utils {
     Function onChanged,
     String value,
     bool isShowroom = false,
-    String Function(dynamic) validator,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -250,22 +286,27 @@ class Utils {
     );
   }
 
-  Widget inputTextField({
-    TextEditingController controller,
-    String label,
-    TextInputType textInputType = TextInputType.text,
-    TextInputAction textInputAction = TextInputAction.done,
-    Function(String) onChanged,
-    bool readOnly = false,
-  }) {
+  Widget inputTextField(
+      {TextEditingController controller,
+      String label,
+      TextInputType textInputType = TextInputType.text,
+      TextInputAction textInputAction = TextInputAction.done,
+      Function(String) onChanged,
+      bool readOnly = false,
+      String initialValue,
+      List<TextInputFormatter> inputFormatters}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
       child: TextFormField(
+        initialValue: initialValue,
+        validator: (value) =>
+            value == null || value.isEmpty ? 'Field can\'t be empty' : null,
         onChanged: onChanged,
         style: inputTextStyle(),
         readOnly: readOnly,
         maxLines: null,
         controller: controller,
+        inputFormatters: inputFormatters,
         keyboardType: textInputType,
         decoration: inputDecoration(label: label),
         textInputAction: textInputAction,
@@ -305,7 +346,7 @@ class Utils {
         color: Colors.grey.shade100,
       ),
       child: ListTile(
-        title: nullWidget('Something went wrong !'),
+        title: nullWidget(),
       ),
     );
   }
@@ -402,8 +443,12 @@ class Utils {
     );
   }
 
-  Widget appbar(String label,
-      {Widget bottom, Widget leading, List<Widget> actions}) {
+  Widget appbar(
+    String label, {
+    Widget bottom,
+    Widget leading,
+    List<Widget> actions,
+  }) {
     return AppBar(
       leading: leading,
       actions: actions,
@@ -417,10 +462,10 @@ class Utils {
     );
   }
 
-  Widget nullWidget(label) {
+  Widget nullWidget() {
     return Center(
       child: Text(
-        label,
+        'Nothing found',
         style: textStyle(color: Colors.grey),
         textScaleFactor: 1.5,
         textAlign: TextAlign.center,

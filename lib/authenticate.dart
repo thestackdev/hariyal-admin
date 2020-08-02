@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/forgot_password.dart';
-import 'package:superuser/utils.dart';
 
 class Authenticate extends StatefulWidget {
   @override
@@ -10,17 +10,16 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
+  final controllers = Controllers.to;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool loading = false;
 
   final contentStyle = TextStyle(
     color: Colors.grey,
     fontSize: 18,
     fontWeight: FontWeight.normal,
   );
-
-  bool loading = false;
-  Utils utils = Utils();
 
   @override
   void dispose() {
@@ -32,10 +31,10 @@ class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: utils.appbar('Hariyal'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Hariyal'),
+      body: controllers.utils.container(
         child: loading
-            ? utils.progressIndicator()
+            ? controllers.utils.progressIndicator()
             : ListView(
                 children: <Widget>[
                   SizedBox(height: 90),
@@ -54,11 +53,11 @@ class _AuthenticateState extends State<Authenticate> {
                     padding: const EdgeInsets.all(25),
                     child: Text('Hey Admin !', style: contentStyle),
                   ),
-                  utils.inputTextField(
+                  controllers.utils.inputTextField(
                     label: 'Email',
                     controller: emailController,
                   ),
-                  utils.inputTextField(
+                  controllers.utils.inputTextField(
                     label: 'Password',
                     controller: passwordController,
                   ),
@@ -76,7 +75,7 @@ class _AuthenticateState extends State<Authenticate> {
                         ),
                         onPressed: () => Get.to(ForgotPassword()),
                       ),
-                      utils.getRaisedButton(
+                      controllers.utils.getRaisedButton(
                         title: 'Login',
                         onPressed: () {
                           FocusScope.of(context).unfocus();
@@ -84,7 +83,8 @@ class _AuthenticateState extends State<Authenticate> {
                               passwordController.text.length > 0) {
                             login();
                           } else {
-                            utils.showSnackbar('Invalid Credintials');
+                            controllers.utils
+                                .showSnackbar('Invalid Credintials');
                           }
                         },
                       ),
@@ -107,7 +107,9 @@ class _AuthenticateState extends State<Authenticate> {
     } catch (e) {
       loading = false;
       handleSetState();
-      utils.showSnackbar(utils.errorMessageHelper(e.code));
+      controllers.utils.showSnackbar(
+        controllers.utils.errorMessageHelper(e.code),
+      );
       return false;
     }
   }

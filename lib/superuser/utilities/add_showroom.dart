@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/utils.dart';
 
 class AddShowroom extends StatefulWidget {
   @override
@@ -10,10 +9,9 @@ class AddShowroom extends StatefulWidget {
 }
 
 class _AddShowroomState extends State<AddShowroom> {
-  final showrooms = Firestore.instance.collection('showrooms');
+  final controllers = Controllers.to;
   final DocumentSnapshot docSnap = Get.arguments;
-  final Map locationsMap = Controllers.to.locations.value.data;
-  final Utils utils = Utils();
+  Map locationsMap = {};
 
   final titleController = TextEditingController();
   final addressController = TextEditingController();
@@ -27,7 +25,7 @@ class _AddShowroomState extends State<AddShowroom> {
 
   @override
   void initState() {
-    print(docSnap);
+    locationsMap = controllers.locations.value.data;
     if (docSnap != null) {
       titleController.text = docSnap['name'];
       addressController.text = docSnap['adress'];
@@ -55,12 +53,13 @@ class _AddShowroomState extends State<AddShowroom> {
     }
 
     return Scaffold(
-      appBar: utils.appbar(docSnap == null ? 'Add Showroom' : 'Edit Showroom'),
-      body: utils.container(
+      appBar: controllers.utils
+          .appbar(docSnap == null ? 'Add Showroom' : 'Edit Showroom'),
+      body: controllers.utils.container(
         child: ListView(
           children: <Widget>[
             SizedBox(height: 36),
-            utils.productInputDropDown(
+            controllers.utils.productInputDropDown(
                 label: 'State',
                 value: selectedState,
                 items: locationsMap.keys.toList(),
@@ -69,7 +68,7 @@ class _AddShowroomState extends State<AddShowroom> {
                   selectedArea = null;
                   handleSetState();
                 }),
-            utils.productInputDropDown(
+            controllers.utils.productInputDropDown(
                 label: 'Area',
                 value: selectedArea,
                 items: areas,
@@ -77,35 +76,35 @@ class _AddShowroomState extends State<AddShowroom> {
                   selectedArea = newValue;
                   handleSetState();
                 }),
-            utils.inputTextField(
+            controllers.utils.inputTextField(
               label: 'Name',
               controller: titleController,
             ),
-            utils.inputTextField(
+            controllers.utils.inputTextField(
               label: 'Address',
               controller: addressController,
             ),
-            utils.inputTextField(
+            controllers.utils.inputTextField(
               label: 'latitude',
               controller: latitudeController,
               textInputType:
-              TextInputType.numberWithOptions(signed: true, decimal: true),
+                  TextInputType.numberWithOptions(signed: true, decimal: true),
             ),
-            utils.inputTextField(
+            controllers.utils.inputTextField(
               label: 'longitude',
               controller: longitudeController,
               textInputType:
-              TextInputType.numberWithOptions(signed: true, decimal: true),
+                  TextInputType.numberWithOptions(signed: true, decimal: true),
             ),
             SizedBox(height: 36),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                utils.getRaisedButton(
+                controllers.utils.getRaisedButton(
                   title: 'Cancel',
                   onPressed: () => Get.back(),
                 ),
-                utils.getRaisedButton(
+                controllers.utils.getRaisedButton(
                   title: docSnap == null ? 'Confirm' : 'Update',
                   onPressed: () async {
                     if (titleController.text.length > 0 &&
@@ -115,18 +114,22 @@ class _AddShowroomState extends State<AddShowroom> {
                         selectedArea != null &&
                         selectedState != null) {
                       if (docSnap == null) {
-                        showrooms.document().setData({
+                        controllers.showrooms.document().setData({
                           'name': titleController.text,
-                          'adress': addressController.text,
+                          'address': addressController.text,
                           'state': selectedState,
                           'area': selectedArea,
                           'latitude': latitudeController.text,
                           'longitude': longitudeController.text,
+                          'timestamp': DateTime.now().millisecondsSinceEpoch,
+                          'active': true,
                         });
                       } else {
-                        showrooms.document(docSnap.documentID).updateData({
+                        controllers.showrooms
+                            .document(docSnap.documentID)
+                            .updateData({
                           'name': titleController.text,
-                          'adress': addressController.text,
+                          'address': addressController.text,
                           'state': selectedState,
                           'area': selectedArea,
                           'latitude': latitudeController.text,
@@ -135,7 +138,7 @@ class _AddShowroomState extends State<AddShowroom> {
                       }
                       Get.back();
                     } else {
-                      utils.showSnackbar('Invalid Entries');
+                      controllers.utils.showSnackbar('Invalid Entries');
                     }
                   },
                 )

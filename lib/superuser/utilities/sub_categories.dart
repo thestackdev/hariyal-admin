@@ -3,37 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/utils.dart';
 
 class SubCategories extends StatelessWidget {
+  final controllers = Controllers.to;
   final String mapKey = Get.arguments;
-  final utils = Utils();
-  final products = Firestore.instance.collection('products');
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final DocumentSnapshot snapshot = Controllers.to.categories.value;
+      final DocumentSnapshot snapshot = controllers.categories.value;
       final List items = snapshot[mapKey];
       String text = '';
 
       addSubCategory() {
-        if (utils.validateInputText(text) &&
+        if (controllers.utils.validateInputText(text) &&
             !items.contains(text.toLowerCase())) {
           snapshot.reference.updateData({
             mapKey: FieldValue.arrayUnion([text.toLowerCase()])
           });
           Get.back();
-          utils.showSnackbar('Subcategory Added');
+          controllers.utils.showSnackbar('Subcategory Added');
         } else {
           Get.back();
-          utils.showSnackbar('Invalid entries');
+          controllers.utils.showSnackbar('Invalid entries');
         }
         text = '';
       }
 
       deleteSubCategory(String data) {
-        products
+        controllers.products
             .where('category.subCategory', isEqualTo: data)
             .getDocuments()
             .then((value) {
@@ -47,7 +45,7 @@ class SubCategories extends StatelessWidget {
       }
 
       editSubCategory(String oldData, String newData) {
-        products
+        controllers.products
             .where('category.subCategory', isEqualTo: oldData)
             .getDocuments()
             .then((value) {
@@ -58,13 +56,13 @@ class SubCategories extends StatelessWidget {
       }
 
       return Scaffold(
-        appBar: utils.appbar(mapKey, actions: [
+        appBar: controllers.utils.appbar(mapKey, actions: [
           IconButton(
               icon: Icon(MdiIcons.plusOutline),
               onPressed: () {
-                utils.getSimpleDialouge(
+                controllers.utils.getSimpleDialouge(
                   title: 'Add Sub-Category',
-                  content: utils.dialogInput(
+                  content: controllers.utils.dialogInput(
                     onChnaged: (value) {
                       text = value;
                     },
@@ -75,14 +73,14 @@ class SubCategories extends StatelessWidget {
                 );
               }),
         ]),
-        body: utils.container(
+        body: controllers.utils.container(
           child: ListView.builder(
             itemCount: items.length,
-            itemBuilder: (context, index) => utils.dismissible(
+            itemBuilder: (context, index) => controllers.utils.dismissible(
               key: UniqueKey(),
               confirmDismiss: (direction) async {
                 if (direction == DismissDirection.startToEnd) {
-                  return await utils.getSimpleDialouge(
+                  return await controllers.utils.getSimpleDialouge(
                     title: 'Confirm',
                     content: Text('Delete this Sub-Category ?'),
                     yesPressed: () {
@@ -96,9 +94,9 @@ class SubCategories extends StatelessWidget {
                     noPressed: () => Get.back(),
                   );
                 } else {
-                  return await utils.getSimpleDialouge(
+                  return await controllers.utils.getSimpleDialouge(
                     title: 'Edit Sub-Category',
-                    content: utils.dialogInput(
+                    content: controllers.utils.dialogInput(
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
@@ -106,7 +104,7 @@ class SubCategories extends StatelessWidget {
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {
-                      if (utils.validateInputText(text) &&
+                      if (controllers.utils.validateInputText(text) &&
                           text != items[index] &&
                           !items.contains(text.toLowerCase())) {
                         editSubCategory(items[index], text);
@@ -120,14 +118,14 @@ class SubCategories extends StatelessWidget {
                         Get.back();
                       } else {
                         Get.back();
-                        utils.showSnackbar('Invalid entries');
+                        controllers.utils.showSnackbar('Invalid entries');
                       }
                       text = '';
                     },
                   );
                 }
               },
-              child: utils.listTile(
+              child: controllers.utils.listTile(
                 title: items[index],
                 isTrailingNull: true,
               ),

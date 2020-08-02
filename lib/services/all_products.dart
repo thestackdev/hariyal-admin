@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/search_page.dart';
 import 'package:superuser/utils.dart';
 
@@ -18,7 +19,8 @@ class AllProducts extends StatelessWidget {
           icon: Icon(Icons.search),
           onPressed: () {
             Map<dynamic, dynamic> map = {
-              'query': query,
+              'query':
+                  Controllers.to.products.where('isSold', isEqualTo: false),
               'searchField': FieldPath.documentId,
               'type': 'product'
             };
@@ -29,7 +31,7 @@ class AllProducts extends StatelessWidget {
       body: utils.container(
         child: utils.buildProducts(
           shrinkWrap: true,
-          query: query.orderBy('timestamp', descending: true),
+          query: query,
           itemBuilder: (context, snapshot) {
             try {
               return utils.card(

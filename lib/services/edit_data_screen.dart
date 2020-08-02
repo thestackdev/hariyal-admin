@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +11,6 @@ import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
 import 'package:superuser/widgets/network_image.dart';
-import '../utils.dart';
 
 class EditDataScreen extends StatefulWidget {
   @override
@@ -19,19 +18,17 @@ class EditDataScreen extends StatefulWidget {
 }
 
 class _EditDataScreenState extends State<EditDataScreen> {
+  final controllers = Controllers.to;
+  GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   final DocumentSnapshot docsnap = Get.arguments;
-  final Controllers controllers = Get.find();
 
-/////////////////
   Map categoryMap = {};
   Map locationsMap = {};
   Map specificationsMap = {};
   Map inputSpecifications = {};
   List subCategory = [];
-  GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   String selectedSubCategory;
 
-  final Utils utils = Utils();
   List<File> newImages = [];
   List existingImages = [];
   String selectedCategory;
@@ -47,7 +44,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
   final title = TextEditingController();
   final description = TextEditingController();
   final showroomAddressController = TextEditingController();
-  Firestore firestore = Firestore.instance;
   bool loading = false;
   final textstyle = TextStyle(color: Colors.grey, fontSize: 16);
   List shouldRemoveImages = [];
@@ -58,14 +54,13 @@ class _EditDataScreenState extends State<EditDataScreen> {
     selectedSubCategory = docsnap.data['category']['subCategory'];
     selectedState = docsnap.data['location']['state'];
     selectedArea = docsnap.data['location']['area'];
-    addressID = docsnap.data['adress'];
-    price.text = docsnap.data['price'];
+    addressID = docsnap.data['address'];
+    price.text = docsnap.data['price'].toString();
     title.text = docsnap.data['title'];
     description.text = docsnap.data['description'];
     inputSpecifications = docsnap.data['specifications'];
 
-    await firestore
-        .collection('showrooms')
+    await controllers.showrooms
         .where('area', isEqualTo: selectedArea)
         .getDocuments()
         .then((value) {
@@ -73,7 +68,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
       for (var doc in value.documents) {
         if (doc.documentID == addressID) {
           selectedShowroom = doc.data['name'];
-          showroomAddressController.text = doc.data['adress'];
+          showroomAddressController.text = doc.data['address'];
         }
       }
 
@@ -112,10 +107,10 @@ class _EditDataScreenState extends State<EditDataScreen> {
       areasList = locationsMap[selectedState];
     }
     return Scaffold(
-      appBar: utils.appbar('Edit Product'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Edit Product'),
+      body: controllers.utils.container(
         child: loading
-            ? utils.progressIndicator()
+            ? controllers.utils.progressIndicator()
             : Padding(
                 padding: EdgeInsets.all(9),
                 child: ListView(
@@ -186,7 +181,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                 : IconButton(
                                     onPressed: () async {
                                       dynamic source;
-                                      await utils.getSimpleDialouge(
+                                      await controllers.utils.getSimpleDialouge(
                                           title: 'Select an option',
                                           yesText: 'Select from gallery',
                                           noText: 'Take a picture',
@@ -296,7 +291,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       key: globalKey,
                       child: Column(
                         children: <Widget>[
-                          utils.productInputDropDown(
+                          controllers.utils.productInputDropDown(
                               label: 'Category',
                               value: selectedCategory,
                               items: categoryMap.keys.toList(),
@@ -314,14 +309,14 @@ class _EditDataScreenState extends State<EditDataScreen> {
                           GestureDetector(
                             onTap: () {
                               if (selectedCategory == null) {
-                                utils.showSnackbar(
+                                controllers.utils.showSnackbar(
                                     'Please select category first');
                               } else if (subCategory.length == 0) {
-                                utils.showSnackbar(
+                                controllers.utils.showSnackbar(
                                     'No subcategories in $selectedCategory');
                               }
                             },
-                            child: utils.productInputDropDown(
+                            child: controllers.utils.productInputDropDown(
                                 label: 'Sub-Category',
                                 value: selectedSubCategory,
                                 items: subCategory,
@@ -330,7 +325,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                   handleSetState();
                                 }),
                           ),
-                          utils.productInputDropDown(
+                          controllers.utils.productInputDropDown(
                               label: 'State',
                               value: selectedState,
                               items: locationsMap.keys.toList(),
@@ -345,13 +340,14 @@ class _EditDataScreenState extends State<EditDataScreen> {
                           GestureDetector(
                             onTap: () {
                               if (selectedState == null) {
-                                utils.showSnackbar('Please select state first');
+                                controllers.utils
+                                    .showSnackbar('Please select state first');
                               } else if (subCategory.length == 0) {
-                                utils
+                                controllers.utils
                                     .showSnackbar('No areas in $selectedState');
                               }
                             },
-                            child: utils.productInputDropDown(
+                            child: controllers.utils.productInputDropDown(
                                 label: 'Area',
                                 value: selectedArea,
                                 items: areasList,
@@ -360,11 +356,11 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                   selectedShowroom = null;
                                   showroomAddressController.clear();
                                   showroomList.clear();
-                                  utils.showSnackbar(
+                                  controllers.utils.showSnackbar(
                                       'Loading showrooms in $selectedArea...');
 
-                                  await firestore
-                                      .collection('showrooms')
+                                  await controllers.showrooms
+                                      .where('active', isEqualTo: true)
                                       .where('area', isEqualTo: newValue)
                                       .getDocuments()
                                       .then((value) {
@@ -376,13 +372,14 @@ class _EditDataScreenState extends State<EditDataScreen> {
                           GestureDetector(
                             onTap: () {
                               if (selectedArea == null) {
-                                utils.showSnackbar('Please select area first');
+                                controllers.utils
+                                    .showSnackbar('Please select area first');
                               } else if (showroomList.length == 0) {
-                                utils.showSnackbar(
+                                controllers.utils.showSnackbar(
                                     'No showrooms in $selectedArea');
                               }
                             },
-                            child: utils.productInputDropDown(
+                            child: controllers.utils.productInputDropDown(
                                 label: 'Showroom',
                                 items: showroomList,
                                 value: selectedShowroom,
@@ -392,7 +389,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                   showroomList.forEach((element) {
                                     if (element['name'] == newValue) {
                                       showroomAddressController.text =
-                                          element['adress'];
+                                          element['address'];
                                       addressID = element.documentID;
                                       return false;
                                     } else {
@@ -402,62 +399,61 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                   handleSetState();
                                 }),
                           ),
-                          utils.inputTextField(
+                          controllers.utils.inputTextField(
                             label: 'Showroom Address',
                             controller: showroomAddressController,
                             readOnly: true,
                           ),
-                          utils.inputTextField(
+                          controllers.utils.inputTextField(
                             label: 'Price',
                             controller: price,
-                            textInputType:
-                                TextInputType.numberWithOptions(signed: true),
+                            inputFormatters: <TextInputFormatter>[
+                              WhitelistingTextInputFormatter.digitsOnly
+                            ],
+                            textInputType: TextInputType.numberWithOptions(
+                                decimal: true, signed: true),
                           ),
-                          utils.inputTextField(
+                          controllers.utils.inputTextField(
                             label: 'Title',
                             controller: title,
                           ),
-                          utils.inputTextField(
+                          controllers.utils.inputTextField(
                             label: 'Description',
                             controller: description,
                           ),
-                          if (specificationsList.length > 0)
+                          if (specificationsList.length > 0) ...[
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Add Specifications',
-                                style: TextStyle(
+                                style: controllers.utils.textStyle(
                                   color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                  fontSize: 19,
                                 ),
                               ),
                             ),
-                          /* ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: specificationsList.length,
-                            itemBuilder: (context, index) {
-                              return utils.textInputPadding(
-                                child: TextFormField(
+                            ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: specificationsList.length,
+                              itemBuilder: (context, index) {
+                                return controllers.utils.inputTextField(
                                   initialValue: inputSpecifications[
                                       specificationsList[index]],
-                                  decoration: utils.inputDecoration(
-                                    label: specificationsList[index],
-                                  ),
+                                  label: specificationsList[index],
                                   onChanged: (value) {
                                     inputSpecifications[
                                         specificationsList[index]] = value;
                                   },
-                                ),
-                              );
-                            },
-                          ), */
+                                );
+                              },
+                            ),
+                          ]
                         ],
                       ),
                     ),
                     SizedBox(height: 18),
-                    utils.getRaisedButton(
+                    controllers.utils.getRaisedButton(
                         title: 'Update Data', onPressed: onPressed),
                     SizedBox(height: 50),
                   ],
@@ -468,13 +464,9 @@ class _EditDataScreenState extends State<EditDataScreen> {
   }
 
   onPressed() async {
-    if (globalKey.currentState.validate() &&
-        title != null &&
-        price.text.length > 0 &&
-        title.text.length > 0 &&
-        description.text.length > 0) {
+    FocusScope.of(context).unfocus();
+    if (globalKey.currentState.validate()) {
       if (newImages.length > 0 || existingImages.length > 0) {
-        FocusScope.of(context).unfocus();
         loading = true;
         handleSetState();
 
@@ -510,12 +502,10 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
         loading = false;
         handleSetState();
-        utils.showSnackbar('Item Updated Sucessfully');
+        controllers.utils.showSnackbar('Item Updated Sucessfully');
       } else {
-        utils.showSnackbar('Upload alteast one image');
+        controllers.utils.showSnackbar('Upload alteast 1 image');
       }
-    } else {
-      utils.showSnackbar('Invalid Selections');
     }
   }
 

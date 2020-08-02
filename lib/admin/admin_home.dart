@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/services/all_products.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/orders.dart';
 import 'package:superuser/services/sold_items.dart';
@@ -25,17 +24,12 @@ class AdminHome extends StatelessWidget {
             .where('isSold', isEqualTo: true),
       ),
       PushData(),
-      AllProducts(
-        query: products.where('author',
-            isEqualTo: controllers.firebaseUser.value.uid),
-      ),
       AdminExtras(),
     ];
     final items = [
       bottomNavigationBar('Orders', MdiIcons.humanGreeting),
       bottomNavigationBar('Sold Items', MdiIcons.humanMaleMale),
       bottomNavigationBar('Add Items', MdiIcons.plusCircleOutline),
-      bottomNavigationBar('Products', MdiIcons.cashUsdOutline),
       bottomNavigationBar('Extras', MdiIcons.receipt),
     ];
     return Obx(

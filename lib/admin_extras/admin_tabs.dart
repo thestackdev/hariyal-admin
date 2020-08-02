@@ -1,24 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
+import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
 import 'package:superuser/utils.dart';
 
-class AdminExtras extends StatefulWidget {
-  final adminUid;
-
-  const AdminExtras({Key key, this.adminUid}) : super(key: key);
-
-  @override
-  _AdminExtrasState createState() => _AdminExtrasState();
-}
-
-class _AdminExtrasState extends State<AdminExtras> {
+class AdminExtras extends StatelessWidget {
+  final String adminUid = Get.arguments;
   final Utils utils = Utils();
-  Firestore firestore = Firestore.instance;
-  String uid;
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +24,9 @@ class _AdminExtrasState extends State<AdminExtras> {
           child: TabBarView(
             children: <Widget>[
               utils.buildProducts(
-                  query: firestore
-                      .collection('products')
-                      .where('author', isEqualTo: widget.adminUid),
+                  query: controllers.products
+                      .orderBy('timestamp', descending: true)
+                      .where('author', isEqualTo: adminUid),
                   itemBuilder: (context, snapshot) {
                     try {
                       return utils.card(
@@ -61,10 +52,9 @@ class _AdminExtrasState extends State<AdminExtras> {
 
   getPrivilages() {
     return DataStreamBuilder<DocumentSnapshot>(
-      errorBuilder: (context, error) => utils.nullWidget(error),
+      errorBuilder: (context, error) => utils.nullWidget(),
       loadingBuilder: (context) => utils.progressIndicator(),
-      stream:
-          firestore.collection('admin').document(widget.adminUid).snapshots(),
+      stream: controllers.admin.document(adminUid).snapshots(),
       builder: (context, snapshot) {
         return ListView(
           children: <Widget>[
@@ -76,7 +66,7 @@ class _AdminExtrasState extends State<AdminExtras> {
               ),
               child: SwitchListTile(
                 title: Text('Admin'),
-                onChanged: uid == widget.adminUid
+                onChanged: controllers.firebaseUser.value.uid == adminUid
                     ? null
                     : (value) {
                         snapshot.reference.updateData({
@@ -94,7 +84,7 @@ class _AdminExtrasState extends State<AdminExtras> {
               ),
               child: SwitchListTile(
                 title: Text('Superuser'),
-                onChanged: uid == widget.adminUid
+                onChanged: controllers.firebaseUser.value.uid == adminUid
                     ? null
                     : (value) {
                         snapshot.reference.updateData({

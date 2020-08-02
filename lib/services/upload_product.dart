@@ -10,16 +10,17 @@ class PushProduct {
 
   uploadProduct({
     List<File> images,
-    category,
-    subCategory,
-    state,
-    area,
-    adressID,
-    price,
-    title,
-    description,
-    specifications,
-    uid,
+    String category,
+    String subCategory,
+    String state,
+    String area,
+    String adressID,
+    double price,
+    String title,
+    String description,
+    Map specifications,
+    String uid,
+    bool authored,
   }) async {
     imageUrls.clear();
     await Future.forEach(images, (element) async {
@@ -33,7 +34,7 @@ class PushProduct {
       'location': {'state': state, 'area': area},
       'category': {'category': category, 'subCategory': subCategory},
       'author': uid,
-      'adress': adressID,
+      'address': adressID,
       'price': price,
       'specifications': specifications,
       'isSold': false,
@@ -41,6 +42,9 @@ class PushProduct {
       'soldReason': null,
       'interested_count': 0,
       'timestamp': DateTime.now().microsecondsSinceEpoch,
+      'authored': false,
+      'isDeleted': false,
+      'sold_timestamp': null,
     });
   }
 
