@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
 
 class Utils {
@@ -21,9 +21,8 @@ class Utils {
       {String label, Icon icon, Function onPressed}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(
+      labelStyle: textStyle(
         color: Colors.red.shade500,
-        fontWeight: FontWeight.bold,
         fontSize: 16,
       ),
       suffix: IconButton(icon: icon, onPressed: onPressed),
@@ -103,8 +102,8 @@ class Utils {
   }) {
     return PaginateFirestore(
       shrinkWrap: shrinkWrap,
-      emptyDisplay: nullWidget('Something went wrong'),
-      initialLoader: blankScreenLoading(),
+      emptyDisplay: nullWidget('Nothing found'),
+      initialLoader: progressIndicator(),
       bottomLoader: Padding(
         padding: EdgeInsets.all(9),
         child: progressIndicator(),
@@ -117,13 +116,6 @@ class Utils {
 
   bool validateInputText(String text) =>
       (text.trim().length > 0 && !text.contains('.')) ? true : false;
-
-  blankScreenLoading() {
-    return Container(
-      color: Colors.white,
-      child: progressIndicator(),
-    );
-  }
 
   Widget dismissible({
     Key key,
@@ -141,7 +133,7 @@ class Utils {
         ),
         child: ListTile(
           leading: Icon(
-            MdiIcons.deleteOffOutline,
+            OMIcons.deleteForever,
             color: Colors.white,
           ),
         ),
@@ -153,7 +145,7 @@ class Utils {
         ),
         child: ListTile(
           trailing: Icon(
-            MdiIcons.pencilOutline,
+            OMIcons.edit,
             color: Colors.white,
           ),
         ),
@@ -319,60 +311,35 @@ class Utils {
     );
   }
 
-  TabBar tabDecoration(String title1, String title2) {
-    return TabBar(
-      labelStyle: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
-      ),
-      indicatorColor: Colors.transparent,
-      tabs: [Tab(text: title1), Tab(text: title2)],
-    );
-  }
-
   TextStyle inputTextStyle() {
     return TextStyle(
       fontWeight: FontWeight.normal,
-      fontSize: 18,
+      fontSize: 16,
       color: Colors.grey.shade700,
     );
   }
 
-  inputDecoration({label, iconData, suffix}) {
+  InputDecoration inputDecoration({String label}) {
     return InputDecoration(
-      suffix: suffix,
       labelText: label,
       isDense: true,
       labelStyle: textStyle(color: Colors.red),
-      contentPadding: EdgeInsets.all(16),
+      contentPadding: EdgeInsets.all(12),
       border: InputBorder.none,
-      fillColor: Colors.grey.shade100,
+      fillColor: Colors.grey.shade50,
       filled: true,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderSide: BorderSide.none,
       ),
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide(
-          color: Colors.grey.shade100,
-        ),
+        borderSide: BorderSide.none,
       ),
-      prefix: iconData != null
-          ? Icon(
-              iconData,
-              color: Colors.red.shade300,
-              size: 18,
-            )
-          : SizedBox(),
     );
   }
 
@@ -433,8 +400,8 @@ class Utils {
     return Center(
       child: Text(
         label,
-        style: textStyle(color: Colors.grey),
-        textScaleFactor: 1.2,
+        style: textStyle(color: Colors.grey.shade700),
+        textScaleFactor: 1.3,
         textAlign: TextAlign.center,
       ),
     );
@@ -446,12 +413,12 @@ class Utils {
     );
   }
 
-  Widget getRaisedButton({onPressed, title}) {
+  Widget getRaisedButton({Function onPressed, String title}) {
     return Center(
       child: RaisedButton(
         onPressed: onPressed,
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        elevation: 5,
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+        elevation: 3,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9),
         ),
@@ -499,7 +466,7 @@ class Utils {
         trailing: isTrailingNull
             ? SizedBox.shrink()
             : Icon(
-                MdiIcons.chevronRight,
+                OMIcons.chevronRight,
                 color: Colors.red,
               ),
         onTap: onTap,

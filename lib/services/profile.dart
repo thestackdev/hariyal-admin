@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/change_password.dart';
 import 'package:superuser/widgets/image_view.dart';
@@ -39,7 +39,6 @@ class _ProfileState extends State<Profile> {
             .document(controllers.firebaseUser.value.uid)
             .snapshots(),
         builder: (context, snapshot) {
-          print(controllers.firebaseUser.value.uid);
           void changeName() {
             Get.back();
             if (controllers.utils.validateInputText(controller.text)) {
@@ -107,11 +106,11 @@ class _ProfileState extends State<Profile> {
                     ),
                     child: ListTile(
                       leading: Icon(
-                        MdiIcons.accountOutline,
+                        OMIcons.accountBox,
                         color: Colors.red,
                       ),
                       title: Text(
-                        GetUtils.capitalize(snapshot['name']),
+                        GetUtils.capitalizeFirst(snapshot['name']),
                         style: TextStyle(
                           color: Colors.red,
                           letterSpacing: 1,
@@ -143,7 +142,7 @@ class _ProfileState extends State<Profile> {
                               children: <Widget>[
                                 IconButton(
                                   icon: Icon(
-                                    MdiIcons.cameraOutline,
+                                    OMIcons.camera,
                                     color: Colors.red,
                                   ),
                                   onPressed: () async {
@@ -175,7 +174,7 @@ class _ProfileState extends State<Profile> {
                               children: <Widget>[
                                 IconButton(
                                   icon: Icon(
-                                    MdiIcons.imageOutline,
+                                    OMIcons.image,
                                     color: Colors.red,
                                   ),
                                   onPressed: () async {

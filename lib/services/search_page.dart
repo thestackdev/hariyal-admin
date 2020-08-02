@@ -4,8 +4,8 @@ import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 
 class SearchPage extends StatefulWidget {
@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
             searchBarStyle: SearchBarStyle(
               borderRadius: BorderRadius.circular(9),
             ),
-            loader: controllers.utils.blankScreenLoading(),
+            loader: controllers.utils.progressIndicator(),
             hintText: 'Search...',
             onError: (error) => Center(
                   child: Text('Something went wrong', style: textStyle),
@@ -51,7 +51,7 @@ class _SearchPageState extends State<SearchPage> {
             onSearch: onSearch,
             searchBarController: controller,
             placeHolder: Center(),
-            cancellationWidget: Icon(MdiIcons.closeOutline),
+            cancellationWidget: Icon(OMIcons.close),
             emptyWidget: Center(
               child: Text('Nothing found', style: textStyle),
             ),

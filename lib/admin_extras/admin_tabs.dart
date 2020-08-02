@@ -16,7 +16,11 @@ class AdminExtras extends StatelessWidget {
       child: Scaffold(
         appBar: controllers.utils.appbar(
           'Admin Extras',
-          bottom: controllers.utils.tabDecoration('Products', 'Privileges'),
+          bottom: TabBar(
+            labelStyle: controllers.utils.textStyle(fontSize: 18),
+            indicatorColor: Colors.transparent,
+            tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Privilages')],
+          ),
         ),
         body: controllers.utils.container(
           child: TabBarView(

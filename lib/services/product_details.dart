@@ -175,13 +175,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ),
                           SizedBox(height: 9),
-                          Flexible(
-                            child: Text(
-                              DateFormat.yMMMd().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(
-                                      snapshot['timestamp'])),
-                              style: controllers.utils.inputTextStyle(),
-                            ),
+                          Text(
+                            DateFormat.yMMMd().format(
+                                DateTime.fromMicrosecondsSinceEpoch(
+                                    snapshot['timestamp'])),
+                            style: controllers.utils.inputTextStyle(),
                           ),
                           SizedBox(height: 18),
                           Text(
@@ -193,15 +191,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ),
                           SizedBox(height: 9),
-                          Flexible(
-                            child: GestureDetector(
-                              onTap: () => Get.toNamed('/admin_extras',
-                                  arguments: snapshot.data['author']),
-                              child: Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['author']}'),
-                                style: controllers.utils.inputTextStyle(),
-                              ),
+                          GestureDetector(
+                            onTap: () => Get.toNamed('/admin_extras',
+                                arguments: snapshot.data['author']),
+                            child: Text(
+                              GetUtils.capitalizeFirst(
+                                  '${snapshot.data['author']}'),
+                              style: controllers.utils.inputTextStyle(),
                             ),
                           ),
                           SizedBox(height: 18),
@@ -309,13 +305,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                             ),
                             SizedBox(height: 9),
-                            Flexible(
-                              child: Text(
-                                DateFormat.yMMMd().format(
-                                    DateTime.fromMicrosecondsSinceEpoch(
-                                        snapshot['sold_timestamp'])),
-                                style: controllers.utils.inputTextStyle(),
-                              ),
+                            Text(
+                              DateFormat.yMMMd().format(
+                                  DateTime.fromMicrosecondsSinceEpoch(
+                                      snapshot['sold_timestamp'])),
+                              style: controllers.utils.inputTextStyle(),
                             ),
                             SizedBox(height: 18),
                             controllers.utils.getRaisedButton(

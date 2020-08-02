@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/orders.dart';
@@ -23,10 +23,10 @@ class AdminHome extends StatelessWidget {
       AdminExtras(),
     ];
     final items = [
-      bottomNavigationBar('Orders', MdiIcons.humanGreeting),
-      bottomNavigationBar('Sold Items', MdiIcons.humanMaleMale),
-      bottomNavigationBar('Add Items', MdiIcons.plusCircleOutline),
-      bottomNavigationBar('Extras', MdiIcons.receipt),
+      bottomNavigationBar('Orders', OMIcons.addShoppingCart),
+      bottomNavigationBar('Sold Items', OMIcons.attachMoney),
+      bottomNavigationBar('Add Items', OMIcons.plusOne),
+      bottomNavigationBar('Extras', OMIcons.more),
     ];
     return Obx(
       () => Scaffold(

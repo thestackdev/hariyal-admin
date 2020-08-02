@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 
 class States extends StatelessWidget {
@@ -76,7 +76,7 @@ class States extends StatelessWidget {
       return Scaffold(
         appBar: controllers.utils.appbar('States', actions: [
           IconButton(
-            icon: Icon(MdiIcons.plusOutline),
+            icon: Icon(OMIcons.plusOne),
             onPressed: () => controllers.utils.getSimpleDialouge(
               title: 'Add State',
               content: controllers.utils.dialogInput(

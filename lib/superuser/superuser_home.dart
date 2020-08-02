@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
 import '../services/orders.dart';
@@ -14,11 +14,11 @@ class SuperuserHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      bottomNavigationBar('Orders', MdiIcons.humanGreeting),
-      bottomNavigationBar('Requests', MdiIcons.humanMaleMale),
-      bottomNavigationBar('Add Items', MdiIcons.plusCircleOutline),
-      bottomNavigationBar('Sold Items', MdiIcons.cashUsdOutline),
-      bottomNavigationBar('Reports', MdiIcons.receipt),
+      bottomNavigationBar('Orders', OMIcons.addShoppingCart),
+      bottomNavigationBar('Requests', OMIcons.moneyOff),
+      bottomNavigationBar('Add Items', OMIcons.plusOne),
+      bottomNavigationBar('Sold Items', OMIcons.attachMoney),
+      bottomNavigationBar('Reports', OMIcons.receipt),
     ];
     final screenList = [
       Orders(),

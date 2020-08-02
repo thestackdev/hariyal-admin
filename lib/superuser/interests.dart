@@ -3,40 +3,30 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
-import 'package:paginate_firestore/paginate_firestore.dart';
-import 'package:superuser/utils.dart';
+import 'package:superuser/get/controllers.dart';
 
 class Interests extends StatelessWidget {
-  final firestore = Firestore.instance;
-  final utils = Utils();
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
-    final products = firestore.collection('products');
-    final interests = firestore.collection('interests');
-    final customers = firestore.collection('customers');
-
     return Scaffold(
-      appBar: utils.appbar('Interests'),
-      body: utils.container(
-        child: PaginateFirestore(
-          emptyDisplay: utils.nullWidget('Nothing Found'),
-          initialLoader: utils.blankScreenLoading(),
-          bottomLoader: Padding(
-            padding: EdgeInsets.all(9),
-            child: utils.progressIndicator(),
-          ),
-          itemsPerPage: 10,
-          query: interests.orderBy('timestamp', descending: true),
+      appBar: controllers.utils.appbar('Interests'),
+      body: controllers.utils.container(
+        child: controllers.utils.buildProducts(
+          query: controllers.interests.orderBy('timestamp', descending: true),
           itemBuilder: (context, snapshot) {
             return DataStreamBuilder<DocumentSnapshot>(
-              stream: customers.document(snapshot.data['author']).snapshots(),
+              stream: controllers.customers
+                  .document(snapshot.data['author'])
+                  .snapshots(),
               builder: (context, author) {
                 return DataStreamBuilder<DocumentSnapshot>(
-                  stream:
-                      products.document(snapshot.data['productId']).snapshots(),
+                  stream: controllers.products
+                      .document(snapshot.data['productId'])
+                      .snapshots(),
                   builder: (context, product) {
-                    return utils.listTile(
+                    return controllers.utils.listTile(
                         textscalefactor: 1,
                         leading: GestureDetector(
                           onTap: () => Get.offNamed(

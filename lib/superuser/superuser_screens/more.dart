@@ -1,102 +1,99 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/all_products.dart';
-import 'package:superuser/utils.dart';
-import '../../utils.dart';
 
 class Settings extends StatelessWidget {
-  final Utils utils = Utils();
-  final products = Controllers.to.products
-      .orderBy('timestamp', descending: true)
-      .where('isDeleted', isEqualTo: false);
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: utils.appbar('Console'),
-      body: utils.container(
+      appBar: controllers.utils.appbar('Console'),
+      body: controllers.utils.container(
         child: ListView(
           children: <Widget>[
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'My Profile',
               leading: Icon(
-                MdiIcons.faceProfile,
+                OMIcons.face,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/profile'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Add Admin',
               leading: Icon(
-                MdiIcons.humanChild,
+                OMIcons.personAdd,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/add_admin'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'User Interests',
               leading: Icon(
-                MdiIcons.humanChild,
+                OMIcons.shoppingBasket,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/interests'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'My Products',
-              leading: Icon(MdiIcons.cartOutline, color: Colors.red),
+              leading: Icon(OMIcons.shoppingBasket, color: Colors.red),
               onTap: () => Get.to(AllProducts(
-                query: products,
+                query: controllers.products
+                    .orderBy('timestamp', descending: true)
+                    .where('isDeleted', isEqualTo: false),
               )),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Customers',
-              leading: Icon(MdiIcons.humanMaleMale, color: Colors.red),
+              leading: Icon(OMIcons.childFriendly, color: Colors.red),
               onTap: () => Get.toNamed('/all_customers'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Admins',
-              leading: Icon(MdiIcons.humanChild, color: Colors.red),
+              leading: Icon(OMIcons.childFriendly, color: Colors.red),
               onTap: () => Get.toNamed('/admins'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Categories',
               leading: Icon(
-                MdiIcons.cartArrowRight,
+                OMIcons.category,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/categories'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Locations',
               leading: Icon(
-                MdiIcons.locationExit,
+                OMIcons.place,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/states'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Specifications',
               leading: Icon(
-                MdiIcons.cartArrowRight,
+                OMIcons.newReleases,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/specifications'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Showrooms',
               leading: Icon(
-                MdiIcons.mapMarkerOutline,
+                OMIcons.locationCity,
                 color: Colors.red.shade300,
               ),
               onTap: () => Get.toNamed('/showrooms'),
             ),
-            utils.listTile(
+            controllers.utils.listTile(
               title: 'Logout',
-              leading: Icon(MdiIcons.logout, color: Colors.red),
-              onTap: () => utils.getSimpleDialouge(
+              leading: Icon(OMIcons.exitToApp, color: Colors.red),
+              onTap: () => controllers.utils.getSimpleDialouge(
                 title: 'Confirm',
                 content: Text('Logout ?'),
                 yesPressed: () => {

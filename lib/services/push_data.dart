@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
@@ -143,7 +143,7 @@ class _PushDataState extends State<PushData> {
                                     handleSetState();
                                   },
                                   icon: Icon(
-                                    MdiIcons.plusOutline,
+                                    OMIcons.plusOne,
                                     color: Colors.red.shade300,
                                   ),
                                 ),
@@ -393,7 +393,6 @@ class _PushDataState extends State<PushData> {
       handleSetState();
       controllers.utils.showSnackbar('Item Added Sucessfully');
     } else {
-      print(price.text);
       if (images.length == 0) {
         controllers.utils.showSnackbar('Please select atleast 1 image');
       }

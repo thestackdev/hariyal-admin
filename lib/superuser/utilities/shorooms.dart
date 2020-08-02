@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 
 class Showrooms extends StatelessWidget {
@@ -99,11 +99,15 @@ class Showrooms extends StatelessWidget {
           'Showrooms',
           actions: <Widget>[
             IconButton(
-              icon: Icon(MdiIcons.plusOutline),
+              icon: Icon(OMIcons.plusOne),
               onPressed: () => Get.toNamed('add_showroom'),
             ),
           ],
-          bottom: controllers.utils.tabDecoration('Active', 'InActive'),
+          bottom: TabBar(
+            labelStyle: controllers.utils.textStyle(fontSize: 18),
+            indicatorColor: Colors.transparent,
+            tabs: <Widget>[Tab(text: 'Active'), Tab(text: 'Inactive')],
+          ),
         ),
         body: controllers.utils.container(
           child: TabBarView(

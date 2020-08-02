@@ -16,7 +16,6 @@ dependencies:
   firebase_auth:
   firebase_core:
   cloud_firestore:
-  material_design_icons_flutter:
   firebase_storage:
   cached_network_image:
   photo_view:

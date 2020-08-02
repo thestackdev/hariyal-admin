@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
 import 'package:superuser/widgets/network_image.dart';
@@ -79,7 +79,7 @@ class Customerdetails extends StatelessWidget {
                 ),
                 SizedBox(
                   child: IconButton(
-                    icon: Icon(MdiIcons.phoneOutline),
+                    icon: Icon(OMIcons.phone),
                     onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
                   ),
                 ),
@@ -104,7 +104,7 @@ class Customerdetails extends StatelessWidget {
                 ),
                 SizedBox(
                   child: IconButton(
-                      icon: Icon(MdiIcons.emailOutline),
+                      icon: Icon(OMIcons.email),
                       onPressed: () {
                         if (snapshot['email'] != 'default') {
                           writeAnEmail(
@@ -152,7 +152,7 @@ class Customerdetails extends StatelessWidget {
                 ),
                 SizedBox(
                   child: IconButton(
-                      icon: Icon(MdiIcons.phoneOutline),
+                      icon: Icon(OMIcons.phone),
                       onPressed: () {
                         if (snapshot['alternatePhoneNumber'] != 'default') {
                           makeAPhone(
@@ -214,7 +214,11 @@ class Customerdetails extends StatelessWidget {
       child: Scaffold(
         appBar: controllers.utils.appbar(
           'Customer Console',
-          bottom: controllers.utils.tabDecoration('Details', 'Interests'),
+          bottom: TabBar(
+            labelStyle: controllers.utils.textStyle(fontSize: 18),
+            indicatorColor: Colors.transparent,
+            tabs: <Widget>[Tab(text: 'Details'), Tab(text: 'Interests')],
+          ),
         ),
         body: TabBarView(children: <Widget>[
           detailsPage(),

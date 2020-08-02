@@ -2,21 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/utils.dart';
 
 class AllCustomers extends StatelessWidget {
-  final customers = Controllers.to.customers;
-  final utils = Utils();
+  final controllers = Controllers.to;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: utils.appbar('Customers', actions: [
+      appBar: controllers.utils.appbar('Customers', actions: [
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
             Map<dynamic, dynamic> map = {
-              'query': customers,
+              'query': controllers.customers,
               'searchField': 'name',
               'type': 'customer'
             };
@@ -24,12 +22,12 @@ class AllCustomers extends StatelessWidget {
           },
         )
       ]),
-      body: utils.container(
-        child: utils.buildProducts(
-          query: customers.orderBy('timestamp', descending: true),
+      body: controllers.utils.container(
+        child: controllers.utils.buildProducts(
+          query: controllers.customers.orderBy('timestamp', descending: true),
           itemBuilder: (context, snapshot) {
             try {
-              return utils.listTile(
+              return controllers.utils.listTile(
                 leading: CircleAvatar(
                   backgroundImage: CachedNetworkImageProvider(
                     snapshot['image'],
@@ -40,7 +38,7 @@ class AllCustomers extends StatelessWidget {
                     Get.toNamed('customer_deatils', arguments: snapshot),
               );
             } catch (e) {
-              return utils.nullWidget(e.toString());
+              return controllers.utils.nullWidget(e.toString());
             }
           },
         ),
