@@ -358,9 +358,11 @@ class _PushDataState extends State<PushData> {
                     ),
                   ),
                   SizedBox(height: 18),
-                  controllers.utils.getRaisedButton(
-                    title: 'Add Product',
-                    onPressed: onPressed,
+                  Center(
+                    child: RaisedButton(
+                      child: Text('Add Product'),
+                      onPressed: onPressed,
+                    ),
                   ),
                   SizedBox(height: 30),
                 ],
@@ -385,6 +387,7 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
+        authored: controllers.isSuperuser.value,
         uid: controllers.firebaseUser.value.uid,
       );
       clearAllData();

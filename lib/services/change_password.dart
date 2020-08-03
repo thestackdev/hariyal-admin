@@ -56,8 +56,11 @@ class _ChangePasswordState extends State<ChangePassword> {
                         ),
                         onPressed: () => Get.to(ForgotPassword()),
                       ),
-                      controllers.utils.getRaisedButton(
-                          title: 'Change Password',
+                      RaisedButton(
+                          child: Text(
+                            'Change Password',
+                            style: Theme.of(context).textTheme.button,
+                          ),
                           onPressed: () async {
                             FocusScope.of(context).unfocus();
                             if (oldPass.text.length > 0 &&

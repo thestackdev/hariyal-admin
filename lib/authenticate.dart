@@ -44,11 +44,7 @@ class _AuthenticateState extends State<Authenticate> {
                     padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: Text(
                       'Login',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 30),
                     ),
                   ),
                   Padding(
@@ -62,12 +58,12 @@ class _AuthenticateState extends State<Authenticate> {
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontSize: 16,
-                        letterSpacing: 1.2,
+                        letterSpacing: 1,
                       ),
-                      decoration: controllers.utils.authDecoration(
-                          label: 'Email',
-                          icon: Icon(OMIcons.email, color: Colors.red),
-                          onPressed: () {}),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        suffixIcon: Icon(OMIcons.email, size: 21),
+                      ),
                     ),
                   ),
                   Padding(
@@ -78,18 +74,21 @@ class _AuthenticateState extends State<Authenticate> {
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontSize: 16,
-                        letterSpacing: 1.2,
+                        letterSpacing: 1,
                       ),
-                      decoration: controllers.utils.authDecoration(
-                          label: 'Password',
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
                           icon: Icon(
                             isHidden ? OMIcons.lock : OMIcons.lockOpen,
-                            color: Colors.red,
+                            size: 21,
                           ),
                           onPressed: () {
                             isHidden = !isHidden;
                             handleSetState();
-                          }),
+                          },
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 18),
@@ -106,8 +105,8 @@ class _AuthenticateState extends State<Authenticate> {
                         ),
                         onPressed: () => Get.to(ForgotPassword()),
                       ),
-                      controllers.utils.getRaisedButton(
-                        title: 'Login',
+                      RaisedButton(
+                        child: Text('Login'),
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           if (GetUtils.isEmail(emailController.text) &&

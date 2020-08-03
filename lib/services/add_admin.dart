@@ -80,8 +80,11 @@ class _AddAdminState extends State<AddAdmin> {
                     label: 'Password',
                   ),
                   SizedBox(height: 18),
-                  controllers.utils.getRaisedButton(
-                    title: 'Add Admin',
+                  RaisedButton(
+                    child: Text(
+                      'Add Admin',
+                      style: Theme.of(context).textTheme.button,
+                    ),
                     onPressed: () async {
                       FocusScope.of(context).unfocus();
                       if (GetUtils.isEmail(email.text) &&

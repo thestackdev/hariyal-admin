@@ -100,12 +100,18 @@ class _AddShowroomState extends State<AddShowroom> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                controllers.utils.getRaisedButton(
-                  title: 'Cancel',
+                RaisedButton(
+                  child: Text(
+                    'Cancel',
+                    style: Theme.of(context).textTheme.button,
+                  ),
                   onPressed: () => Get.back(),
                 ),
-                controllers.utils.getRaisedButton(
-                  title: docSnap == null ? 'Confirm' : 'Update',
+                RaisedButton(
+                  child: Text(
+                    docSnap == null ? 'Confirm' : 'Update',
+                    style: Theme.of(context).textTheme.button,
+                  ),
                   onPressed: () async {
                     if (titleController.text.length > 0 &&
                         addressController.text.length > 0 &&
@@ -141,7 +147,7 @@ class _AddShowroomState extends State<AddShowroom> {
                       controllers.utils.showSnackbar('Invalid Entries');
                     }
                   },
-                )
+                ),
               ],
             )
           ],

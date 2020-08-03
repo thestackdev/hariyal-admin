@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
@@ -47,198 +48,47 @@ class _ProductDetailsState extends State<ProductDetails> {
                             dotPosition: 20,
                           ),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Product ID : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              SelectableText(
-                                '${snapshot.documentID}',
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails('Product ID', snapshot.documentID),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Category : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['category']['category']}'),
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails('Category',
+                              snapshot.data['category']['category']),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Sub-Category : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['category']['subCategory']}'),
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails('Sub-Category',
+                              snapshot.data['category']['subCategory']),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'State : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['location']['state']}'),
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails(
+                              'State', snapshot.data['location']['state']),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Area : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['location']['area']}'),
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails(
+                              'Area', snapshot.data['location']['area']),
                           SizedBox(height: 18),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Title : ',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                GetUtils.capitalizeFirst(
-                                    '${snapshot.data['title']}'),
-                                textAlign: TextAlign.justify,
-                                style: controllers.utils.inputTextStyle(),
-                              ),
-                            ],
-                          ),
+                          buildDetails('Title', snapshot.data['title']),
                           SizedBox(height: 18),
-                          Text(
+                          buildDetails(
                             'Added Date',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 9),
-                          Text(
                             DateFormat.yMMMd().format(
-                                DateTime.fromMicrosecondsSinceEpoch(
-                                    snapshot['timestamp'])),
-                            style: controllers.utils.inputTextStyle(),
-                          ),
-                          SizedBox(height: 18),
-                          Text(
-                            'Author',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 9),
-                          GestureDetector(
-                            onTap: () => Get.toNamed('/admin_extras',
-                                arguments: snapshot.data['author']),
-                            child: Text(
-                              GetUtils.capitalizeFirst(
-                                  '${snapshot.data['author']}'),
-                              style: controllers.utils.inputTextStyle(),
+                              DateTime.fromMicrosecondsSinceEpoch(
+                                  snapshot['timestamp']),
                             ),
                           ),
                           SizedBox(height: 18),
-                          Text(
-                            'Description',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 9),
-                          Text(
-                            GetUtils.capitalizeFirst(
-                                '${snapshot.data['description']}'),
-                            textAlign: TextAlign.justify,
-                            style: controllers.utils.inputTextStyle(),
-                          ),
+                          buildDetails('Author', snapshot.data['author']),
                           SizedBox(height: 18),
-                          Text(
+                          buildDetails(
+                              'Description', snapshot.data['description']),
+                          SizedBox(height: 18),
+                          buildDetails(
                             'Price',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 9),
-                          Text(
-                            NumberFormat("#,##0.00", "en_US").format(
+                            NumberFormat("#,##0.0", "en_US").format(
                               snapshot.data['price'],
                             ),
-                            textAlign: TextAlign.justify,
-                            style: controllers.utils.inputTextStyle(),
                           ),
                           SizedBox(height: 18),
                           Text(
                             'Specifications',
                             style: TextStyle(
-                              color: Colors.red,
                               fontWeight: FontWeight.bold,
+                              color: Colors.red,
                               fontSize: 23,
                             ),
                           ),
@@ -251,34 +101,21 @@ class _ProductDetailsState extends State<ProductDetails> {
                             itemBuilder: (context, index) {
                               final keys =
                                   snapshot.data['specifications'].keys.toList();
-                              return Row(
-                                children: <Widget>[
-                                  Text(
-                                    '${keys[index]}  :  ',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                  Text(
-                                    snapshot.data['specifications']
-                                        [keys[index]],
-                                    style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 18,
-                                    ),
-                                  )
-                                ],
+                              return buildDetails(
+                                keys[index],
+                                snapshot.data['specifications'][keys[index]],
                               );
                             },
                           ),
                           SizedBox(height: 18),
                           if (snapshot.data['isSold'] == false) ...[
-                            controllers.utils.getRaisedButton(
-                                title: 'Mark as sold',
+                            Center(
+                              child: RaisedButton(
+                                child: Text('Mark as Sold'),
                                 onPressed: () =>
-                                    Get.to(MarkAsSold(), arguments: snapshot))
+                                    Get.to(MarkAsSold(), arguments: snapshot),
+                              ),
+                            )
                           ] else if (snapshot.data['isSold'] == true) ...[
                             Text(
                               'Sold Reason',
@@ -290,8 +127,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                             SizedBox(height: 9),
                             Text(
-                              snapshot.data['soldReason'] ??=
-                                  'Something went wrong',
+                              snapshot.data['soldReason'],
                               textAlign: TextAlign.justify,
                               style: controllers.utils.inputTextStyle(),
                             ),
@@ -312,29 +148,31 @@ class _ProductDetailsState extends State<ProductDetails> {
                               style: controllers.utils.inputTextStyle(),
                             ),
                             SizedBox(height: 18),
-                            controllers.utils.getRaisedButton(
-                                title: 'Mark as Available',
-                                onPressed: () {
-                                  snapshot.reference.updateData({
-                                    'isSold': false,
-                                    'soldReason': null,
-                                  });
-                                }),
+                            RaisedButton(
+                              child: Text(
+                                'Mark as Available',
+                                style: Theme.of(context).textTheme.button,
+                              ),
+                              onPressed: () => snapshot.reference.updateData({
+                                'isSold': false,
+                                'soldReason': null,
+                              }),
+                            ),
                           ],
                           SizedBox(height: 50),
                         ],
                       ),
                       Positioned(
-                        bottom: 0,
+                        bottom: -1,
                         right: 0,
                         left: 0,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Expanded(
-                              child: controllers.utils.materialButton(
+                              child: RaisedButton(
                                 color: Colors.red.shade500,
-                                title: 'Delete',
+                                child: Text('Delete'),
                                 onPressed: () =>
                                     controllers.utils.getSimpleDialouge(
                                   title: 'Are you sure',
@@ -353,9 +191,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                             ),
                             Expanded(
-                              child: controllers.utils.materialButton(
+                              child: RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.zero,
+                                ),
                                 color: Colors.grey.shade500,
-                                title: 'Edit',
+                                child: Text('Edit'),
                                 onPressed: () => editProduct(snapshot),
                               ),
                             ),
@@ -365,6 +206,32 @@ class _ProductDetailsState extends State<ProductDetails> {
                     ],
                   );
                 }),
+      ),
+    );
+  }
+
+  Widget buildDetails(String key, String value) {
+    return SelectableText.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$key : ',
+            style: TextStyle(
+              color: Colors.red.shade300,
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: value,
+            style: TextStyle(
+              color: Colors.grey.shade700,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+        ],
       ),
     );
   }

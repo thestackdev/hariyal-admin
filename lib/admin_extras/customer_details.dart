@@ -45,164 +45,96 @@ class Customerdetails extends StatelessWidget {
     detailsPage() {
       return controllers.utils.container(
         child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
           children: <Widget>[
-            SizedBox(height: 30),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: TextFormField(
-                style: controllers.utils.inputTextStyle(),
-                initialValue: GetUtils.capitalize(
-                  snapshot['name'] ?? 'Something went wrong !',
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: GetUtils.capitalizeFirst(
+                snapshot['name'] ?? 'Something went wrong !',
+              ),
+              readOnly: true,
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: snapshot['phone'] ?? 'Something went wrong !',
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Phone',
+                suffixIcon: IconButton(
+                  icon: Icon(OMIcons.phone),
+                  onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
                 ),
-                readOnly: true,
-                maxLines: null,
-                decoration: controllers.utils.inputDecoration(label: 'Name'),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: TextFormField(
-                      style: controllers.utils.inputTextStyle(),
-                      initialValue: GetUtils.capitalize(
-                        snapshot['phone'] ?? 'Something went wrong !',
-                      ),
-                      readOnly: true,
-                      maxLines: null,
-                      decoration: controllers.utils.inputDecoration(
-                        label: 'Phone',
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  child: IconButton(
-                    icon: Icon(OMIcons.phone),
-                    onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: TextFormField(
-                      style: controllers.utils.inputTextStyle(),
-                      initialValue:
-                          snapshot['email'] ?? 'Something went wrong !',
-                      readOnly: true,
-                      maxLines: null,
-                      decoration: controllers.utils.inputDecoration(
-                        label: 'Email',
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  child: IconButton(
-                      icon: Icon(OMIcons.email),
-                      onPressed: () {
-                        if (snapshot['email'] != 'default') {
-                          writeAnEmail(
-                            snapshot['email'],
-                          );
-                        } else {
-                          controllers.utils
-                              .showSnackbar('Invalid Email Address');
-                        }
-                      }),
-                ),
-                SizedBox(width: 18),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: TextFormField(
-                style: controllers.utils.inputTextStyle(),
-                initialValue: GetUtils.capitalize(
-                  snapshot['gender'] ?? 'Something went wrong !',
-                ),
-                readOnly: true,
-                maxLines: null,
-                decoration: controllers.utils.inputDecoration(label: 'Gender'),
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: snapshot['email'] ?? 'Something went wrong !',
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                suffixIcon: IconButton(
+                    icon: Icon(OMIcons.email),
+                    onPressed: () {
+                      if (snapshot['email'] != 'default') {
+                        writeAnEmail(
+                          snapshot['email'],
+                        );
+                      } else {
+                        controllers.utils.showSnackbar('Invalid Email Address');
+                      }
+                    }),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: TextFormField(
-                      style: controllers.utils.inputTextStyle(),
-                      initialValue: GetUtils.capitalize(
-                        snapshot['alternatePhoneNumber'] ??
-                            'Something went wrong !',
-                      ),
-                      readOnly: true,
-                      maxLines: null,
-                      decoration: controllers.utils.inputDecoration(
-                        label: 'Alternate Phone',
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  child: IconButton(
-                      icon: Icon(OMIcons.phone),
-                      onPressed: () {
-                        if (snapshot['alternatePhoneNumber'] != 'default') {
-                          makeAPhone(
-                              'tel: ${snapshot['alternatePhoneNumber']}');
-                        } else {
-                          controllers.utils.showSnackbar('No Phone Number');
-                        }
-                      }),
-                ),
-                SizedBox(width: 18),
-              ],
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: snapshot['gender'] ?? 'Something went wrong !',
+              readOnly: true,
+              decoration: InputDecoration(labelText: 'Gender'),
             ),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: TextFormField(
-                style: controllers.utils.inputTextStyle(),
-                initialValue: GetUtils.capitalize(
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue:
+                  snapshot['alternatePhoneNumber'] ?? 'Something went wrong !',
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Alternate Phone',
+                suffixIcon: IconButton(
+                  icon: Icon(OMIcons.phone),
+                  onPressed: () {
+                    if (snapshot['alternatePhoneNumber'] != 'default') {
+                      makeAPhone('tel: ${snapshot['alternatePhoneNumber']}');
+                    } else {
+                      controllers.utils.showSnackbar('No Phone Number');
+                    }
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 18),
+            TextFormField(
+              style: controllers.utils.inputTextStyle(),
+              initialValue:
                   snapshot['permanentAddress'] ?? 'Something went wrong !',
-                ),
-                readOnly: true,
-                maxLines: null,
-                decoration: controllers.utils
-                    .inputDecoration(label: 'Permanent Address'),
-              ),
+              readOnly: true,
+              decoration: InputDecoration(labelText: 'Permanent Address'),
             ),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: TextFormField(
-                style: controllers.utils.inputTextStyle(),
-                initialValue: GetUtils.capitalize(
-                  snapshot['location']['cityDistrict'] ??
-                      'Something went wrong !',
-                ),
-                readOnly: true,
-                maxLines: null,
-                decoration:
-                    controllers.utils.inputDecoration(label: 'City/District'),
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: GetUtils.capitalize(
+                snapshot['location']['cityDistrict'] ??
+                    'Something went wrong !',
               ),
+              readOnly: true,
+              decoration: InputDecoration(labelText: 'City/District'),
             ),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: TextFormField(
-                style: controllers.utils.inputTextStyle(),
-                initialValue: GetUtils.capitalize(
-                  snapshot['location']['state'] ?? 'Something went wrong !',
-                ),
-                readOnly: true,
-                maxLines: null,
-                decoration: controllers.utils.inputDecoration(label: 'State'),
+            SizedBox(height: 18),
+            TextFormField(
+              initialValue: GetUtils.capitalize(
+                snapshot['location']['state'] ?? 'Something went wrong !',
               ),
+              readOnly: true,
+              decoration: InputDecoration(labelText: 'State'),
             ),
           ],
         ),

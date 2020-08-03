@@ -26,8 +26,11 @@ class _MarkAsSoldState extends State<MarkAsSold> {
             controller: controller,
           ),
           SizedBox(height: 18),
-          controllers.utils.getRaisedButton(
-            title: 'Sold',
+          RaisedButton(
+            child: Text(
+              'Sold',
+              style: Theme.of(context).textTheme.button,
+            ),
             onPressed: () {
               if (controller.text.length > 0) {
                 snapshot.reference.updateData({
@@ -40,7 +43,7 @@ class _MarkAsSoldState extends State<MarkAsSold> {
                 controllers.utils.showSnackbar('Invalid Reason');
               }
             },
-          )
+          ),
         ],
       )),
     );

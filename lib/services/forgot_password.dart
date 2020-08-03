@@ -31,8 +31,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   controllers.utils
                       .inputTextField(label: 'Email', controller: email),
                   SizedBox(height: 18),
-                  controllers.utils.getRaisedButton(
-                      title: 'Request Password Reset',
+                  RaisedButton(
+                      child: Text(
+                        'Request Password Reset',
+                        style: Theme.of(context).textTheme.button,
+                      ),
                       onPressed: () async {
                         if (GetUtils.isEmail(email.text)) {
                           setState(() {

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/services/search_page.dart';
 
 class AllProducts extends StatelessWidget {
   final Query query;

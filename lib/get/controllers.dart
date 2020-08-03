@@ -49,18 +49,6 @@ class Controllers extends GetxController {
     orders = firestore.collection('orders');
     reports = firestore.collection('reports');
 
-    extras.snapshots().obs.value.listen((event) {
-      event.documents.forEach((element) {
-        if (element.documentID == 'category') {
-          categories.value = element;
-        } else if (element.documentID == 'locations') {
-          locations.value = element;
-        } else if (element.documentID == 'specifications') {
-          specifications.value = element;
-        }
-      });
-    });
-
     super.onInit();
   }
 
@@ -69,6 +57,17 @@ class Controllers extends GetxController {
       Get.offAllNamed('/authenticate');
     } else {
       admin.document(firebaseUser.uid).obs.value.snapshots().listen((event) {
+        extras.snapshots().obs.value.listen((event) {
+          event.documents.forEach((element) {
+            if (element.documentID == 'category') {
+              categories.value = element;
+            } else if (element.documentID == 'locations') {
+              locations.value = element;
+            } else if (element.documentID == 'specifications') {
+              specifications.value = element;
+            }
+          });
+        });
         userData.value = event;
 
         if (shouldUpdateScreen.value) {

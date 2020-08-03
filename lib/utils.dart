@@ -17,35 +17,6 @@ class Utils {
     );
   }
 
-  InputDecoration authDecoration(
-      {String label, Icon icon, Function onPressed}) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: textStyle(
-        color: Colors.red.shade500,
-        fontSize: 16,
-      ),
-      suffix: IconButton(icon: icon, onPressed: onPressed),
-      isDense: true,
-      contentPadding: EdgeInsets.all(12),
-      border: InputBorder.none,
-      fillColor: Colors.grey.shade50,
-      filled: true,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
-      disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
-    );
-  }
-
   Widget requestCard({
     String title,
     String description,
@@ -75,16 +46,10 @@ class Utils {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(9),
-                    ),
+                  child: RaisedButton(
                     color: Colors.green,
                     onPressed: approve,
-                    child: Text(
-                      'Approve',
-                      style: textStyle(color: Colors.white),
-                    ),
+                    child: Text('Approve'),
                   ),
                 ),
               ],
@@ -131,10 +96,12 @@ class Utils {
           borderRadius: BorderRadius.circular(9),
           color: Colors.red,
         ),
-        child: ListTile(
-          leading: Icon(
-            OMIcons.deleteForever,
-            color: Colors.white,
+        child: Center(
+          child: ListTile(
+            leading: Icon(
+              OMIcons.deleteForever,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
@@ -143,10 +110,12 @@ class Utils {
           borderRadius: BorderRadius.circular(9),
           color: Colors.blue,
         ),
-        child: ListTile(
-          trailing: Icon(
-            OMIcons.edit,
-            color: Colors.white,
+        child: Center(
+          child: ListTile(
+            trailing: Icon(
+              OMIcons.edit,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
@@ -170,22 +139,15 @@ class Utils {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
         ),
-        title: Center(
-          child: Text(
-            title,
-            style: textStyle(
-              color: Colors.red,
-            ),
-          ),
-        ),
+        title: Center(child: Text(title)),
         content: content,
         actions: <Widget>[
           FlatButton(
-            child: Text(noText, style: textStyle()),
+            child: Text(noText),
             onPressed: noPressed,
           ),
           FlatButton(
-            child: Text(yesText, style: textStyle()),
+            child: Text(yesText),
             onPressed: yesPressed,
           ),
         ],
@@ -205,28 +167,7 @@ class Utils {
       controller: controller,
       validator: (value) => value == null ? 'Field can\'t be empty' : null,
       onChanged: onChnaged,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: inputTextStyle(),
-        isDense: true,
-        labelStyle: textStyle(color: Colors.red),
-        contentPadding: EdgeInsets.all(12),
-        border: InputBorder.none,
-        fillColor: Colors.grey.shade100,
-        filled: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide.none,
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(9),
-          borderSide: BorderSide.none,
-        ),
-      ),
+      decoration: InputDecoration(hintText: hintText),
     );
   }
 
@@ -242,7 +183,7 @@ class Utils {
       child: DropdownButtonFormField(
         validator: (value) => value == null ? 'Field can\'t be empty' : null,
         value: value,
-        decoration: inputDecoration(label: label),
+        decoration: InputDecoration(labelText: label),
         isExpanded: true,
         iconEnabledColor: Colors.grey,
         style: inputTextStyle(),
@@ -281,7 +222,7 @@ class Utils {
         controller: controller,
         inputFormatters: inputFormatters,
         keyboardType: textInputType,
-        decoration: inputDecoration(label: label),
+        decoration: InputDecoration(labelText: label),
         textInputAction: textInputAction,
       ),
     );
@@ -316,30 +257,6 @@ class Utils {
       fontWeight: FontWeight.normal,
       fontSize: 16,
       color: Colors.grey.shade700,
-    );
-  }
-
-  InputDecoration inputDecoration({String label}) {
-    return InputDecoration(
-      labelText: label,
-      isDense: true,
-      labelStyle: textStyle(color: Colors.red),
-      contentPadding: EdgeInsets.all(18),
-      border: InputBorder.none,
-      fillColor: Colors.grey.shade50,
-      filled: true,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
-      disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(9),
-        borderSide: BorderSide.none,
-      ),
     );
   }
 
@@ -381,16 +298,11 @@ class Utils {
   Widget appbar(
     String label, {
     Widget bottom,
-    Widget leading,
     List<Widget> actions,
   }) {
     return AppBar(
-      leading: leading,
       actions: actions,
-      title: Text(
-        GetUtils.capitalizeFirst(label),
-        style: textStyle(fontSize: 23),
-      ),
+      title: Text(GetUtils.capitalizeFirst(label)),
       centerTitle: true,
       bottom: bottom,
     );
@@ -398,36 +310,13 @@ class Utils {
 
   Widget nullWidget(String label) {
     return Center(
-      child: Text(
-        label,
-        style: textStyle(color: Colors.grey.shade700),
-        textScaleFactor: 1.3,
-        textAlign: TextAlign.center,
-      ),
+      child: Text(label),
     );
   }
 
   Widget progressIndicator() {
     return Center(
       child: SpinKitRing(color: Colors.red.shade300, lineWidth: 5),
-    );
-  }
-
-  Widget getRaisedButton({Function onPressed, String title}) {
-    return Center(
-      child: RaisedButton(
-        onPressed: onPressed,
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(9),
-        ),
-        color: Colors.red.shade300,
-        child: Text(
-          title,
-          style: textStyle(color: Colors.white, fontSize: 16),
-        ),
-      ),
     );
   }
 

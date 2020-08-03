@@ -455,8 +455,13 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       ),
                     ),
                     SizedBox(height: 18),
-                    controllers.utils.getRaisedButton(
-                        title: 'Update Data', onPressed: onPressed),
+                    RaisedButton(
+                      child: Text(
+                        'Update Data',
+                        style: Theme.of(context).textTheme.button,
+                      ),
+                      onPressed: onPressed,
+                    ),
                     SizedBox(height: 50),
                   ],
                 ),
