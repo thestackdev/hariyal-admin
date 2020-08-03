@@ -386,7 +386,6 @@ class _PushDataState extends State<PushData> {
         description: description.text,
         specifications: inputSpecifications,
         uid: controllers.firebaseUser.value.uid,
-        authored: controllers.isSuperuser.value,
       );
       clearAllData();
       loading = false;
