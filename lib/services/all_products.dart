@@ -18,12 +18,11 @@ class AllProducts extends StatelessWidget {
           icon: Icon(Icons.search),
           onPressed: () {
             Map<dynamic, dynamic> map = {
-              'query':
-                  Controllers.to.products.where('isSold', isEqualTo: false),
+              'query': Controllers.to.products,
               'searchField': FieldPath.documentId,
               'type': 'product'
             };
-            Get.to(SearchPage(), arguments: map);
+            Get.toNamed('/search', arguments: map);
           },
         )
       ]),

@@ -90,14 +90,14 @@ class _SearchPageState extends State<SearchPage> {
                     return controllers.utils.listTile(
                       title: snapshot.data['name'],
                       subtitle:
-                          'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['since']))}',
+                          'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp']))}',
                       onTap: () => Get.offNamed(
                         '/admin_extras',
                         arguments: snapshot.documentID,
                       ),
                     );
                   default:
-                    return controllers.utils.nullWidget('Nothing Found');
+                    return controllers.utils.nullWidget('Something went wrong');
                 }
               } catch (e) {
                 return controllers.utils.nullWidget('Nothing Found');
@@ -107,8 +107,8 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Future<List<DocumentSnapshot>> onSearch(String text) =>
-      query.where(searchField, isEqualTo: text).getDocuments().then((value) {
-        return value.documents;
-      });
+  Future<List<DocumentSnapshot>> onSearch(String text) => query
+      .where(searchField, isEqualTo: text)
+      .getDocuments()
+      .then((value) => value.documents);
 }

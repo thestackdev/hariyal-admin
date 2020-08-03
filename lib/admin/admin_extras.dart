@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
+import 'package:superuser/services/all_products.dart';
 
 class AdminExtras extends StatelessWidget {
   final controllers = Controllers.to;
@@ -27,11 +28,14 @@ class AdminExtras extends StatelessWidget {
             controllers.utils.listTile(
               leading: Icon(OMIcons.shoppingCart, color: Colors.red),
               title: 'My Products',
-              onTap: () => Get.toNamed(
-                'all_products',
-                arguments: controllers.products.where(
-                  'author',
-                  isEqualTo: controllers.firebaseUser.value.uid,
+              onTap: () => Get.to(
+                AllProducts(
+                  query: controllers.products
+                      .orderBy('timestamp', descending: true)
+                      .where(
+                        'author',
+                        isEqualTo: controllers.firebaseUser.value.uid,
+                      ),
                 ),
               ),
             ),

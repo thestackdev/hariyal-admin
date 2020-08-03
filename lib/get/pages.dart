@@ -29,6 +29,7 @@ class Pages {
     GetPage(
       name: '/initialPage',
       page: () => InitialRoute(),
+      transition: Transition.noTransition,
     ),
     GetPage(
       name: '/authenticate',
