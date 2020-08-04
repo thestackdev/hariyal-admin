@@ -15,7 +15,7 @@ class Interests extends StatelessWidget {
       body: controllers.utils.container(
         child: controllers.utils.buildProducts(
           query: controllers.interests.orderBy('timestamp', descending: true),
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             return DataStreamBuilder<DocumentSnapshot>(
               stream: controllers.customers
                   .document(snapshot.data['author'])

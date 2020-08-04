@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:superuser/get/controllers.dart';
 import 'package:intl/intl.dart';
+import 'package:superuser/get/controllers.dart';
 
 class Admins extends StatelessWidget {
   final controllers = Controllers.to;
@@ -25,7 +25,7 @@ class Admins extends StatelessWidget {
       body: controllers.utils.container(
         child: controllers.utils.buildProducts(
           query: controllers.admin.orderBy('timestamp', descending: true),
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             return controllers.utils.listTile(
               title: snapshot.data['name'],
               subtitle:

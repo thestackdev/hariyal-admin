@@ -25,7 +25,7 @@ class AllCustomers extends StatelessWidget {
       body: controllers.utils.container(
         child: controllers.utils.buildProducts(
           query: controllers.customers.orderBy('timestamp', descending: true),
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             try {
               return controllers.utils.listTile(
                 leading: CircleAvatar(

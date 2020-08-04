@@ -15,7 +15,7 @@ class SoldItems extends StatelessWidget {
       body: controllers.utils.container(
         child: controllers.utils.buildProducts(
           query: query,
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             try {
               return controllers.utils.card(
                 title: snapshot.data['title'],

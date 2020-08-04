@@ -14,7 +14,7 @@ class Pending extends StatelessWidget {
               .orderBy('timestamp', descending: true)
               .where('author', isEqualTo: controllers.firebaseUser.value.uid)
               .where('authored', isEqualTo: false),
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             try {
               return controllers.utils.card(
                 title: snapshot.data['title'],

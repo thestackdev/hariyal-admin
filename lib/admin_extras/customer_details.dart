@@ -159,7 +159,7 @@ class Customerdetails extends StatelessWidget {
                   query: controllers.interests
                       .orderBy('timestamp', descending: true)
                       .where('author', isEqualTo: snapshot.documentID),
-                  itemBuilder: (context, snapshot) {
+                  itemBuilder: (index, context, snapshot) {
                     return DataStreamBuilder<DocumentSnapshot>(
                         stream: controllers.products
                             .document(snapshot['productId'])

@@ -31,7 +31,7 @@ class AdminExtras extends StatelessWidget {
                   query: controllers.products
                       .orderBy('timestamp', descending: true)
                       .where('author', isEqualTo: adminUid),
-                  itemBuilder: (context, snapshot) {
+                  itemBuilder: (index, context, snapshot) {
                     try {
                       return controllers.utils.card(
                         title: snapshot.data['title'],

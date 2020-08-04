@@ -26,11 +26,11 @@ class Utils {
     );
   }
 
-  Widget buildProducts({
-    Query query,
-    Widget Function(BuildContext, DocumentSnapshot) itemBuilder,
-    bool shrinkWrap = false,
-  }) {
+  Widget buildProducts(
+      {Query query,
+      Widget Function(int, BuildContext, DocumentSnapshot) itemBuilder,
+      bool shrinkWrap = false,
+      PaginateBuilderType builderType = PaginateBuilderType.listView}) {
     return PaginateFirestore(
       shrinkWrap: shrinkWrap,
       emptyDisplay: nullWidget('Nothing found'),
@@ -42,6 +42,7 @@ class Utils {
       itemsPerPage: 10,
       itemBuilder: itemBuilder,
       query: query,
+      itemBuilderType: builderType,
     );
   }
 

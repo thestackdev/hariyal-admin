@@ -29,7 +29,7 @@ class AllProducts extends StatelessWidget {
         child: controllers.utils.buildProducts(
           shrinkWrap: true,
           query: query,
-          itemBuilder: (context, snapshot) {
+          itemBuilder: (index, context, snapshot) {
             try {
               return controllers.utils.card(
                 title: snapshot.data['title'],
