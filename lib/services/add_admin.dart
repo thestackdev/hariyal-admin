@@ -80,22 +80,16 @@ class _AddAdminState extends State<AddAdmin> {
                     label: 'Password',
                   ),
                   SizedBox(height: 18),
-                  RaisedButton(
-                    child: Text(
-                      'Add Admin',
-                      style: Theme.of(context).textTheme.button,
-                    ),
-                    onPressed: () async {
-                      FocusScope.of(context).unfocus();
-                      if (GetUtils.isEmail(email.text) &&
-                          password.text.length > 0 &&
-                          name.text.length > 0) {
-                        register();
-                      } else {
-                        controllers.utils.showSnackbar('Invalid entries');
-                      }
-                    },
-                  ),
+                  controllers.utils.raisedButton('Add Admin', () async {
+                    FocusScope.of(context).unfocus();
+                    if (GetUtils.isEmail(email.text) &&
+                        password.text.length > 0 &&
+                        name.text.length > 0) {
+                      register();
+                    } else {
+                      controllers.utils.showSnackbar('Invalid entries');
+                    }
+                  })
                 ],
               ),
       ),

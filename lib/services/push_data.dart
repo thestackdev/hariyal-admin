@@ -387,7 +387,7 @@ class _PushDataState extends State<PushData> {
         title: title.text.toLowerCase(),
         description: description.text,
         specifications: inputSpecifications,
-        authored: controllers.isSuperuser.value,
+        authored: !controllers.isSuperuser.value,
         uid: controllers.firebaseUser.value.uid,
       );
       clearAllData();

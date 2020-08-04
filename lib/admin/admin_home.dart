@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:superuser/admin/pending.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/orders.dart';
@@ -14,6 +15,7 @@ class AdminHome extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> screenList = [
       Orders(),
+      Pending(),
       SoldItems(
         query: controllers.products
             .where('author', isEqualTo: controllers.firebaseUser.value.uid)
@@ -24,6 +26,7 @@ class AdminHome extends StatelessWidget {
     ];
     final items = [
       bottomNavigationBar('Orders', OMIcons.addShoppingCart),
+      bottomNavigationBar('Pending', OMIcons.addShoppingCart),
       bottomNavigationBar('Sold Items', OMIcons.attachMoney),
       bottomNavigationBar('Add Items', OMIcons.plusOne),
       bottomNavigationBar('Extras', OMIcons.more),

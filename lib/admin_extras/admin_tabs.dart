@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
+import 'package:superuser/widgets/image_view.dart';
 
 class AdminExtras extends StatelessWidget {
   final String adminUid = Get.arguments;
@@ -19,7 +21,7 @@ class AdminExtras extends StatelessWidget {
           bottom: TabBar(
             labelStyle: controllers.utils.textStyle(fontSize: 18),
             indicatorColor: Colors.transparent,
-            tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Privilages')],
+            tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Details')],
           ),
         ),
         body: controllers.utils.container(
@@ -58,6 +60,29 @@ class AdminExtras extends StatelessWidget {
       builder: (context, snapshot) {
         return ListView(
           children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                if (snapshot.data['imageUrl'] != null) {
+                  Get.to(HariyalImageView(imageUrls: [snapshot['imageUrl']]));
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.all(18),
+                margin: EdgeInsets.all(18),
+                child: Center(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    maxRadius: 90,
+                    minRadius: 90,
+                    backgroundImage: snapshot.data['imageUrl'] == null
+                        ? AssetImage('assets/avatar-default-circle.png')
+                        : CachedNetworkImageProvider(
+                            snapshot['imageUrl'],
+                          ),
+                  ),
+                ),
+              ),
+            ),
             Container(
               margin: EdgeInsets.all(9),
               decoration: BoxDecoration(
@@ -66,7 +91,8 @@ class AdminExtras extends StatelessWidget {
               ),
               child: SwitchListTile(
                 title: Text('Admin'),
-                onChanged: controllers.firebaseUser.value.uid == adminUid
+                onChanged: controllers.firebaseUser.value.uid == adminUid ||
+                        snapshot.data['isSuperuser'] == true
                     ? null
                     : (value) {
                         snapshot.reference.updateData({
@@ -84,7 +110,8 @@ class AdminExtras extends StatelessWidget {
               ),
               child: SwitchListTile(
                 title: Text('Superuser'),
-                onChanged: controllers.firebaseUser.value.uid == adminUid
+                onChanged: controllers.firebaseUser.value.uid == adminUid ||
+                        snapshot.data['isAdmin'] == false
                     ? null
                     : (value) {
                         snapshot.reference.updateData({

@@ -59,7 +59,6 @@ class Showrooms extends StatelessWidget {
                     arguments: snapshot.documents[index].data,
                   ),
                   title: snapshot.documents[index]['name'],
-                  subtitle: 'Address : ' + snapshot.documents[index]['address'],
                 ),
               );
             },
@@ -75,16 +74,39 @@ class Showrooms extends StatelessWidget {
             .where('active', isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
+          if (snapshot.documents.length == 0) {
+            return controllers.utils.nullWidget('No Showrooms found');
+          }
           return ListView.builder(
             itemCount: snapshot.documents.length,
-            itemBuilder: (BuildContext context, int index) {
-              return controllers.utils.listTile(
-                onTap: () => Get.toNamed(
-                  'showroom_details',
-                  arguments: snapshot.documents[index].data,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  color: Colors.grey.shade50,
                 ),
-                title: snapshot.documents[index]['name'],
-                subtitle: 'Address : ' + snapshot.documents[index]['address'],
+                child: ListTile(
+                  onTap: () => Get.toNamed(
+                    'showroom_details',
+                    arguments: snapshot.documents[index].data,
+                  ),
+                  title: Text(
+                    GetUtils.capitalizeFirst(
+                        snapshot.documents[index]['name'].trim()),
+                    style: TextStyle(color: Colors.red),
+                    textScaleFactor: 1.2,
+                  ),
+                  subtitle: Column(
+                    children: <Widget>[
+                      SizedBox(height: 18),
+                      controllers.utils.raisedButton('Make Active', () {
+                        snapshot.documents[index].reference
+                            .updateData({'active': true});
+                      }),
+                    ],
+                  ),
+                ),
               );
             },
           );

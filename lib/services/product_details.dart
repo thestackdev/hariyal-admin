@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
@@ -19,6 +18,8 @@ class _ProductDetailsState extends State<ProductDetails> {
   final controllers = Controllers.to;
   bool loading = false;
   final String docId = Get.arguments;
+  String admin = '';
+  bool isFirst = true;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,34 @@ class _ProductDetailsState extends State<ProductDetails> {
             : DataStreamBuilder<DocumentSnapshot>(
                 stream: controllers.products.document(docId).snapshots(),
                 builder: (context, snapshot) {
+                  if (isFirst) {
+                    controllers.admin
+                        .document(snapshot.data['author'])
+                        .get()
+                        .then((value) {
+                      admin = value.data['name'];
+                      isFirst = false;
+                      handleState();
+                    });
+                  }
+
+                  Widget buildButton(
+                      int count, String label, Color color, Function onTap) {
+                    return GestureDetector(
+                      onTap: onTap,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * .07,
+                        width: MediaQuery.of(context).size.width / count,
+                        color: color,
+                        alignment: Alignment.center,
+                        child: Text(
+                          label,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
+                  }
+
                   return Stack(
                     children: [
                       ListView(
@@ -72,7 +101,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ),
                           SizedBox(height: 18),
-                          buildDetails('Author', snapshot.data['author']),
+                          buildDetails('Author', admin),
                           SizedBox(height: 18),
                           buildDetails(
                               'Description', snapshot.data['description']),
@@ -108,7 +137,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                             },
                           ),
                           SizedBox(height: 18),
-                          if (snapshot.data['isSold'] == false) ...[
+                          if (snapshot.data['isSold'] == false &&
+                              snapshot.data['authored']) ...[
                             Center(
                               child: RaisedButton(
                                 child: Text('Mark as Sold'),
@@ -117,64 +147,104 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                             )
                           ] else if (snapshot.data['isSold'] == true) ...[
-                            Text(
-                              'Sold Reason',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 23,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 9),
-                            Text(
-                              snapshot.data['soldReason'],
-                              textAlign: TextAlign.justify,
-                              style: controllers.utils.inputTextStyle(),
-                            ),
+                            buildDetails(
+                                'Sold Reason', snapshot.data['soldReason']),
                             SizedBox(height: 18),
-                            Text(
+                            buildDetails(
                               'Sold Date',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 23,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 9),
-                            Text(
                               DateFormat.yMMMd().format(
-                                  DateTime.fromMicrosecondsSinceEpoch(
-                                      snapshot['sold_timestamp'])),
-                              style: controllers.utils.inputTextStyle(),
+                                DateTime.fromMicrosecondsSinceEpoch(
+                                    snapshot['sold_timestamp']),
+                              ),
                             ),
                             SizedBox(height: 18),
-                            RaisedButton(
-                              child: Text(
-                                'Mark as Available',
-                                style: Theme.of(context).textTheme.button,
-                              ),
-                              onPressed: () => snapshot.reference.updateData({
+                            controllers.utils.raisedButton(
+                              'Mark as Available',
+                              () => snapshot.reference.updateData({
                                 'isSold': false,
                                 'soldReason': null,
                               }),
-                            ),
+                            )
                           ],
                           SizedBox(height: 50),
                         ],
                       ),
                       Positioned(
-                        bottom: -1,
-                        right: 0,
-                        left: 0,
+                        bottom: 0.0,
+                        right: 0.0,
+                        left: 0.0,
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Expanded(
-                              child: RaisedButton(
-                                color: Colors.red.shade500,
-                                child: Text('Delete'),
-                                onPressed: () =>
-                                    controllers.utils.getSimpleDialouge(
+                            if (!snapshot.data['authored']) ...[
+                              if (!controllers.isSuperuser.value) ...[
+                                buildButton(
+                                  2,
+                                  'Edit',
+                                  Colors.grey.shade500,
+                                  () => editProduct(snapshot),
+                                ),
+                                buildButton(
+                                  2,
+                                  'Delete',
+                                  Colors.redAccent,
+                                  () => controllers.utils.getSimpleDialouge(
+                                    title: 'Are you sure',
+                                    content: Text(
+                                      'Delete this product permanently ?',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    yesText: 'Delete',
+                                    noText: 'Cancel',
+                                    yesPressed: () =>
+                                        deletePremanently(snapshot),
+                                    noPressed: () => Get.back(),
+                                  ),
+                                ),
+                              ] else ...[
+                                buildButton(
+                                  3,
+                                  'Approve',
+                                  Colors.green.shade500,
+                                  () => snapshot.reference
+                                      .updateData({'authored': true}),
+                                ),
+                                buildButton(
+                                  3,
+                                  'Edit',
+                                  Colors.grey.shade500,
+                                  () => editProduct(snapshot),
+                                ),
+                                buildButton(
+                                  3,
+                                  'Reject',
+                                  Colors.redAccent,
+                                  () => controllers.utils.getSimpleDialouge(
+                                    title: 'Are you sure',
+                                    content: Text(
+                                      'Do you want to Reject this product ?',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    yesText: 'Reject',
+                                    noText: 'Cancel',
+                                    yesPressed: () =>
+                                        deletePremanently(snapshot),
+                                    noPressed: () => Get.back(),
+                                  ),
+                                ),
+                              ],
+                            ] else if (!snapshot.data['isDeleted'] &&
+                                !snapshot.data['isSold']) ...[
+                              buildButton(
+                                2,
+                                'Delete',
+                                Colors.redAccent,
+                                () => controllers.utils.getSimpleDialouge(
                                   title: 'Are you sure',
                                   content: Text(
                                     'Do you want to delete this product ?',
@@ -189,17 +259,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   noPressed: () => Get.back(),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.zero,
-                                ),
-                                color: Colors.grey.shade500,
-                                child: Text('Edit'),
-                                onPressed: () => editProduct(snapshot),
-                              ),
-                            ),
+                              buildButton(
+                                2,
+                                'Edit',
+                                Colors.grey.shade500,
+                                () => editProduct(snapshot),
+                              )
+                            ],
                           ],
                         ),
                       ),
@@ -234,6 +300,16 @@ class _ProductDetailsState extends State<ProductDetails> {
         ],
       ),
     );
+  }
+
+  deletePremanently(DocumentSnapshot snapshot) {
+    Get.back();
+    final images = snapshot.data['images'];
+    images.forEach((element) => controllers.firebaseStorage
+        .getReferenceFromUrl(element)
+        .then((value) => value.delete()));
+    controllers.products.document(snapshot.documentID).delete();
+    Get.back();
   }
 
   deleteProduct(DocumentSnapshot snapshot) async {

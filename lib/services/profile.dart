@@ -78,8 +78,10 @@ class _ProfileState extends State<Profile> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      Get.to(
-                          HariyalImageView(imageUrls: [snapshot['imageUrl']]));
+                      if (snapshot.data['imageUrl'] != null) {
+                        Get.to(HariyalImageView(
+                            imageUrls: [snapshot['imageUrl']]));
+                      }
                     },
                     child: Container(
                       padding: EdgeInsets.all(18),

@@ -17,45 +17,11 @@ class Utils {
     );
   }
 
-  Widget requestCard({
-    String title,
-    String description,
-    String imageUrl,
-    Function onTap,
-    Function approve,
-  }) {
-    return Card(
-      margin: EdgeInsets.all(12),
-      elevation: 3,
-      shadowColor: Colors.deepPurple,
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            onTap: onTap,
-            leading: CachedNetworkImage(
-              imageUrl: imageUrl,
-              height: 90,
-              width: 90,
-              filterQuality: FilterQuality.low,
-            ),
-            title: Text(GetUtils.capitalize(title)),
-            subtitle: Text(description),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(9),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                    color: Colors.green,
-                    onPressed: approve,
-                    child: Text('Approve'),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
+  Widget raisedButton(String label, Function onPressed) {
+    return Center(
+      child: RaisedButton(
+        child: Text(label),
+        onPressed: onPressed,
       ),
     );
   }
@@ -310,7 +276,11 @@ class Utils {
 
   Widget nullWidget(String label) {
     return Center(
-      child: Text(label),
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.grey.shade700),
+        textScaleFactor: 1.5,
+      ),
     );
   }
 

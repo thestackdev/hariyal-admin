@@ -23,9 +23,9 @@ class Requests extends StatelessWidget {
             }
             return ListView.builder(
               itemCount: snapshot.documents.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (context, index) {
                 try {
-                  return controllers.utils.requestCard(
+                  return controllers.utils.card(
                     title: snapshot.documents[index].data['title'],
                     description: snapshot.documents[index].data['description'],
                     imageUrl: snapshot.documents[index].data['images'][0],
@@ -33,8 +33,6 @@ class Requests extends StatelessWidget {
                       'product_details',
                       arguments: snapshot.documents[index].documentID,
                     ),
-                    approve: () => snapshot.documents[index].reference
-                        .updateData({'authored': true}),
                   );
                 } catch (e) {
                   return controllers.utils.nullWidget(e.toString());

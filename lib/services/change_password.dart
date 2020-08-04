@@ -56,52 +56,46 @@ class _ChangePasswordState extends State<ChangePassword> {
                         ),
                         onPressed: () => Get.to(ForgotPassword()),
                       ),
-                      RaisedButton(
-                          child: Text(
-                            'Change Password',
-                            style: Theme.of(context).textTheme.button,
-                          ),
-                          onPressed: () async {
-                            FocusScope.of(context).unfocus();
-                            if (oldPass.text.length > 0 &&
-                                newPass.text.length > 0 &&
-                                newPassClone.text.length > 0 &&
-                                newPass.text == newPassClone.text) {
-                              setState(() {
-                                loading = true;
-                              });
-                              authCredential = EmailAuthProvider.getCredential(
-                                email: controllers.firebaseUser.value.email,
-                                password: oldPass.text,
-                              );
-                              try {
-                                final resutlt = await controllers
-                                    .firebaseUser.value
-                                    .reauthenticateWithCredential(
-                                        authCredential);
-                                resutlt.user.updatePassword(newPassClone.text);
-                                controllers.utils.showSnackbar(
-                                    'Password Changed sucessfully changed');
-                                setState(() {
-                                  loading = false;
-                                });
-                              } catch (e) {
-                                setState(() {
-                                  loading = false;
-                                });
-                                controllers.utils
-                                    .showSnackbar('Not a valid Password');
-                              }
-                            } else {
-                              if (newPass.text != newPassClone.text) {
-                                controllers.utils.showSnackbar(
-                                    'New Passwords does\'t match');
-                              } else {
-                                controllers.utils
-                                    .showSnackbar('Not a valid Password');
-                              }
-                            }
-                          }),
+                      controllers.utils.raisedButton('Change Password',
+                          () async {
+                        FocusScope.of(context).unfocus();
+                        if (oldPass.text.length > 0 &&
+                            newPass.text.length > 0 &&
+                            newPassClone.text.length > 0 &&
+                            newPass.text == newPassClone.text) {
+                          setState(() {
+                            loading = true;
+                          });
+                          authCredential = EmailAuthProvider.getCredential(
+                            email: controllers.firebaseUser.value.email,
+                            password: oldPass.text,
+                          );
+                          try {
+                            final resutlt = await controllers.firebaseUser.value
+                                .reauthenticateWithCredential(authCredential);
+                            resutlt.user.updatePassword(newPassClone.text);
+                            controllers.utils.showSnackbar(
+                                'Password Changed sucessfully changed');
+                            setState(() {
+                              loading = false;
+                            });
+                          } catch (e) {
+                            setState(() {
+                              loading = false;
+                            });
+                            controllers.utils
+                                .showSnackbar('Not a valid Password');
+                          }
+                        } else {
+                          if (newPass.text != newPassClone.text) {
+                            controllers.utils
+                                .showSnackbar('New Passwords does\'t match');
+                          } else {
+                            controllers.utils
+                                .showSnackbar('Not a valid Password');
+                          }
+                        }
+                      })
                     ],
                   ),
                 ],
