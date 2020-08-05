@@ -82,7 +82,7 @@ class States extends StatelessWidget {
               content: controllers.utils.dialogInput(
                   hintText: 'Type here',
                   onChnaged: (value) {
-                    text = value;
+                    text = value.trim().toLowerCase();
                   }),
               noPressed: () => Get.back(),
               yesPressed: () => addState(),
@@ -114,7 +114,7 @@ class States extends StatelessWidget {
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
-                          text = value;
+                          text = value.trim().toLowerCase();
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {

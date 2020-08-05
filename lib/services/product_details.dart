@@ -20,6 +20,13 @@ class _ProductDetailsState extends State<ProductDetails> {
   final String docId = Get.arguments;
   String admin = '';
   bool isFirst = true;
+  final controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +119,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                               snapshot.data['price'],
                             ),
                           ),
+                          if (snapshot.data['reject_reason'] != null) ...[
+                            SizedBox(height: 18),
+                            buildDetails(
+                              'Reject Reason',
+                              snapshot.data['reject_reason'],
+                            ),
+                          ],
                           SizedBox(height: 18),
                           Text(
                             'Specifications',
@@ -154,7 +168,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                               'Sold Date',
                               DateFormat.yMMMd().format(
                                 DateTime.fromMicrosecondsSinceEpoch(
-                                    snapshot['sold_timestamp']),
+                                  snapshot['sold_timestamp'],
+                                ),
                               ),
                             ),
                             SizedBox(height: 18),
@@ -170,12 +185,46 @@ class _ProductDetailsState extends State<ProductDetails> {
                         ],
                       ),
                       Positioned(
-                        bottom: 0.0,
-                        right: 0.0,
-                        left: 0.0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
                         child: Row(
                           children: <Widget>[
-                            if (!snapshot.data['authored']) ...[
+                            if (!controllers.isSuperuser.value &&
+                                snapshot.data['rejected']) ...[
+                              buildButton(
+                                3,
+                                'Edit',
+                                Colors.grey.shade500,
+                                () => editProduct(snapshot),
+                              ),
+                              buildButton(
+                                3,
+                                'Delete',
+                                Colors.redAccent,
+                                () => controllers.utils.getSimpleDialouge(
+                                  title: 'Are you sure',
+                                  content: Text(
+                                    'Delete this product permanently ?',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  yesText: 'Delete',
+                                  noText: 'Cancel',
+                                  yesPressed: () => deletePremanently(snapshot),
+                                  noPressed: () => Get.back(),
+                                ),
+                              ),
+                              buildButton(
+                                3,
+                                'Request Again',
+                                Colors.green.shade500,
+                                () => snapshot.reference
+                                    .updateData({'rejected': false}),
+                              ),
+                            ] else if (!snapshot.data['authored']) ...[
                               if (!controllers.isSuperuser.value) ...[
                                 buildButton(
                                   2,
@@ -208,8 +257,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   3,
                                   'Approve',
                                   Colors.green.shade500,
-                                  () => snapshot.reference
-                                      .updateData({'authored': true}),
+                                  () => snapshot.reference.updateData({
+                                    'authored': true,
+                                    'rejected': false,
+                                    'reject_reason': null,
+                                  }),
                                 ),
                                 buildButton(
                                   3,
@@ -223,23 +275,37 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   Colors.redAccent,
                                   () => controllers.utils.getSimpleDialouge(
                                     title: 'Are you sure',
-                                    content: Text(
-                                      'Do you want to Reject this product ?',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                        fontSize: 18,
-                                      ),
+                                    content: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          'Mention Reason...',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade700,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        controllers.utils.inputTextField(
+                                          label: 'Reason',
+                                          controller: controller,
+                                        )
+                                      ],
                                     ),
                                     yesText: 'Reject',
                                     noText: 'Cancel',
-                                    yesPressed: () =>
-                                        deletePremanently(snapshot),
+                                    yesPressed: () => {
+                                      Get.back(),
+                                      snapshot.reference.updateData({
+                                        'rejected': true,
+                                        'reject_reason': controller.text.trim()
+                                      }),
+                                    },
                                     noPressed: () => Get.back(),
                                   ),
                                 ),
                               ],
                             ] else if (!snapshot.data['isDeleted'] &&
-                                !snapshot.data['isSold']) ...[
+                                !snapshot.data['isSold'] &&
+                                controllers.isSuperuser.value) ...[
                               buildButton(
                                 2,
                                 'Delete',

@@ -42,6 +42,8 @@ class PushProduct {
       'authored': false,
       'isDeleted': false,
       'sold_timestamp': null,
+      'rejected': false,
+      'reject_reason': null,
     });
   }
 

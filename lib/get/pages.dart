@@ -8,6 +8,7 @@ import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/all_products.dart';
 import 'package:superuser/services/product_details.dart';
 import 'package:superuser/services/profile.dart';
+import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/search_page.dart';
 import 'package:superuser/services/showroom_details.dart';
 import 'package:superuser/superuser/interests.dart';
@@ -127,6 +128,10 @@ class Pages {
     GetPage(
       name: '/specifications_data',
       page: () => SpecificationData(),
+    ),
+    GetPage(
+      name: '/add_product',
+      page: () => PushData(),
     ),
   ];
 }

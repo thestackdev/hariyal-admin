@@ -262,6 +262,49 @@ class Utils {
     );
   }
 
+  Widget root(
+      {String label, Widget bottom, Widget child, List<Widget> actions}) {
+    try {
+      return Scaffold(
+        appBar: AppBar(
+          actions: actions,
+          title: Text(label),
+          centerTitle: true,
+          bottom: bottom,
+        ),
+        body: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
+          ),
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: child,
+          ),
+        ),
+      );
+    } catch (e) {
+      return error();
+    }
+  }
+
+  Widget error() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Oops... , Something went wrong !'),
+      ),
+    );
+  }
+
   Widget appbar(
     String label, {
     Widget bottom,

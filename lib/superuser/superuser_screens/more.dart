@@ -32,6 +32,14 @@ class Settings extends StatelessWidget {
               onTap: () => Get.toNamed('/add_admin'),
             ),
             controllers.utils.listTile(
+              title: 'Add Product',
+              leading: Icon(
+                OMIcons.shoppingCart,
+                color: Colors.red.shade300,
+              ),
+              onTap: () => Get.toNamed('/add_product'),
+            ),
+            controllers.utils.listTile(
               title: 'User Interests',
               leading: Icon(
                 OMIcons.shoppingBasket,
@@ -97,6 +105,7 @@ class Settings extends StatelessWidget {
                 title: 'Confirm',
                 content: Text('Logout ?'),
                 yesPressed: () => {
+                  controllers.changeScreen(0),
                   Get.back(),
                   FirebaseAuth.instance.signOut(),
                 },

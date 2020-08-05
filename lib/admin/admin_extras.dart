@@ -10,56 +10,60 @@ class AdminExtras extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Extras'),
-      body: controllers.utils.container(
-        child: ListView(
-          children: <Widget>[
-            controllers.utils.listTile(
-              title: 'My Profile',
-              leading: Icon(OMIcons.face, color: Colors.red.shade300),
-              onTap: () => Get.toNamed('profile'),
-            ),
-            controllers.utils.listTile(
-              leading: Icon(OMIcons.personAdd, color: Colors.red),
-              title: 'Add Admin',
-              onTap: () => Get.toNamed('add_admin'),
-            ),
-            controllers.utils.listTile(
-              leading: Icon(OMIcons.shoppingCart, color: Colors.red),
-              title: 'My Products',
-              onTap: () => Get.to(
-                AllProducts(
-                  query: controllers.products
-                      .orderBy('timestamp', descending: true)
-                      .where(
-                        'author',
-                        isEqualTo: controllers.firebaseUser.value.uid,
-                      ),
-                ),
+    return controllers.utils.root(
+      label: 'Extras',
+      child: ListView(
+        children: <Widget>[
+          controllers.utils.listTile(
+            title: 'My Profile',
+            leading: Icon(OMIcons.face, color: Colors.red.shade300),
+            onTap: () => Get.toNamed('profile'),
+          ),
+          controllers.utils.listTile(
+            leading: Icon(OMIcons.personAdd, color: Colors.red),
+            title: 'Add Admin',
+            onTap: () => Get.toNamed('add_admin'),
+          ),
+          controllers.utils.listTile(
+            leading: Icon(OMIcons.shoppingCart, color: Colors.red),
+            title: 'Add Product',
+            onTap: () => Get.toNamed('add_product'),
+          ),
+          controllers.utils.listTile(
+            leading: Icon(OMIcons.shoppingCart, color: Colors.red),
+            title: 'My Products',
+            onTap: () => Get.to(
+              AllProducts(
+                query: controllers.products
+                    .orderBy('timestamp', descending: true)
+                    .where(
+                      'author',
+                      isEqualTo: controllers.firebaseUser.value.uid,
+                    ),
               ),
             ),
-            controllers.utils.listTile(
-              title: 'Logout',
-              leading: Icon(OMIcons.cloudOff, color: Colors.red),
-              onTap: () async {
-                showDialog(
-                  context: context,
-                  child: controllers.utils.alertDialog(
-                    content: 'Signout ?',
-                    yesPressed: () {
-                      Get.back();
-                      FirebaseAuth.instance.signOut();
-                    },
-                    noPressed: () {
-                      Get.back();
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+          controllers.utils.listTile(
+            title: 'Logout',
+            leading: Icon(OMIcons.cloudOff, color: Colors.red),
+            onTap: () async {
+              showDialog(
+                context: context,
+                child: controllers.utils.alertDialog(
+                  content: 'Signout ?',
+                  yesPressed: () => {
+                    Get.back(),
+                    controllers.changeScreen(0),
+                    FirebaseAuth.instance.signOut(),
+                  },
+                  noPressed: () {
+                    Get.back();
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

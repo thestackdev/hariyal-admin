@@ -455,13 +455,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       ),
                     ),
                     SizedBox(height: 18),
-                    RaisedButton(
-                      child: Text(
-                        'Update Data',
-                        style: Theme.of(context).textTheme.button,
-                      ),
-                      onPressed: onPressed,
-                    ),
+                    controllers.utils.raisedButton('Update Data', onPressed),
                     SizedBox(height: 50),
                   ],
                 ),
@@ -494,16 +488,16 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
         await PushProduct().updateProduct(
           newImages: newImages,
-          category: selectedCategory,
-          docID: docsnap.documentID,
+          category: selectedCategory.trim().toLowerCase(),
+          docID: docsnap.documentID.trim().toLowerCase(),
           oldImages: existingImages,
-          subCategory: selectedSubCategory,
-          state: selectedState,
-          area: selectedArea,
-          adressID: addressID,
+          subCategory: selectedSubCategory.trim().toLowerCase(),
+          state: selectedState.trim().toLowerCase(),
+          area: selectedArea.trim().toLowerCase(),
+          adressID: addressID.trim().toLowerCase(),
           price: double.parse(price.text.replaceAll(',', '')),
-          title: title.text.toLowerCase(),
-          description: description.text,
+          title: title.text.trim().toLowerCase(),
+          description: description.text.trim().toLowerCase(),
           specifications: inputSpecifications,
         );
 

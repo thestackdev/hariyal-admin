@@ -64,7 +64,7 @@ class SubCategories extends StatelessWidget {
                   title: 'Add Sub-Category',
                   content: controllers.utils.dialogInput(
                     onChnaged: (value) {
-                      text = value;
+                      text = value.trim().toLowerCase();
                     },
                     hintText: 'Type here',
                   ),
@@ -100,7 +100,7 @@ class SubCategories extends StatelessWidget {
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
-                          text = value;
+                          text = value.trim().toLowerCase();
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {

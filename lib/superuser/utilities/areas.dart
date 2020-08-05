@@ -85,7 +85,7 @@ class Areas extends StatelessWidget {
               content: controllers.utils.dialogInput(
                   hintText: 'Type here',
                   onChnaged: (value) {
-                    text = value;
+                    text = value.trim().toLowerCase();
                   }),
               noPressed: () => Get.back(),
               yesPressed: () => addArea(),
@@ -118,7 +118,7 @@ class Areas extends StatelessWidget {
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
-                          text = value;
+                          text = value.trim().toLowerCase();
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {

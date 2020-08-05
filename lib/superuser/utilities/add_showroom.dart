@@ -121,12 +121,15 @@ class _AddShowroomState extends State<AddShowroom> {
                         selectedState != null) {
                       if (docSnap == null) {
                         controllers.showrooms.document().setData({
-                          'name': titleController.text,
-                          'address': addressController.text,
-                          'state': selectedState,
-                          'area': selectedArea,
-                          'latitude': latitudeController.text,
-                          'longitude': longitudeController.text,
+                          'name': titleController.text.trim().toLowerCase(),
+                          'address':
+                              addressController.text.trim().toLowerCase(),
+                          'state': selectedState.trim().toLowerCase(),
+                          'area': selectedArea.trim().toLowerCase(),
+                          'latitude':
+                              latitudeController.text.trim().toLowerCase(),
+                          'longitude':
+                              longitudeController.text.trim().toLowerCase(),
                           'timestamp': DateTime.now().millisecondsSinceEpoch,
                           'active': true,
                         });
@@ -134,12 +137,15 @@ class _AddShowroomState extends State<AddShowroom> {
                         controllers.showrooms
                             .document(docSnap.documentID)
                             .updateData({
-                          'name': titleController.text,
-                          'address': addressController.text,
-                          'state': selectedState,
-                          'area': selectedArea,
-                          'latitude': latitudeController.text,
-                          'longitude': longitudeController.text,
+                          'name': titleController.text.trim().toLowerCase(),
+                          'address':
+                              addressController.text.trim().toLowerCase(),
+                          'state': selectedState.trim().toLowerCase(),
+                          'area': selectedArea.trim().toLowerCase(),
+                          'latitude':
+                              latitudeController.text.trim().toLowerCase(),
+                          'longitude':
+                              longitudeController.text.trim().toLowerCase(),
                         });
                       }
                       Get.back();

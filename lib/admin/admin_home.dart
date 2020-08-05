@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/admin/pending.dart';
+import 'package:superuser/admin/rejected.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/services/push_data.dart';
 import 'package:superuser/services/orders.dart';
 import 'package:superuser/services/sold_items.dart';
 import 'admin_extras.dart';
@@ -16,19 +16,19 @@ class AdminHome extends StatelessWidget {
     final List<Widget> screenList = [
       Orders(),
       Pending(),
+      Rejected(),
       SoldItems(
         query: controllers.products
             .where('author', isEqualTo: controllers.firebaseUser.value.uid)
             .where('isSold', isEqualTo: true),
       ),
-      PushData(),
       AdminExtras(),
     ];
     final items = [
       bottomNavigationBar('Orders', OMIcons.addShoppingCart),
       bottomNavigationBar('Pending', OMIcons.addShoppingCart),
+      bottomNavigationBar('Rejected', OMIcons.exitToApp),
       bottomNavigationBar('Sold Items', OMIcons.attachMoney),
-      bottomNavigationBar('Add Items', OMIcons.plusOne),
       bottomNavigationBar('Extras', OMIcons.more),
     ];
     return Obx(

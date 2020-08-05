@@ -378,17 +378,18 @@ class _PushDataState extends State<PushData> {
       handleSetState();
       await PushProduct().uploadProduct(
         images: images,
-        category: selectedCategory,
-        subCategory: selectedSubCategory,
-        state: selectedState,
-        area: selectedArea,
-        adressID: addressID,
-        price: double.parse(price.text.replaceAll(',', '')),
-        title: title.text.toLowerCase(),
-        description: description.text,
+        category: selectedCategory.trim().toLowerCase(),
+        subCategory: selectedSubCategory.trim().toLowerCase(),
+        state: selectedState.trim().toLowerCase(),
+        area: selectedArea.trim().toLowerCase(),
+        adressID: addressID.trim().toLowerCase(),
+        price:
+            double.parse(price.text.trim().toLowerCase().replaceAll(',', '')),
+        title: title.text.toLowerCase().trim().toLowerCase(),
+        description: description.text.trim().toLowerCase(),
         specifications: inputSpecifications,
         authored: !controllers.isSuperuser.value,
-        uid: controllers.firebaseUser.value.uid,
+        uid: controllers.firebaseUser.value.uid.trim().toLowerCase(),
       );
       clearAllData();
       loading = false;

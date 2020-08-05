@@ -78,7 +78,7 @@ class SpecificationData extends StatelessWidget {
                   content: controllers.utils.dialogInput(
                       hintText: 'Type here',
                       onChnaged: (value) {
-                        text = value;
+                        text = value.trim().toLowerCase();
                       }),
                   noPressed: () => Get.back(),
                   yesPressed: () => addSpecification(),
@@ -112,7 +112,7 @@ class SpecificationData extends StatelessWidget {
                         hintText: 'Type here',
                         initialValue: items[index],
                         onChnaged: (value) {
-                          text = value;
+                          text = value.trim().toLowerCase();
                         }),
                     noPressed: () => Get.back(),
                     yesPressed: () {

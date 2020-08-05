@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
-import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 
 class Reports extends StatelessWidget {
@@ -10,12 +9,7 @@ class Reports extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: controllers.utils.appbar('Reports', actions: [
-        IconButton(
-          icon: Icon(Icons.more_horiz),
-          onPressed: () => Get.toNamed('/settings'),
-        )
-      ]),
+      appBar: controllers.utils.appbar('Reports'),
       body: controllers.utils.container(
         child: DataStreamBuilder<QuerySnapshot>(
           stream: controllers.reports.snapshots(),

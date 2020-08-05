@@ -48,6 +48,7 @@ final theme = ThemeData(
     buttonColor: Colors.red.shade300,
   ),
   appBarTheme: AppBarTheme(
+    color: Colors.transparent,
     elevation: 0,
     textTheme: TextTheme(
       headline6: TextStyle(
