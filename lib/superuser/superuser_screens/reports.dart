@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:superuser/get/controllers.dart';
 
 class Reports extends StatelessWidget {
@@ -8,14 +6,13 @@ class Reports extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Reports'),
-      body: controllers.utils.container(
-        child: DataStreamBuilder<QuerySnapshot>(
+    return controllers.utils.root(
+        label: 'Reports',
+        child: controllers.utils.streamBuilder(
           stream: controllers.reports.snapshots(),
           builder: (context, snapshot) {
             if (snapshot.documents.length == 0) {
-              return controllers.utils.nullWidget('Nothing Found');
+              return controllers.utils.error('No Reports Found !');
             } else {
               return ListView.builder(
                 itemCount: snapshot.documents.length,
@@ -25,8 +22,6 @@ class Reports extends StatelessWidget {
               );
             }
           },
-        ),
-      ),
-    );
+        ));
   }
 }

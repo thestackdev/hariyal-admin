@@ -39,60 +39,63 @@ class _AddAdminState extends State<AddAdmin> {
           email: email.text,
           password: password.text,
         );
-        await controllers.admin.document(result.user.uid).setData(
-          {
-            'timestamp': DateTime.now().millisecondsSinceEpoch,
-            'name': name.text.toLowerCase(),
-            'isSuperuser': false,
-            'isAdmin': true,
-          },
-        );
+        await controllers.admin.document(result.user.uid).setData({
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'name': name.text.toLowerCase(),
+          'isSuperuser': false,
+          'isAdmin': true,
+        });
         email.clear();
         password.clear();
         name.clear();
         loading = false;
         handleState();
+        controllers.utils.snackbar('Admin Added !');
       } catch (error) {
         loading = false;
         handleState();
-        controllers.utils.errorMessageHelper(error.code);
+        controllers.utils.snackbar(
+          controllers.utils.errorMessageHelper(error.code),
+        );
       }
-      controllers.utils.showSnackbar('Admin Added Successfully !');
     }
 
-    return Scaffold(
-      appBar: controllers.utils.appbar('Add Admin'),
-      body: controllers.utils.container(
-        child: loading
-            ? controllers.utils.progressIndicator()
-            : ListView(
+    return controllers.utils.root(
+      label: 'Add Admin',
+      child: loading
+          ? controllers.utils.loading()
+          : Padding(
+              padding: const EdgeInsets.all(18),
+              child: Wrap(
+                runSpacing: 18,
+                spacing: 18,
                 children: <Widget>[
-                  controllers.utils.inputTextField(
-                    label: 'Full name',
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Full name'),
                     controller: name,
+                    style: Get.theme.textTheme.headline2,
                   ),
-                  controllers.utils.inputTextField(
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Email'),
                     controller: email,
-                    label: 'Email',
+                    style: Get.theme.textTheme.headline2,
                   ),
-                  controllers.utils.inputTextField(
+                  TextField(
+                    decoration: InputDecoration(labelText: 'Password'),
                     controller: password,
-                    label: 'Password',
+                    style: Get.theme.textTheme.headline2,
                   ),
-                  SizedBox(height: 18),
                   controllers.utils.raisedButton('Add Admin', () async {
                     FocusScope.of(context).unfocus();
-                    if (GetUtils.isEmail(email.text) &&
-                        password.text.length > 0 &&
-                        name.text.length > 0) {
-                      register();
-                    } else {
-                      controllers.utils.showSnackbar('Invalid entries');
-                    }
+                    (GetUtils.isEmail(email.text) &&
+                            !password.text.length.isNullOrBlank &&
+                            !name.text.length.isNullOrBlank)
+                        ? register()
+                        : controllers.utils.snackbar('Invalid entries');
                   })
                 ],
               ),
-      ),
+            ),
     );
   }
 

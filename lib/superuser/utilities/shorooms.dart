@@ -75,7 +75,7 @@ class Showrooms extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.documents.length == 0) {
-            return controllers.utils.nullWidget('No Showrooms found');
+            return controllers.utils.error('No Showrooms found');
           }
           return ListView.builder(
             itemCount: snapshot.documents.length,
@@ -116,28 +116,23 @@ class Showrooms extends StatelessWidget {
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: controllers.utils.appbar(
-          'Showrooms',
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(OMIcons.plusOne),
-              onPressed: () => Get.toNamed('add_showroom'),
-            ),
-          ],
-          bottom: TabBar(
-            labelStyle: controllers.utils.textStyle(fontSize: 18),
-            indicatorColor: Colors.transparent,
-            tabs: <Widget>[Tab(text: 'Active'), Tab(text: 'Inactive')],
+      child: controllers.utils.root(
+        label: 'Showrooms',
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(OMIcons.plusOne),
+            onPressed: () => Get.toNamed('add_showroom'),
           ),
+        ],
+        bottom: TabBar(
+          indicatorColor: Colors.transparent,
+          tabs: <Widget>[Tab(text: 'Active'), Tab(text: 'Inactive')],
         ),
-        body: controllers.utils.container(
-          child: TabBarView(
-            children: <Widget>[
-              active(),
-              inActive(),
-            ],
-          ),
+        child: TabBarView(
+          children: <Widget>[
+            active(),
+            inActive(),
+          ],
         ),
       ),
     );

@@ -8,8 +8,9 @@ class AllCustomers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Customers', actions: [
+    return controllers.utils.root(
+      label: 'Customers',
+      actions: [
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
@@ -21,27 +22,24 @@ class AllCustomers extends StatelessWidget {
             Get.toNamed('/search', arguments: map);
           },
         )
-      ]),
-      body: controllers.utils.container(
-        child: controllers.utils.buildProducts(
-          query: controllers.customers.orderBy('timestamp', descending: true),
-          itemBuilder: (index, context, snapshot) {
-            try {
-              return controllers.utils.listTile(
-                leading: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(
-                    snapshot['image'],
-                  ),
+      ],
+      child: controllers.utils.paginator(
+        query: controllers.customers.orderBy('timestamp', descending: true),
+        itemBuilder: (index, context, snapshot) {
+          try {
+            return controllers.utils.listTile(
+              leading: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(
+                  snapshot['image'],
                 ),
-                title: '${snapshot['name']}',
-                onTap: () =>
-                    Get.toNamed('customer_deatils', arguments: snapshot),
-              );
-            } catch (e) {
-              return controllers.utils.nullWidget(e.toString());
-            }
-          },
-        ),
+              ),
+              title: '${snapshot['name']}',
+              onTap: () => Get.toNamed('customer_deatils', arguments: snapshot),
+            );
+          } catch (e) {
+            return controllers.utils.error(e.toString());
+          }
+        },
       ),
     );
   }

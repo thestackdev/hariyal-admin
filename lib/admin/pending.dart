@@ -8,40 +8,38 @@ class Pending extends StatelessWidget {
   final controllers = Controllers.to;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Pending'),
-      body: controllers.utils.container(
-        child: DataStreamBuilder<QuerySnapshot>(
-          stream: controllers.products
-              .orderBy('timestamp', descending: true)
-              .where('author', isEqualTo: controllers.firebaseUser.value.uid)
-              .where('rejected', isEqualTo: false)
-              .where('authored', isEqualTo: false)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.documents.length == 0) {
-              return controllers.utils.nullWidget('No Products Found');
-            }
-            try {
-              return ListView.builder(
-                itemCount: snapshot.documents.length,
-                itemBuilder: (context, index) {
-                  return controllers.utils.card(
-                    title: snapshot.documents[index].data['title'],
-                    description: snapshot.documents[index].data['description'],
-                    imageUrl: snapshot.documents[index].data['images'][0],
-                    onTap: () => Get.toNamed(
-                      'product_details',
-                      arguments: snapshot.documents[index].documentID,
-                    ),
-                  );
-                },
-              );
-            } catch (e) {
-              return controllers.utils.nullWidget(e.toString());
-            }
-          },
-        ),
+    return controllers.utils.root(
+      label: 'Pending',
+      child: DataStreamBuilder<QuerySnapshot>(
+        stream: controllers.products
+            .orderBy('timestamp', descending: true)
+            .where('author', isEqualTo: controllers.firebaseUser.value.uid)
+            .where('rejected', isEqualTo: false)
+            .where('authored', isEqualTo: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.documents.length == 0) {
+            return controllers.utils.error('No Products Found');
+          }
+          try {
+            return ListView.builder(
+              itemCount: snapshot.documents.length,
+              itemBuilder: (context, index) {
+                return controllers.utils.card(
+                  title: snapshot.documents[index].data['title'],
+                  description: snapshot.documents[index].data['description'],
+                  imageUrl: snapshot.documents[index].data['images'][0],
+                  onTap: () => Get.toNamed(
+                    'product_details',
+                    arguments: snapshot.documents[index].documentID,
+                  ),
+                );
+              },
+            );
+          } catch (e) {
+            return controllers.utils.error('Oops.., Something went wrong');
+          }
+        },
       ),
     );
   }

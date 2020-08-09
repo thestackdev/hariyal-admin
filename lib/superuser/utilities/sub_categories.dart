@@ -22,10 +22,10 @@ class SubCategories extends StatelessWidget {
             mapKey: FieldValue.arrayUnion([text.toLowerCase()])
           });
           Get.back();
-          controllers.utils.showSnackbar('Subcategory Added');
+          controllers.utils.snackbar('Subcategory Added');
         } else {
           Get.back();
-          controllers.utils.showSnackbar('Invalid entries');
+          controllers.utils.snackbar('Invalid entries');
         }
         text = '';
       }
@@ -55,8 +55,9 @@ class SubCategories extends StatelessWidget {
         });
       }
 
-      return Scaffold(
-        appBar: controllers.utils.appbar(mapKey, actions: [
+      return controllers.utils.root(
+        label: mapKey,
+        actions: [
           IconButton(
               icon: Icon(OMIcons.plusOne),
               onPressed: () {
@@ -72,63 +73,61 @@ class SubCategories extends StatelessWidget {
                   yesPressed: () => addSubCategory(),
                 );
               }),
-        ]),
-        body: controllers.utils.container(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => controllers.utils.dismissible(
-              key: UniqueKey(),
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Confirm',
-                    content: Text('Delete this Sub-Category ?'),
-                    yesPressed: () {
-                      deleteSubCategory(items[index]);
+        ],
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) => controllers.utils.dismissible(
+            key: UniqueKey(),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Confirm',
+                  content: Text('Delete this Sub-Category ?'),
+                  yesPressed: () {
+                    deleteSubCategory(items[index]);
 
+                    snapshot.reference.updateData({
+                      mapKey: FieldValue.arrayRemove([items[index]])
+                    });
+                    Get.back();
+                  },
+                  noPressed: () => Get.back(),
+                );
+              } else {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Edit Sub-Category',
+                  content: controllers.utils.dialogInput(
+                      hintText: 'Type here',
+                      initialValue: items[index],
+                      onChnaged: (value) {
+                        text = value.trim().toLowerCase();
+                      }),
+                  noPressed: () => Get.back(),
+                  yesPressed: () {
+                    if (controllers.utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      editSubCategory(items[index], text);
                       snapshot.reference.updateData({
-                        mapKey: FieldValue.arrayRemove([items[index]])
+                        mapKey: FieldValue.arrayRemove([items[index]]),
                       });
-                      Get.back();
-                    },
-                    noPressed: () => Get.back(),
-                  );
-                } else {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Edit Sub-Category',
-                    content: controllers.utils.dialogInput(
-                        hintText: 'Type here',
-                        initialValue: items[index],
-                        onChnaged: (value) {
-                          text = value.trim().toLowerCase();
-                        }),
-                    noPressed: () => Get.back(),
-                    yesPressed: () {
-                      if (controllers.utils.validateInputText(text) &&
-                          text != items[index] &&
-                          !items.contains(text.toLowerCase())) {
-                        editSubCategory(items[index], text);
-                        snapshot.reference.updateData({
-                          mapKey: FieldValue.arrayRemove([items[index]]),
-                        });
-                        snapshot.reference.updateData({
-                          mapKey: FieldValue.arrayUnion([text]),
-                        });
+                      snapshot.reference.updateData({
+                        mapKey: FieldValue.arrayUnion([text]),
+                      });
 
-                        Get.back();
-                      } else {
-                        Get.back();
-                        controllers.utils.showSnackbar('Invalid entries');
-                      }
-                      text = '';
-                    },
-                  );
-                }
-              },
-              child: controllers.utils.listTile(
-                title: items[index],
-                isTrailingNull: true,
-              ),
+                      Get.back();
+                    } else {
+                      Get.back();
+                      controllers.utils.snackbar('Invalid entries');
+                    }
+                    text = '';
+                  },
+                );
+              }
+            },
+            child: controllers.utils.listTile(
+              title: items[index],
+              isTrailingNull: true,
             ),
           ),
         ),

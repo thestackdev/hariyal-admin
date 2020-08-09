@@ -60,16 +60,17 @@ class SpecificationData extends StatelessWidget {
           }
 
           Get.back();
-          controllers.utils.showSnackbar('Specification Added');
+          controllers.utils.snackbar('Specification Added');
         } else {
           Get.back();
-          controllers.utils.showSnackbar('Invalid entries');
+          controllers.utils.snackbar('Invalid entries');
         }
         text = '';
       }
 
-      return Scaffold(
-        appBar: controllers.utils.appbar(category, actions: [
+      return controllers.utils.root(
+        label: category,
+        actions: [
           IconButton(
               icon: Icon(OMIcons.plusOne),
               onPressed: () {
@@ -84,61 +85,59 @@ class SpecificationData extends StatelessWidget {
                   yesPressed: () => addSpecification(),
                 );
               }),
-        ]),
-        body: controllers.utils.container(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => controllers.utils.dismissible(
-              key: UniqueKey(),
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Confirm',
-                    content: Text('Delete this Specification ?'),
-                    yesPressed: () {
-                      deleteSpecification(items[index]);
+        ],
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) => controllers.utils.dismissible(
+            key: UniqueKey(),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Confirm',
+                  content: Text('Delete this Specification ?'),
+                  yesPressed: () {
+                    deleteSpecification(items[index]);
 
+                    snapshot.reference.updateData({
+                      category: FieldValue.arrayRemove([items[index]])
+                    });
+                    Get.back();
+                  },
+                  noPressed: () => Get.back(),
+                );
+              } else {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Edit Specification',
+                  content: controllers.utils.dialogInput(
+                      hintText: 'Type here',
+                      initialValue: items[index],
+                      onChnaged: (value) {
+                        text = value.trim().toLowerCase();
+                      }),
+                  noPressed: () => Get.back(),
+                  yesPressed: () {
+                    Get.back();
+                    if (controllers.utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      editSpecification(items[index], text);
                       snapshot.reference.updateData({
-                        category: FieldValue.arrayRemove([items[index]])
+                        category: FieldValue.arrayRemove([items[index]]),
                       });
-                      Get.back();
-                    },
-                    noPressed: () => Get.back(),
-                  );
-                } else {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Edit Specification',
-                    content: controllers.utils.dialogInput(
-                        hintText: 'Type here',
-                        initialValue: items[index],
-                        onChnaged: (value) {
-                          text = value.trim().toLowerCase();
-                        }),
-                    noPressed: () => Get.back(),
-                    yesPressed: () {
-                      Get.back();
-                      if (controllers.utils.validateInputText(text) &&
-                          text != items[index] &&
-                          !items.contains(text.toLowerCase())) {
-                        editSpecification(items[index], text);
-                        snapshot.reference.updateData({
-                          category: FieldValue.arrayRemove([items[index]]),
-                        });
-                        snapshot.reference.updateData({
-                          category: FieldValue.arrayUnion([text]),
-                        });
-                      } else {
-                        controllers.utils.showSnackbar('Invalid entries');
-                      }
-                      text = '';
-                    },
-                  );
-                }
-              },
-              child: controllers.utils.listTile(
-                title: items[index],
-                isTrailingNull: true,
-              ),
+                      snapshot.reference.updateData({
+                        category: FieldValue.arrayUnion([text]),
+                      });
+                    } else {
+                      controllers.utils.snackbar('Invalid entries');
+                    }
+                    text = '';
+                  },
+                );
+              }
+            },
+            child: controllers.utils.listTile(
+              title: items[index],
+              isTrailingNull: true,
             ),
           ),
         ),

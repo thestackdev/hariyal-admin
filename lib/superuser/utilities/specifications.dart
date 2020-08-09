@@ -12,16 +12,14 @@ class Specifications extends StatelessWidget {
       final DocumentSnapshot snapshot = controllers.categories.value;
       final List items = snapshot.data.keys.toList();
 
-      return Scaffold(
-        appBar: controllers.utils.appbar('Select Category'),
-        body: controllers.utils.container(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => controllers.utils.listTile(
-              title: items[index],
-              onTap: () =>
-                  Get.toNamed('/specifications_data', arguments: items[index]),
-            ),
+      return controllers.utils.root(
+        label: 'Select Category',
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) => controllers.utils.listTile(
+            title: items[index],
+            onTap: () =>
+                Get.toNamed('/specifications_data', arguments: items[index]),
           ),
         ),
       );

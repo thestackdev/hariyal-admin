@@ -19,10 +19,10 @@ class Customerdetails extends StatelessWidget {
         if (await canLaunch(url)) {
           await launch(url);
         } else {
-          controllers.utils.showSnackbar('Something went wrong');
+          controllers.utils.snackbar('Something went wrong');
         }
       } catch (e) {
-        controllers.utils.showSnackbar(e.toString());
+        controllers.utils.snackbar(e.toString());
       }
     }
 
@@ -35,156 +35,151 @@ class Customerdetails extends StatelessWidget {
         if (await canLaunch(_emailLaunchUri.toString())) {
           await launch(_emailLaunchUri.toString());
         } else {
-          controllers.utils.showSnackbar('Something went wrong');
+          controllers.utils.snackbar('Something went wrong');
         }
       } catch (e) {
-        controllers.utils.showSnackbar(e.toString());
+        controllers.utils.snackbar(e.toString());
       }
     }
 
     detailsPage() {
-      return controllers.utils.container(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-          children: <Widget>[
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: GetUtils.capitalizeFirst(
-                snapshot['name'] ?? 'Something went wrong !',
-              ),
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Name'),
+      return ListView(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+        children: <Widget>[
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: GetUtils.capitalizeFirst(
+              snapshot['name'] ?? 'Something went wrong !',
             ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: snapshot['phone'] ?? 'Something went wrong !',
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Phone',
-                suffixIcon: IconButton(
-                  icon: Icon(OMIcons.phone),
-                  onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
-                ),
+            readOnly: true,
+            decoration: InputDecoration(labelText: 'Name'),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: snapshot['phone'] ?? 'Something went wrong !',
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: 'Phone',
+              suffixIcon: IconButton(
+                icon: Icon(OMIcons.phone),
+                onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
               ),
             ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: snapshot['email'] ?? 'Something went wrong !',
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                suffixIcon: IconButton(
-                    icon: Icon(OMIcons.email),
-                    onPressed: () {
-                      if (snapshot['email'] != 'default') {
-                        writeAnEmail(
-                          snapshot['email'],
-                        );
-                      } else {
-                        controllers.utils.showSnackbar('Invalid Email Address');
-                      }
-                    }),
-              ),
-            ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: snapshot['gender'] ?? 'Something went wrong !',
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Gender'),
-            ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue:
-                  snapshot['alternatePhoneNumber'] ?? 'Something went wrong !',
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Alternate Phone',
-                suffixIcon: IconButton(
-                  icon: Icon(OMIcons.phone),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: snapshot['email'] ?? 'Something went wrong !',
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              suffixIcon: IconButton(
+                  icon: Icon(OMIcons.email),
                   onPressed: () {
-                    if (snapshot['alternatePhoneNumber'] != 'default') {
-                      makeAPhone('tel: ${snapshot['alternatePhoneNumber']}');
+                    if (snapshot['email'] != 'default') {
+                      writeAnEmail(
+                        snapshot['email'],
+                      );
                     } else {
-                      controllers.utils.showSnackbar('No Phone Number');
+                      controllers.utils.snackbar('Invalid Email Address');
                     }
-                  },
-                ),
+                  }),
+            ),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: snapshot['gender'] ?? 'Something went wrong !',
+            readOnly: true,
+            decoration: InputDecoration(labelText: 'Gender'),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue:
+                snapshot['alternatePhoneNumber'] ?? 'Something went wrong !',
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: 'Alternate Phone',
+              suffixIcon: IconButton(
+                icon: Icon(OMIcons.phone),
+                onPressed: () {
+                  if (snapshot['alternatePhoneNumber'] != 'default') {
+                    makeAPhone('tel: ${snapshot['alternatePhoneNumber']}');
+                  } else {
+                    controllers.utils.snackbar('No Phone Number');
+                  }
+                },
               ),
             ),
-            SizedBox(height: 18),
-            TextFormField(
-              style: controllers.utils.inputTextStyle(),
-              initialValue:
-                  snapshot['permanentAddress'] ?? 'Something went wrong !',
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Permanent Address'),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue:
+                snapshot['permanentAddress'] ?? 'Something went wrong !',
+            readOnly: true,
+            decoration: InputDecoration(labelText: 'Permanent Address'),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: GetUtils.capitalize(
+              snapshot['location']['cityDistrict'] ?? 'Something went wrong !',
             ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: GetUtils.capitalize(
-                snapshot['location']['cityDistrict'] ??
-                    'Something went wrong !',
-              ),
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'City/District'),
+            readOnly: true,
+            decoration: InputDecoration(labelText: 'City/District'),
+          ),
+          SizedBox(height: 18),
+          TextFormField(
+            initialValue: GetUtils.capitalize(
+              snapshot['location']['state'] ?? 'Something went wrong !',
             ),
-            SizedBox(height: 18),
-            TextFormField(
-              initialValue: GetUtils.capitalize(
-                snapshot['location']['state'] ?? 'Something went wrong !',
-              ),
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'State'),
-            ),
-          ],
-        ),
+            readOnly: true,
+            decoration: InputDecoration(labelText: 'State'),
+          ),
+        ],
       );
     }
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: controllers.utils.appbar(
-          'Customer Console',
-          bottom: TabBar(
-            labelStyle: controllers.utils.textStyle(fontSize: 18),
-            indicatorColor: Colors.transparent,
-            tabs: <Widget>[Tab(text: 'Details'), Tab(text: 'Interests')],
-          ),
+      child: controllers.utils.root(
+        label: 'Customer Console',
+        bottom: TabBar(
+          indicatorColor: Colors.transparent,
+          tabs: <Widget>[Tab(text: 'Details'), Tab(text: 'Interests')],
         ),
-        body: TabBarView(children: <Widget>[
+        child: TabBarView(children: <Widget>[
           detailsPage(),
-          controllers.utils.container(
-              child: controllers.utils.buildProducts(
-                  query: controllers.interests
-                      .orderBy('timestamp', descending: true)
-                      .where('author', isEqualTo: snapshot.documentID),
-                  itemBuilder: (index, context, snapshot) {
-                    return DataStreamBuilder<DocumentSnapshot>(
-                        stream: controllers.products
-                            .document(snapshot['productId'])
-                            .snapshots(),
-                        builder: (context, product) {
-                          try {
-                            return controllers.utils.listTile(
-                              title: '${product.data['title']}',
-                              leading: SizedBox(
-                                width: 70,
-                                child: PNetworkImage(
-                                  product.data['images'][0],
-                                  fit: BoxFit.fitHeight,
-                                ),
-                              ),
-                              onTap: () => Get.to(
-                                ProductDetails(),
-                                arguments: product.documentID,
-                              ),
-                            );
-                          } catch (e) {
-                            return controllers.utils.nullWidget(e.toString());
-                          }
-                        });
-                  }))
+          controllers.utils.paginator(
+            query: controllers.interests
+                .orderBy('timestamp', descending: true)
+                .where('author', isEqualTo: snapshot.documentID),
+            itemBuilder: (index, context, snapshot) {
+              return DataStreamBuilder<DocumentSnapshot>(
+                stream: controllers.products
+                    .document(snapshot['productId'])
+                    .snapshots(),
+                builder: (context, product) {
+                  try {
+                    return controllers.utils.listTile(
+                      title: '${product.data['title']}',
+                      leading: SizedBox(
+                        width: 70,
+                        child: PNetworkImage(
+                          product.data['images'][0],
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                      onTap: () => Get.to(
+                        ProductDetails(),
+                        arguments: product.documentID,
+                      ),
+                    );
+                  } catch (e) {
+                    return controllers.utils
+                        .error('Oops , Something went wrong !');
+                  }
+                },
+              );
+            },
+          ),
         ]),
       ),
     );

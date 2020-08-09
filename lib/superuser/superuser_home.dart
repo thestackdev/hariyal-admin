@@ -55,10 +55,9 @@ class SuperuserHome extends StatelessWidget {
     });
   }
 
-  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon),
-      title: Text(title),
-    );
-  }
+  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) =>
+      BottomNavigationBarItem(
+        icon: Icon(icon),
+        title: Text(title),
+      );
 }

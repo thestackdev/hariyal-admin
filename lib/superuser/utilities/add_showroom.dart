@@ -52,112 +52,107 @@ class _AddShowroomState extends State<AddShowroom> {
       areas = locationsMap[selectedState];
     }
 
-    return Scaffold(
-      appBar: controllers.utils
-          .appbar(docSnap == null ? 'Add Showroom' : 'Edit Showroom'),
-      body: controllers.utils.container(
-        child: ListView(
-          children: <Widget>[
-            SizedBox(height: 36),
-            controllers.utils.productInputDropDown(
-                label: 'State',
-                value: selectedState,
-                items: locationsMap.keys.toList(),
-                onChanged: (value) {
-                  selectedState = value;
-                  selectedArea = null;
-                  handleSetState();
-                }),
-            controllers.utils.productInputDropDown(
-                label: 'Area',
-                value: selectedArea,
-                items: areas,
-                onChanged: (newValue) {
-                  selectedArea = newValue;
-                  handleSetState();
-                }),
-            controllers.utils.inputTextField(
-              label: 'Name',
-              controller: titleController,
-            ),
-            controllers.utils.inputTextField(
-              label: 'Address',
-              controller: addressController,
-            ),
-            controllers.utils.inputTextField(
-              label: 'latitude',
-              controller: latitudeController,
-              textInputType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
-            ),
-            controllers.utils.inputTextField(
-              label: 'longitude',
-              controller: longitudeController,
-              textInputType:
-                  TextInputType.numberWithOptions(signed: true, decimal: true),
-            ),
-            SizedBox(height: 36),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                RaisedButton(
-                  child: Text(
-                    'Cancel',
-                    style: Theme.of(context).textTheme.button,
-                  ),
-                  onPressed: () => Get.back(),
+    return controllers.utils.root(
+      label: docSnap == null ? 'Add Showroom' : 'Edit Showroom',
+      child: ListView(
+        children: <Widget>[
+          SizedBox(height: 36),
+          controllers.utils.productInputDropDown(
+              label: 'State',
+              value: selectedState,
+              items: locationsMap.keys.toList(),
+              onChanged: (value) {
+                selectedState = value;
+                selectedArea = null;
+                handleSetState();
+              }),
+          controllers.utils.productInputDropDown(
+              label: 'Area',
+              value: selectedArea,
+              items: areas,
+              onChanged: (newValue) {
+                selectedArea = newValue;
+                handleSetState();
+              }),
+          controllers.utils.inputTextField(
+            label: 'Name',
+            controller: titleController,
+          ),
+          controllers.utils.inputTextField(
+            label: 'Address',
+            controller: addressController,
+          ),
+          controllers.utils.inputTextField(
+            label: 'latitude',
+            controller: latitudeController,
+            textInputType:
+                TextInputType.numberWithOptions(signed: true, decimal: true),
+          ),
+          controllers.utils.inputTextField(
+            label: 'longitude',
+            controller: longitudeController,
+            textInputType:
+                TextInputType.numberWithOptions(signed: true, decimal: true),
+          ),
+          SizedBox(height: 36),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              RaisedButton(
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.button,
                 ),
-                RaisedButton(
-                  child: Text(
-                    docSnap == null ? 'Confirm' : 'Update',
-                    style: Theme.of(context).textTheme.button,
-                  ),
-                  onPressed: () async {
-                    if (titleController.text.length > 0 &&
-                        addressController.text.length > 0 &&
-                        latitudeController.text.length > 0 &&
-                        longitudeController.text.length > 0 &&
-                        selectedArea != null &&
-                        selectedState != null) {
-                      if (docSnap == null) {
-                        controllers.showrooms.document().setData({
-                          'name': titleController.text.trim().toLowerCase(),
-                          'address':
-                              addressController.text.trim().toLowerCase(),
-                          'state': selectedState.trim().toLowerCase(),
-                          'area': selectedArea.trim().toLowerCase(),
-                          'latitude':
-                              latitudeController.text.trim().toLowerCase(),
-                          'longitude':
-                              longitudeController.text.trim().toLowerCase(),
-                          'timestamp': DateTime.now().millisecondsSinceEpoch,
-                          'active': true,
-                        });
-                      } else {
-                        controllers.showrooms
-                            .document(docSnap.documentID)
-                            .updateData({
-                          'name': titleController.text.trim().toLowerCase(),
-                          'address':
-                              addressController.text.trim().toLowerCase(),
-                          'state': selectedState.trim().toLowerCase(),
-                          'area': selectedArea.trim().toLowerCase(),
-                          'latitude':
-                              latitudeController.text.trim().toLowerCase(),
-                          'longitude':
-                              longitudeController.text.trim().toLowerCase(),
-                        });
-                      }
-                      Get.back();
+                onPressed: () => Get.back(),
+              ),
+              RaisedButton(
+                child: Text(
+                  docSnap == null ? 'Confirm' : 'Update',
+                  style: Theme.of(context).textTheme.button,
+                ),
+                onPressed: () async {
+                  if (titleController.text.length > 0 &&
+                      addressController.text.length > 0 &&
+                      latitudeController.text.length > 0 &&
+                      longitudeController.text.length > 0 &&
+                      selectedArea != null &&
+                      selectedState != null) {
+                    if (docSnap == null) {
+                      controllers.showrooms.document().setData({
+                        'name': titleController.text.trim().toLowerCase(),
+                        'address': addressController.text.trim().toLowerCase(),
+                        'state': selectedState.trim().toLowerCase(),
+                        'area': selectedArea.trim().toLowerCase(),
+                        'latitude':
+                            latitudeController.text.trim().toLowerCase(),
+                        'longitude':
+                            longitudeController.text.trim().toLowerCase(),
+                        'timestamp': DateTime.now().millisecondsSinceEpoch,
+                        'active': true,
+                      });
                     } else {
-                      controllers.utils.showSnackbar('Invalid Entries');
+                      controllers.showrooms
+                          .document(docSnap.documentID)
+                          .updateData({
+                        'name': titleController.text.trim().toLowerCase(),
+                        'address': addressController.text.trim().toLowerCase(),
+                        'state': selectedState.trim().toLowerCase(),
+                        'area': selectedArea.trim().toLowerCase(),
+                        'latitude':
+                            latitudeController.text.trim().toLowerCase(),
+                        'longitude':
+                            longitudeController.text.trim().toLowerCase(),
+                      });
                     }
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
+                    Get.back();
+                  } else {
+                    controllers.utils.snackbar('Invalid Entries');
+                  }
+                },
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

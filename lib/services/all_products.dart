@@ -11,8 +11,9 @@ class AllProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controllers = Controllers.to;
-    return Scaffold(
-      appBar: controllers.utils.appbar('All Products', actions: [
+    return controllers.utils.root(
+      label: 'All Products',
+      actions: [
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
@@ -24,27 +25,24 @@ class AllProducts extends StatelessWidget {
             Get.toNamed('/search', arguments: map);
           },
         )
-      ]),
-      body: controllers.utils.container(
-        child: controllers.utils.buildProducts(
-          shrinkWrap: true,
-          query: query,
-          itemBuilder: (index, context, snapshot) {
-            try {
-              return controllers.utils.card(
-                title: snapshot.data['title'],
-                description: snapshot.data['description'],
-                imageUrl: snapshot.data['images'][0],
-                onTap: () => Get.toNamed(
-                  'product_details',
-                  arguments: snapshot.documentID,
-                ),
-              );
-            } catch (e) {
-              return controllers.utils.nullWidget(e.toString());
-            }
-          },
-        ),
+      ],
+      child: controllers.utils.paginator(
+        query: query,
+        itemBuilder: (index, context, snapshot) {
+          try {
+            return controllers.utils.card(
+              title: snapshot.data['title'],
+              description: snapshot.data['description'],
+              imageUrl: snapshot.data['images'][0],
+              onTap: () => Get.toNamed(
+                'product_details',
+                arguments: snapshot.documentID,
+              ),
+            );
+          } catch (e) {
+            return controllers.utils.error(e.toString());
+          }
+        },
       ),
     );
   }

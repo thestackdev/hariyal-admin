@@ -20,56 +20,54 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Forgot Password'),
-      body: controllers.utils.container(
-        child: loading
-            ? controllers.utils.progressIndicator()
-            : ListView(
-                children: <Widget>[
-                  SizedBox(height: 30),
-                  controllers.utils
-                      .inputTextField(label: 'Email', controller: email),
-                  SizedBox(height: 18),
-                  RaisedButton(
-                      child: Text(
-                        'Request Password Reset',
-                        style: Theme.of(context).textTheme.button,
-                      ),
-                      onPressed: () async {
-                        if (GetUtils.isEmail(email.text)) {
+    return controllers.utils.root(
+      label: 'Forgot Password',
+      child: loading
+          ? controllers.utils.loading()
+          : ListView(
+              children: <Widget>[
+                SizedBox(height: 30),
+                controllers.utils.inputTextField(
+                  label: 'Email',
+                  controller: email,
+                ),
+                SizedBox(height: 18),
+                controllers.utils.raisedButton(
+                  'Request Password Reset',
+                  () async {
+                    if (GetUtils.isEmail(email.text)) {
+                      setState(() {
+                        loading = true;
+                      });
+                      controllers.customers
+                          .where('email', isEqualTo: email.text)
+                          .getDocuments()
+                          .then((value) {
+                        if (value.documents.length > 0) {
+                          controllers.firebaseAuth
+                              .sendPasswordResetEmail(email: email.text);
                           setState(() {
-                            loading = true;
+                            loading = false;
                           });
-                          controllers.customers
-                              .where('email', isEqualTo: email.text)
-                              .getDocuments()
-                              .then((value) {
-                            if (value.documents.length > 0) {
-                              controllers.firebaseAuth
-                                  .sendPasswordResetEmail(email: email.text);
-                              setState(() {
-                                loading = false;
-                              });
-                              controllers.utils.showSnackbar(
-                                'Password reset link has sent to ${email.text}',
-                              );
-                            } else {
-                              setState(() {
-                                loading = false;
-                              });
-                              controllers.utils.showSnackbar(
-                                'No customer found with this email',
-                              );
-                            }
-                          });
+                          controllers.utils.snackbar(
+                            'Password reset link has sent to ${email.text}',
+                          );
                         } else {
-                          controllers.utils.showSnackbar('Email not valid');
+                          setState(() {
+                            loading = false;
+                          });
+                          controllers.utils.snackbar(
+                            'No customer found with this email',
+                          );
                         }
-                      }),
-                ],
-              ),
-      ),
+                      });
+                    } else {
+                      controllers.utils.snackbar('Email not valid');
+                    }
+                  },
+                )
+              ],
+            ),
     );
   }
 }

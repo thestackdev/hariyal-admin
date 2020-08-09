@@ -15,10 +15,9 @@ class _MarkAsSoldState extends State<MarkAsSold> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Mark as sold'),
-      body: controllers.utils.container(
-          child: ListView(
+    return controllers.utils.root(
+      label: 'Mark As Sold',
+      child: ListView(
         children: <Widget>[
           SizedBox(height: 18),
           controllers.utils.inputTextField(
@@ -40,12 +39,12 @@ class _MarkAsSoldState extends State<MarkAsSold> {
                 });
                 Get.back();
               } else {
-                controllers.utils.showSnackbar('Invalid Reason');
+                controllers.utils.snackbar('Invalid Reason');
               }
             },
           ),
         ],
-      )),
+      ),
     );
   }
 }

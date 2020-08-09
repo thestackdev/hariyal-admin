@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
             searchBarStyle: SearchBarStyle(
               borderRadius: BorderRadius.circular(9),
             ),
-            loader: controllers.utils.progressIndicator(),
+            loader: controllers.utils.loading(),
             hintText: 'Search...',
             onError: (error) => Center(
                   child: Text('Something went wrong', style: textStyle),
@@ -97,10 +97,10 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   default:
-                    return controllers.utils.nullWidget('Something went wrong');
+                    return controllers.utils.error('Something went wrong');
                 }
               } catch (e) {
-                return controllers.utils.nullWidget('Nothing Found');
+                return controllers.utils.error('Nothing Found');
               }
             }),
       ),

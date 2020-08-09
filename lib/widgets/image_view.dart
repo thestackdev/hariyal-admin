@@ -41,9 +41,9 @@ class _HariyalImageViewState extends State<HariyalImageView> {
         },
         itemCount: widget.imageUrls.length,
         loadingBuilder: (context, event) => Center(
-          child: controllers.utils.progressIndicator(),
+          child: controllers.utils.loading(),
         ),
-        loadFailedChild: controllers.utils.nullWidget('Something went wrong'),
+        loadFailedChild: controllers.utils.error('Something went wrong'),
         pageController: PageController(
           initialPage: 0,
           keepPage: true,

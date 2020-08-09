@@ -8,8 +8,9 @@ class Admins extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Admins', actions: [
+    return controllers.utils.root(
+      label: 'Admins',
+      actions: [
         IconButton(
           icon: Icon(Icons.search),
           onPressed: () {
@@ -20,23 +21,21 @@ class Admins extends StatelessWidget {
             };
             Get.toNamed('/search', arguments: map);
           },
-        )
-      ]),
-      body: controllers.utils.container(
-        child: controllers.utils.buildProducts(
-          query: controllers.admin.orderBy('timestamp', descending: true),
-          itemBuilder: (index, context, snapshot) {
-            return controllers.utils.listTile(
-              title: snapshot.data['name'],
-              subtitle:
-                  'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp']))}',
-              onTap: () => Get.toNamed(
-                '/admin_extras',
-                arguments: snapshot.documentID,
-              ),
-            );
-          },
         ),
+      ],
+      child: controllers.utils.paginator(
+        query: controllers.admin.orderBy('timestamp', descending: true),
+        itemBuilder: (index, context, snapshot) {
+          return controllers.utils.listTile(
+            title: snapshot.data['name'],
+            subtitle:
+                'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp']))}',
+            onTap: () => Get.toNamed(
+              '/admin_extras',
+              arguments: snapshot.documentID,
+            ),
+          );
+        },
       ),
     );
   }

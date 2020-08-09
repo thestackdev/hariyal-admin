@@ -22,10 +22,10 @@ class Areas extends StatelessWidget {
             mapKey: FieldValue.arrayUnion([text.toLowerCase()])
           });
           Get.back();
-          controllers.utils.showSnackbar('Area Added');
+          controllers.utils.snackbar('Area Added');
         } else {
           Get.back();
-          controllers.utils.showSnackbar('Invalid entries');
+          controllers.utils.snackbar('Invalid entries');
         }
 
         text = '';
@@ -76,8 +76,9 @@ class Areas extends StatelessWidget {
         });
       }
 
-      return Scaffold(
-        appBar: controllers.utils.appbar(mapKey, actions: [
+      return controllers.utils.root(
+        label: mapKey,
+        actions: [
           IconButton(
             icon: Icon(OMIcons.plusOne),
             onPressed: () => controllers.utils.getSimpleDialouge(
@@ -91,61 +92,59 @@ class Areas extends StatelessWidget {
               yesPressed: () => addArea(),
             ),
           ),
-        ]),
-        body: controllers.utils.container(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => controllers.utils.dismissible(
-              key: UniqueKey(),
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Confirm',
-                    content: Text('Delete this Area ?'),
-                    yesPressed: () {
-                      deleteArea(items[index]);
+        ],
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) => controllers.utils.dismissible(
+            key: UniqueKey(),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Confirm',
+                  content: Text('Delete this Area ?'),
+                  yesPressed: () {
+                    deleteArea(items[index]);
+                    snapshot.reference.updateData({
+                      mapKey: FieldValue.arrayRemove([items[index]]),
+                    });
+                    Get.back();
+                  },
+                  noPressed: () => Get.back(),
+                );
+              } else {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Edit Area',
+                  content: controllers.utils.dialogInput(
+                      hintText: 'Type here',
+                      initialValue: items[index],
+                      onChnaged: (value) {
+                        text = value.trim().toLowerCase();
+                      }),
+                  noPressed: () => Get.back(),
+                  yesPressed: () {
+                    if (controllers.utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      editArea(items[index], text);
                       snapshot.reference.updateData({
                         mapKey: FieldValue.arrayRemove([items[index]]),
                       });
-                      Get.back();
-                    },
-                    noPressed: () => Get.back(),
-                  );
-                } else {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Edit Area',
-                    content: controllers.utils.dialogInput(
-                        hintText: 'Type here',
-                        initialValue: items[index],
-                        onChnaged: (value) {
-                          text = value.trim().toLowerCase();
-                        }),
-                    noPressed: () => Get.back(),
-                    yesPressed: () {
-                      if (controllers.utils.validateInputText(text) &&
-                          text != items[index] &&
-                          !items.contains(text.toLowerCase())) {
-                        editArea(items[index], text);
-                        snapshot.reference.updateData({
-                          mapKey: FieldValue.arrayRemove([items[index]]),
-                        });
-                        snapshot.reference.updateData({
-                          mapKey: FieldValue.arrayUnion([text]),
-                        });
+                      snapshot.reference.updateData({
+                        mapKey: FieldValue.arrayUnion([text]),
+                      });
 
-                        Get.back();
-                      } else {
-                        Get.back();
-                        controllers.utils.showSnackbar('Invalid entries');
-                      }
-                      text = '';
-                    },
-                  );
-                }
-              },
-              child: controllers.utils
-                  .listTile(title: items[index], isTrailingNull: false),
-            ),
+                      Get.back();
+                    } else {
+                      Get.back();
+                      controllers.utils.snackbar('Invalid entries');
+                    }
+                    text = '';
+                  },
+                );
+              }
+            },
+            child: controllers.utils
+                .listTile(title: items[index], isTrailingNull: false),
           ),
         ),
       );

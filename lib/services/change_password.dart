@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
-
 import 'forgot_password.dart';
 
 class ChangePassword extends StatefulWidget {
@@ -27,12 +26,10 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Change Password'),
-      body: controllers.utils.container(
+  Widget build(BuildContext context) => controllers.utils.root(
+        label: 'Change Password',
         child: loading
-            ? controllers.utils.progressIndicator()
+            ? controllers.utils.loading()
             : ListView(
                 children: <Widget>[
                   SizedBox(height: 18),
@@ -47,25 +44,18 @@ class _ChangePasswordState extends State<ChangePassword> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       FlatButton(
-                        child: Text(
-                          'forgot password ?',
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: Text('forgot password ?'),
                         onPressed: () => Get.to(ForgotPassword()),
                       ),
                       controllers.utils.raisedButton('Change Password',
                           () async {
                         FocusScope.of(context).unfocus();
-                        if (oldPass.text.length > 0 &&
-                            newPass.text.length > 0 &&
-                            newPassClone.text.length > 0 &&
+                        if (!oldPass.text.length.isNullOrBlank &&
+                            !newPass.text.length.isNullOrBlank &&
+                            !newPassClone.text.length.isNullOrBlank &&
                             newPass.text == newPassClone.text) {
-                          setState(() {
-                            loading = true;
-                          });
+                          loading = true;
+                          handleState();
                           authCredential = EmailAuthProvider.getCredential(
                             email: controllers.firebaseUser.value.email,
                             password: oldPass.text,
@@ -74,25 +64,24 @@ class _ChangePasswordState extends State<ChangePassword> {
                             final resutlt = await controllers.firebaseUser.value
                                 .reauthenticateWithCredential(authCredential);
                             resutlt.user.updatePassword(newPassClone.text);
-                            controllers.utils.showSnackbar(
+                            oldPass.clear();
+                            newPass.clear();
+                            newPassClone.clear();
+                            loading = false;
+                            handleState();
+                            controllers.utils.snackbar(
                                 'Password Changed sucessfully changed');
-                            setState(() {
-                              loading = false;
-                            });
                           } catch (e) {
-                            setState(() {
-                              loading = false;
-                            });
-                            controllers.utils
-                                .showSnackbar('Not a valid Password');
+                            loading = false;
+                            handleState();
+                            controllers.utils.snackbar('Wrong Password !');
                           }
                         } else {
                           if (newPass.text != newPassClone.text) {
                             controllers.utils
-                                .showSnackbar('New Passwords does\'t match');
+                                .snackbar('New Passwords does\'t match');
                           } else {
-                            controllers.utils
-                                .showSnackbar('Not a valid Password');
+                            controllers.utils.snackbar('Not a valid Password');
                           }
                         }
                       })
@@ -100,7 +89,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                   ),
                 ],
               ),
-      ),
-    );
-  }
+      );
+
+  handleState() => mounted ? setState(() => null) : null;
 }

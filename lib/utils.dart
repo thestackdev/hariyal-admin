@@ -2,49 +2,47 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
 
 class Utils {
-  TextStyle textStyle({Color color, double fontSize}) {
+  /* TextStyle textStyle({Color color, double fontSize}) {
     return TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: fontSize,
       letterSpacing: 1.0,
       color: color,
     );
-  }
+  } */
 
   Widget raisedButton(String label, Function onPressed) {
     return Center(
       child: RaisedButton(
-        child: Text(label),
+        child: Text(label, style: Get.theme.textTheme.headline1),
         onPressed: onPressed,
       ),
     );
   }
 
-  Widget buildProducts(
-      {Query query,
-      Widget Function(int, BuildContext, DocumentSnapshot) itemBuilder,
-      bool shrinkWrap = false,
-      PaginateBuilderType builderType = PaginateBuilderType.listView}) {
-    return PaginateFirestore(
-      shrinkWrap: shrinkWrap,
-      emptyDisplay: nullWidget('Nothing found'),
-      initialLoader: progressIndicator(),
-      bottomLoader: Padding(
-        padding: EdgeInsets.all(9),
-        child: progressIndicator(),
-      ),
-      itemsPerPage: 10,
-      itemBuilder: itemBuilder,
-      query: query,
-      itemBuilderType: builderType,
-    );
-  }
+  Widget paginator({
+    Query query,
+    Widget Function(int, BuildContext, DocumentSnapshot) itemBuilder,
+  }) =>
+      PaginateFirestore(
+        emptyDisplay: error('No Data Found !'),
+        initialLoader: loading(),
+        bottomLoader: Padding(
+          padding: EdgeInsets.all(9),
+          child: loading(),
+        ),
+        itemsPerPage: 10,
+        itemBuilder: itemBuilder,
+        query: query,
+        itemBuilderType: PaginateBuilderType.listView,
+      );
 
   bool validateInputText(String text) =>
       (text.trim().length > 0 && !text.contains('.')) ? true : false;
@@ -153,7 +151,7 @@ class Utils {
         decoration: InputDecoration(labelText: label),
         isExpanded: true,
         iconEnabledColor: Colors.grey,
-        style: inputTextStyle(),
+        style: Get.theme.textTheme.headline2,
         iconSize: 30,
         elevation: 9,
         onChanged: onChanged,
@@ -183,7 +181,7 @@ class Utils {
         validator: (value) =>
             value == null || value.isEmpty ? 'Field can\'t be empty' : null,
         onChanged: onChanged,
-        style: inputTextStyle(),
+        style: Get.theme.textTheme.headline2,
         readOnly: readOnly,
         maxLines: null,
         controller: controller,
@@ -200,65 +198,26 @@ class Utils {
     String description,
     String imageUrl,
     Function onTap,
-  }) {
-    return Card(
-      margin: EdgeInsets.all(12),
-      elevation: 3,
-      shadowColor: Colors.deepPurple,
-      child: ListTile(
-        onTap: onTap,
-        leading: CachedNetworkImage(
-          imageUrl: imageUrl,
-          height: 90,
-          width: 90,
-          filterQuality: FilterQuality.low,
+  }) =>
+      Card(
+        child: ListTile(
+          onTap: onTap,
+          leading:
+              CachedNetworkImage(imageUrl: imageUrl, height: 90, width: 90),
+          title: Text(GetUtils.capitalize(title)),
+          subtitle: Text(description),
         ),
-        title: Text(GetUtils.capitalize(title)),
-        subtitle: Text(description),
-      ),
-    );
-  }
+      );
 
-  TextStyle inputTextStyle() {
-    return TextStyle(
-      fontWeight: FontWeight.normal,
-      fontSize: 16,
-      color: Colors.grey.shade700,
-    );
-  }
-
-  void showSnackbar(String message) {
+  void snackbar(String message) {
     if (Get.isSnackbarOpen) Get.back();
     Get.snackbar(
-      'Alert',
+      null,
       message,
-      colorText: Colors.white,
-      instantInit: true,
       margin: EdgeInsets.zero,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
       snackStyle: SnackStyle.GROUNDED,
-    );
-  }
-
-  container({Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(30),
-        topRight: Radius.circular(30),
-      ),
-      child: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          color: Colors.white.withOpacity(0.99),
-        ),
-        child: child,
-      ),
     );
   }
 
@@ -268,14 +227,14 @@ class Utils {
       return Scaffold(
         appBar: AppBar(
           actions: actions,
-          title: Text(label),
+          title: Text(label, style: Get.textTheme.headline5),
           centerTitle: true,
           bottom: bottom,
         ),
         body: ClipRRect(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(18),
-            topRight: Radius.circular(18),
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
           ),
           child: Container(
             height: double.infinity,
@@ -283,8 +242,8 @@ class Utils {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
+                topLeft: Radius.circular(25),
+                topRight: Radius.circular(25),
               ),
             ),
             child: child,
@@ -292,47 +251,21 @@ class Utils {
         ),
       );
     } catch (e) {
-      return error();
+      return error('Oops.. , Something went wrong !');
     }
   }
 
-  Widget error() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Text('Oops... , Something went wrong !'),
-      ),
-    );
-  }
+  Widget error(String text) => Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Text(
+            text,
+            style: Get.textTheme.headline4.apply(fontSizeFactor: 1.5),
+          ),
+        ),
+      );
 
-  Widget appbar(
-    String label, {
-    Widget bottom,
-    List<Widget> actions,
-  }) {
-    return AppBar(
-      actions: actions,
-      title: Text(GetUtils.capitalizeFirst(label)),
-      centerTitle: true,
-      bottom: bottom,
-    );
-  }
-
-  Widget nullWidget(String label) {
-    return Center(
-      child: Text(
-        label,
-        style: TextStyle(color: Colors.grey.shade700),
-        textScaleFactor: 1.5,
-      ),
-    );
-  }
-
-  Widget progressIndicator() {
-    return Center(
-      child: SpinKitRing(color: Colors.red.shade300, lineWidth: 5),
-    );
-  }
+  Widget loading() => Center(child: SpinKitRing());
 
   Widget alertDialog(
       {String content, Function yesPressed, Function noPressed}) {
@@ -340,12 +273,11 @@ class Utils {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
-      title: Text('Are you sure', style: textStyle(color: Colors.red)),
-      content: Text(content, style: textStyle(color: Colors.grey)),
+      title: Text('Are you sure'),
+      content: Text(content),
       actions: [
-        FlatButton(
-            child: Text('Yes', style: textStyle()), onPressed: yesPressed),
-        FlatButton(child: Text('No', style: textStyle()), onPressed: noPressed),
+        FlatButton(child: Text('Yes'), onPressed: yesPressed),
+        FlatButton(child: Text('No'), onPressed: noPressed),
       ],
     );
   }
@@ -358,12 +290,7 @@ class Utils {
     String subtitle,
     double textscalefactor,
   }) {
-    return Container(
-      margin: EdgeInsets.all(9),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(9),
-        color: Colors.grey.shade50,
-      ),
+    return Card(
       child: ListTile(
         leading: leading,
         trailing: isTrailingNull
@@ -390,18 +317,23 @@ class Utils {
     );
   }
 
+  Widget streamBuilder<T>({
+    @required Stream<T> stream,
+    @required Widget Function(BuildContext, T) builder,
+  }) =>
+      DataStreamBuilder<T>(
+        stream: stream,
+        builder: builder,
+        loadingBuilder: (context) => loading(),
+        errorBuilder: (context, e) => error('Oops.., Something went wrong !'),
+      );
+
   Widget materialButton({Function onPressed, String title, Color color}) {
     return MaterialButton(
       height: 45,
       color: color,
       onPressed: onPressed,
-      child: Text(
-        title,
-        style: textStyle(
-          color: Colors.white,
-          fontSize: 18,
-        ),
-      ),
+      child: Text(title),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(3),
       ),

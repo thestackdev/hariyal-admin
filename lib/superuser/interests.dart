@@ -10,48 +10,46 @@ class Interests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: controllers.utils.appbar('Interests'),
-      body: controllers.utils.container(
-        child: controllers.utils.buildProducts(
-          query: controllers.interests.orderBy('timestamp', descending: true),
-          itemBuilder: (index, context, snapshot) {
-            return DataStreamBuilder<DocumentSnapshot>(
-              stream: controllers.customers
-                  .document(snapshot.data['author'])
-                  .snapshots(),
-              builder: (context, author) {
-                return DataStreamBuilder<DocumentSnapshot>(
-                  stream: controllers.products
-                      .document(snapshot.data['productId'])
-                      .snapshots(),
-                  builder: (context, product) {
-                    return controllers.utils.listTile(
-                        textscalefactor: 1,
-                        leading: GestureDetector(
-                          onTap: () => Get.offNamed(
-                            'customer_deatils',
-                            arguments: author,
-                          ),
-                          child: CircleAvatar(
-                            backgroundImage: CachedNetworkImageProvider(
-                              author.data['image'],
-                            ),
-                            backgroundColor: Colors.white,
-                          ),
+    return controllers.utils.root(
+      label: 'Interests',
+      child: controllers.utils.paginator(
+        query: controllers.interests.orderBy('timestamp', descending: true),
+        itemBuilder: (index, context, snapshot) {
+          return DataStreamBuilder<DocumentSnapshot>(
+            stream: controllers.customers
+                .document(snapshot.data['author'])
+                .snapshots(),
+            builder: (context, author) {
+              return DataStreamBuilder<DocumentSnapshot>(
+                stream: controllers.products
+                    .document(snapshot.data['productId'])
+                    .snapshots(),
+                builder: (context, product) {
+                  return controllers.utils.listTile(
+                      textscalefactor: 1,
+                      leading: GestureDetector(
+                        onTap: () => Get.offNamed(
+                          'customer_deatils',
+                          arguments: author,
                         ),
-                        onTap: () => Get.toNamed(
-                              'product_details',
-                              arguments: product.documentID,
-                            ),
-                        title:
-                            '${author.data['name']} is interested in ${product['title']}');
-                  },
-                );
-              },
-            );
-          },
-        ),
+                        child: CircleAvatar(
+                          backgroundImage: CachedNetworkImageProvider(
+                            author.data['image'],
+                          ),
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                      onTap: () => Get.toNamed(
+                            'product_details',
+                            arguments: product.documentID,
+                          ),
+                      title:
+                          '${author.data['name']} is interested in ${product['title']}');
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

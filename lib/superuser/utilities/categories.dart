@@ -20,10 +20,10 @@ class CategoriesScreen extends StatelessWidget {
             !items.contains(text.toLowerCase())) {
           snapshot.reference.updateData({text: []});
           Get.back();
-          controllers.utils.showSnackbar('Category Added');
+          controllers.utils.snackbar('Category Added');
         } else {
           Get.back();
-          controllers.utils.showSnackbar('Invalid entries');
+          controllers.utils.snackbar('Invalid entries');
         }
 
         text = '';
@@ -55,8 +55,9 @@ class CategoriesScreen extends StatelessWidget {
         });
       }
 
-      return Scaffold(
-        appBar: controllers.utils.appbar('Categories', actions: [
+      return controllers.utils.root(
+        label: 'Categories',
+        actions: [
           IconButton(
             icon: Icon(OMIcons.plusOne),
             onPressed: () => controllers.utils.getSimpleDialouge(
@@ -70,62 +71,60 @@ class CategoriesScreen extends StatelessWidget {
               yesPressed: () => addCategory(),
             ),
           ),
-        ]),
-        body: controllers.utils.container(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => controllers.utils.dismissible(
-              key: UniqueKey(),
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Confirm',
-                    content: Text('Delete this Category ?'),
-                    yesPressed: () {
-                      deleteCategory(items[index]);
-                      snapshot.reference
-                          .updateData({items[index]: FieldValue.delete()});
+        ],
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) => controllers.utils.dismissible(
+            key: UniqueKey(),
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Confirm',
+                  content: Text('Delete this Category ?'),
+                  yesPressed: () {
+                    deleteCategory(items[index]);
+                    snapshot.reference
+                        .updateData({items[index]: FieldValue.delete()});
+                    Get.back();
+                  },
+                  noPressed: () => Get.back(),
+                );
+              } else {
+                return await controllers.utils.getSimpleDialouge(
+                  title: 'Edit Category',
+                  content: controllers.utils.dialogInput(
+                      hintText: 'Type here',
+                      initialValue: items[index],
+                      onChnaged: (value) {
+                        text = value.trim().toLowerCase();
+                      }),
+                  noPressed: () => Get.back(),
+                  yesPressed: () {
+                    if (controllers.utils.validateInputText(text) &&
+                        text != items[index] &&
+                        !items.contains(text.toLowerCase())) {
+                      List tempData = snapshot.data[items[index]];
+
+                      snapshot.reference.updateData({text: tempData});
+                      snapshot.reference.updateData(
+                        {items[index]: FieldValue.delete()},
+                      );
+
+                      editCategory(items[index], text);
                       Get.back();
-                    },
-                    noPressed: () => Get.back(),
-                  );
-                } else {
-                  return await controllers.utils.getSimpleDialouge(
-                    title: 'Edit Category',
-                    content: controllers.utils.dialogInput(
-                        hintText: 'Type here',
-                        initialValue: items[index],
-                        onChnaged: (value) {
-                          text = value.trim().toLowerCase();
-                        }),
-                    noPressed: () => Get.back(),
-                    yesPressed: () {
-                      if (controllers.utils.validateInputText(text) &&
-                          text != items[index] &&
-                          !items.contains(text.toLowerCase())) {
-                        List tempData = snapshot.data[items[index]];
-
-                        snapshot.reference.updateData({text: tempData});
-                        snapshot.reference.updateData(
-                          {items[index]: FieldValue.delete()},
-                        );
-
-                        editCategory(items[index], text);
-                        Get.back();
-                      } else {
-                        Get.back();
-                        controllers.utils.showSnackbar('Invalid entries');
-                      }
-                      text = '';
-                    },
-                  );
-                }
-              },
-              child: controllers.utils.listTile(
-                title: items[index],
-                onTap: () =>
-                    Get.toNamed('/sub_categories', arguments: items[index]),
-              ),
+                    } else {
+                      Get.back();
+                      controllers.utils.snackbar('Invalid entries');
+                    }
+                    text = '';
+                  },
+                );
+              }
+            },
+            child: controllers.utils.listTile(
+              title: items[index],
+              onTap: () =>
+                  Get.toNamed('/sub_categories', arguments: items[index]),
             ),
           ),
         ),

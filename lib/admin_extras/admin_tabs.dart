@@ -15,40 +15,35 @@ class AdminExtras extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: controllers.utils.appbar(
-          'Admin Extras',
-          bottom: TabBar(
-            labelStyle: controllers.utils.textStyle(fontSize: 18),
-            indicatorColor: Colors.transparent,
-            tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Details')],
-          ),
+      child: controllers.utils.root(
+        label: 'Admin Extras',
+        bottom: TabBar(
+          indicatorColor: Colors.transparent,
+          tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Details')],
         ),
-        body: controllers.utils.container(
-          child: TabBarView(
-            children: <Widget>[
-              controllers.utils.buildProducts(
-                  query: controllers.products
-                      .orderBy('timestamp', descending: true)
-                      .where('author', isEqualTo: adminUid),
-                  itemBuilder: (index, context, snapshot) {
-                    try {
-                      return controllers.utils.card(
-                        title: snapshot.data['title'],
-                        description: snapshot.data['description'],
-                        imageUrl: snapshot.data['images'][0],
-                        onTap: () => Get.to(
-                          ProductDetails(),
-                          arguments: snapshot.documentID,
-                        ),
-                      );
-                    } catch (e) {
-                      return controllers.utils.nullWidget(e.toString());
-                    }
-                  }),
-              getPrivilages(),
-            ],
-          ),
+        child: TabBarView(
+          children: <Widget>[
+            controllers.utils.paginator(
+                query: controllers.products
+                    .orderBy('timestamp', descending: true)
+                    .where('author', isEqualTo: adminUid),
+                itemBuilder: (index, context, snapshot) {
+                  try {
+                    return controllers.utils.card(
+                      title: snapshot.data['title'],
+                      description: snapshot.data['description'],
+                      imageUrl: snapshot.data['images'][0],
+                      onTap: () => Get.to(
+                        ProductDetails(),
+                        arguments: snapshot.documentID,
+                      ),
+                    );
+                  } catch (e) {
+                    return controllers.utils.error(e.toString());
+                  }
+                }),
+            getPrivilages(),
+          ],
         ),
       ),
     );
