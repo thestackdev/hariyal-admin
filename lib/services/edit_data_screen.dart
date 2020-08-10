@@ -492,13 +492,13 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
         await PushProduct().updateProduct(
           newImages: newImages,
-          category: selectedCategory.trim().toLowerCase(),
+          category: selectedCategory,
           docID: docsnap.documentID,
           oldImages: existingImages,
-          subCategory: selectedSubCategory.trim().toLowerCase(),
-          state: selectedState.trim().toLowerCase(),
-          area: selectedArea.trim().toLowerCase(),
-          adressID: addressID.trim(),
+          subCategory: selectedSubCategory,
+          state: selectedState,
+          area: selectedArea,
+          adressID: addressID,
           price: double.parse(price.text.replaceAll(',', '')),
           title: title.text.trim().toLowerCase(),
           description: description.text.trim().toLowerCase(),
