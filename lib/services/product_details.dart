@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/mark_as_sold.dart';
 import 'package:superuser/widgets/image_slider.dart';
 import 'package:superuser/widgets/image_view.dart';
-import 'package:intl/intl.dart';
+
 import 'edit_data_screen.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -206,7 +207,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     noPressed: () => Get.back(),
                                   ),
                                 ),
-                              ] else ...[
+                              ] else if (!snapshot.data['isSold']) ...[
                                 buildButton(
                                   2,
                                   'Edit',
@@ -249,20 +250,23 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   3,
                                   'Request Again',
                                   Colors.green.shade500,
-                                  () => snapshot.reference
-                                      .updateData({'rejected': false}),
+                                      () =>
+                                      snapshot.reference
+                                          .updateData({'rejected': false}),
                                 ),
-                              ] else ...[
-                                buildButton(
-                                  2,
-                                  'Delete',
-                                  Colors.redAccent,
-                                  () => controllers.utils
-                                      .getSimpleDialougeForNoContent(
-                                    title: 'Delete this product permanently ?',
-                                    yesPressed: () =>
-                                        deletePremanently(snapshot),
-                                    noPressed: () => Get.back(),
+                              ] else
+                                if (!snapshot.data['isSold']) ...[
+                                  buildButton(
+                                    2,
+                                    'Delete',
+                                    Colors.redAccent,
+                                        () =>
+                                        controllers.utils
+                                            .getSimpleDialougeForNoContent(
+                                          title: 'Delete this product permanently ?',
+                                          yesPressed: () =>
+                                              deletePremanently(snapshot),
+                                          noPressed: () => Get.back(),
                                   ),
                                 ),
                                 buildButton(
