@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -492,12 +493,12 @@ class _EditDataScreenState extends State<EditDataScreen> {
         await PushProduct().updateProduct(
           newImages: newImages,
           category: selectedCategory.trim().toLowerCase(),
-          docID: docsnap.documentID.trim().toLowerCase(),
+          docID: docsnap.documentID,
           oldImages: existingImages,
           subCategory: selectedSubCategory.trim().toLowerCase(),
           state: selectedState.trim().toLowerCase(),
           area: selectedArea.trim().toLowerCase(),
-          adressID: addressID.trim().toLowerCase(),
+          adressID: addressID.trim(),
           price: double.parse(price.text.replaceAll(',', '')),
           title: title.text.trim().toLowerCase(),
           description: description.text.trim().toLowerCase(),

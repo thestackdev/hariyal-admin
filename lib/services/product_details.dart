@@ -250,23 +250,20 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   3,
                                   'Request Again',
                                   Colors.green.shade500,
-                                      () =>
-                                      snapshot.reference
-                                          .updateData({'rejected': false}),
+                                  () => snapshot.reference
+                                      .updateData({'rejected': false}),
                                 ),
-                              ] else
-                                if (!snapshot.data['isSold']) ...[
-                                  buildButton(
-                                    2,
-                                    'Delete',
-                                    Colors.redAccent,
-                                        () =>
-                                        controllers.utils
-                                            .getSimpleDialougeForNoContent(
-                                          title: 'Delete this product permanently ?',
-                                          yesPressed: () =>
-                                              deletePremanently(snapshot),
-                                          noPressed: () => Get.back(),
+                              ] else if (!snapshot.data['isSold']) ...[
+                                buildButton(
+                                  2,
+                                  'Delete',
+                                  Colors.redAccent,
+                                  () => controllers.utils
+                                      .getSimpleDialougeForNoContent(
+                                    title: 'Delete this product permanently ?',
+                                    yesPressed: () =>
+                                        deletePremanently(snapshot),
+                                    noPressed: () => Get.back(),
                                   ),
                                 ),
                                 buildButton(
