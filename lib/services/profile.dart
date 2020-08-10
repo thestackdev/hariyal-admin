@@ -100,10 +100,9 @@ class _ProfileState extends State<Profile> {
                   child: TextFormField(
                     readOnly: !isEditing,
                     controller: controller,
+                    style: Get.textTheme.headline2,
                     decoration: InputDecoration(
                       labelText: 'User name',
-                      labelStyle:
-                          Get.textTheme.headline3.apply(fontSizeFactor: 1.1),
                       suffixIcon: IconButton(
                         icon: Icon(isEditing ? OMIcons.check : OMIcons.edit),
                         onPressed: () => {

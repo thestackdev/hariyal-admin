@@ -39,7 +39,7 @@ class PushProduct {
       'soldReason': null,
       'interested_count': 0,
       'timestamp': DateTime.now().microsecondsSinceEpoch,
-      'authored': false,
+      'authored': authored,
       'isDeleted': false,
       'sold_timestamp': null,
       'rejected': false,

@@ -9,23 +9,12 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
 
 class Utils {
-  /* TextStyle textStyle({Color color, double fontSize}) {
-    return TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: fontSize,
-      letterSpacing: 1.0,
-      color: color,
-    );
-  } */
-
-  Widget raisedButton(String label, Function onPressed) {
-    return Center(
-      child: RaisedButton(
-        child: Text(label, style: Get.theme.textTheme.headline1),
-        onPressed: onPressed,
-      ),
-    );
-  }
+  Widget raisedButton(String label, Function onPressed) => Center(
+        child: RaisedButton(
+          child: Text(label, style: Get.theme.textTheme.headline1),
+          onPressed: onPressed,
+        ),
+      );
 
   Widget paginator({
     Query query,
@@ -56,32 +45,14 @@ class Utils {
       key: key,
       child: child,
       confirmDismiss: confirmDismiss,
-      background: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(9),
-          color: Colors.red,
-        ),
-        child: Center(
-          child: ListTile(
-            leading: Icon(
-              OMIcons.deleteForever,
-              color: Colors.white,
-            ),
-          ),
+      background: Center(
+        child: ListTile(
+          leading: Icon(OMIcons.deleteForever, color: Colors.redAccent),
         ),
       ),
-      secondaryBackground: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(9),
-          color: Colors.blue,
-        ),
-        child: Center(
-          child: ListTile(
-            trailing: Icon(
-              OMIcons.edit,
-              color: Colors.white,
-            ),
-          ),
+      secondaryBackground: Center(
+        child: ListTile(
+          trailing: Icon(OMIcons.edit, color: Colors.redAccent),
         ),
       ),
     );
@@ -104,15 +75,25 @@ class Utils {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
         ),
-        title: Center(child: Text(title)),
+        title: Center(
+            child: Text(
+          title,
+          style: Get.textTheme.headline4.apply(fontSizeFactor: 1.2),
+        )),
         content: content,
         actions: <Widget>[
           FlatButton(
-            child: Text(noText),
+            child: Text(
+              noText,
+              style: Get.textTheme.headline1.apply(color: Colors.redAccent),
+            ),
             onPressed: noPressed,
           ),
           FlatButton(
-            child: Text(yesText),
+            child: Text(
+              yesText,
+              style: Get.textTheme.headline1.apply(color: Colors.redAccent),
+            ),
             onPressed: yesPressed,
           ),
         ],
@@ -120,21 +101,51 @@ class Utils {
     );
   }
 
-  Widget dialogInput({
-    String hintText,
-    Function(String) onChnaged,
-    String initialValue,
-    TextEditingController controller,
-    Function(String) validator,
-  }) {
-    return TextFormField(
-      initialValue: initialValue,
-      controller: controller,
-      validator: (value) => value == null ? 'Field can\'t be empty' : null,
-      onChanged: onChnaged,
-      decoration: InputDecoration(hintText: hintText),
-    );
-  }
+  Future<bool> getSimpleDialougeForNoContent(
+          {String title, Function yesPressed, Function noPressed}) =>
+      Get.dialog(
+        AlertDialog(
+          scrollable: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: Center(
+              child: Text(
+            title,
+            style: Get.textTheme.headline4.apply(fontSizeFactor: 1.2),
+          )),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Cancel',
+                style: Get.textTheme.headline1.apply(color: Colors.redAccent),
+              ),
+              onPressed: noPressed,
+            ),
+            FlatButton(
+              child: Text(
+                'Confirm',
+                style: Get.textTheme.headline1.apply(color: Colors.redAccent),
+              ),
+              onPressed: yesPressed,
+            ),
+          ],
+        ),
+      );
+
+  Widget dialogInput(
+          {String hintText,
+          Function(String) onChnaged,
+          String initialValue,
+          TextEditingController controller}) =>
+      TextFormField(
+        initialValue: initialValue,
+        style: Get.textTheme.headline2,
+        controller: controller,
+        onChanged: onChnaged,
+        decoration: InputDecoration(
+            hintText: hintText, hintStyle: Get.textTheme.headline2),
+      );
 
   Widget productInputDropDown({
     String label,
@@ -142,26 +153,26 @@ class Utils {
     Function onChanged,
     String value,
     bool isShowroom = false,
+    Function onTap,
   }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      child: DropdownButtonFormField(
-        validator: (value) => value == null ? 'Field can\'t be empty' : null,
-        value: value,
-        decoration: InputDecoration(labelText: label),
-        isExpanded: true,
-        iconEnabledColor: Colors.grey,
-        style: Get.theme.textTheme.headline2,
-        iconSize: 30,
-        elevation: 9,
-        onChanged: onChanged,
-        items: items.map((e) {
-          return DropdownMenuItem(
-            value: isShowroom ? e.data['name'] : e,
-            child: Text(isShowroom ? e.data['name'] : e),
-          );
-        }).toList(),
-      ),
+    return DropdownButtonFormField(
+      validator: (value) => value == null ? 'Field can\'t be empty' : null,
+      value: value,
+      decoration: InputDecoration(labelText: label),
+      isExpanded: true,
+      iconEnabledColor: Colors.grey,
+      style: Get.theme.textTheme.headline2,
+      iconSize: 30,
+      elevation: 9,
+      onChanged: onChanged,
+      items: items == null
+          ? null
+          : items.map((e) {
+              return DropdownMenuItem(
+                value: isShowroom ? e.data['name'] : e,
+                child: Text(isShowroom ? e.data['name'] : e),
+              );
+            }).toList(),
     );
   }
 
@@ -174,22 +185,19 @@ class Utils {
       bool readOnly = false,
       String initialValue,
       List<TextInputFormatter> inputFormatters}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      child: TextFormField(
-        initialValue: initialValue,
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Field can\'t be empty' : null,
-        onChanged: onChanged,
-        style: Get.theme.textTheme.headline2,
-        readOnly: readOnly,
-        maxLines: null,
-        controller: controller,
-        inputFormatters: inputFormatters,
-        keyboardType: textInputType,
-        decoration: InputDecoration(labelText: label),
-        textInputAction: textInputAction,
-      ),
+    return TextFormField(
+      initialValue: initialValue,
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Field can\'t be empty' : null,
+      onChanged: onChanged,
+      style: Get.theme.textTheme.headline2,
+      readOnly: readOnly,
+      maxLines: null,
+      controller: controller,
+      inputFormatters: inputFormatters,
+      keyboardType: textInputType,
+      decoration: InputDecoration(labelText: label),
+      textInputAction: textInputAction,
     );
   }
 
@@ -268,19 +276,18 @@ class Utils {
   Widget loading() => Center(child: SpinKitRing());
 
   Widget alertDialog(
-      {String content, Function yesPressed, Function noPressed}) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
-      title: Text('Are you sure'),
-      content: Text(content),
-      actions: [
-        FlatButton(child: Text('Yes'), onPressed: yesPressed),
-        FlatButton(child: Text('No'), onPressed: noPressed),
-      ],
-    );
-  }
+          {String content, Function yesPressed, Function noPressed}) =>
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: Text('Are you sure'),
+        content: Text(content),
+        actions: [
+          FlatButton(child: Text('Yes'), onPressed: yesPressed),
+          FlatButton(child: Text('No'), onPressed: noPressed),
+        ],
+      );
 
   Widget listTile({
     String title,
@@ -302,7 +309,7 @@ class Utils {
         onTap: onTap,
         title: Text(
           GetUtils.capitalizeFirst(title.trim()),
-          style: TextStyle(color: Colors.red),
+          style: Get.textTheme.headline2.apply(color: Colors.redAccent),
           textScaleFactor: textscalefactor ?? 1.2,
         ),
         subtitle: subtitle == null
@@ -322,6 +329,7 @@ class Utils {
     @required Widget Function(BuildContext, T) builder,
   }) =>
       DataStreamBuilder<T>(
+        initialData: null,
         stream: stream,
         builder: builder,
         loadingBuilder: (context) => loading(),

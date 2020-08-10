@@ -30,64 +30,69 @@ class _ChangePasswordState extends State<ChangePassword> {
         label: 'Change Password',
         child: loading
             ? controllers.utils.loading()
-            : ListView(
-                children: <Widget>[
-                  SizedBox(height: 18),
-                  controllers.utils.inputTextField(
-                      label: 'Old Password', controller: oldPass),
-                  controllers.utils.inputTextField(
-                      label: 'New Password', controller: newPass),
-                  controllers.utils.inputTextField(
-                      label: 'Re-Enter Password', controller: newPassClone),
-                  SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text('forgot password ?'),
-                        onPressed: () => Get.to(ForgotPassword()),
-                      ),
-                      controllers.utils.raisedButton('Change Password',
-                          () async {
-                        FocusScope.of(context).unfocus();
-                        if (!oldPass.text.length.isNullOrBlank &&
-                            !newPass.text.length.isNullOrBlank &&
-                            !newPassClone.text.length.isNullOrBlank &&
-                            newPass.text == newPassClone.text) {
-                          loading = true;
-                          handleState();
-                          authCredential = EmailAuthProvider.getCredential(
-                            email: controllers.firebaseUser.value.email,
-                            password: oldPass.text,
-                          );
-                          try {
-                            final resutlt = await controllers.firebaseUser.value
-                                .reauthenticateWithCredential(authCredential);
-                            resutlt.user.updatePassword(newPassClone.text);
-                            oldPass.clear();
-                            newPass.clear();
-                            newPassClone.clear();
-                            loading = false;
+            : Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 18,
+                  runSpacing: 18,
+                  children: <Widget>[
+                    controllers.utils.inputTextField(
+                        label: 'Old Password', controller: oldPass),
+                    controllers.utils.inputTextField(
+                        label: 'New Password', controller: newPass),
+                    controllers.utils.inputTextField(
+                        label: 'Re-Enter Password', controller: newPassClone),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text('forgot password ?'),
+                          onPressed: () => Get.to(ForgotPassword()),
+                        ),
+                        controllers.utils.raisedButton('Change Password',
+                            () async {
+                          FocusScope.of(context).unfocus();
+                          if (!oldPass.text.length.isNullOrBlank &&
+                              !newPass.text.length.isNullOrBlank &&
+                              !newPassClone.text.length.isNullOrBlank &&
+                              newPass.text == newPassClone.text) {
+                            loading = true;
                             handleState();
-                            controllers.utils.snackbar(
-                                'Password Changed sucessfully changed');
-                          } catch (e) {
-                            loading = false;
-                            handleState();
-                            controllers.utils.snackbar('Wrong Password !');
-                          }
-                        } else {
-                          if (newPass.text != newPassClone.text) {
-                            controllers.utils
-                                .snackbar('New Passwords does\'t match');
+                            authCredential = EmailAuthProvider.getCredential(
+                              email: controllers.firebaseUser.value.email,
+                              password: oldPass.text,
+                            );
+                            try {
+                              final resutlt = await controllers
+                                  .firebaseUser.value
+                                  .reauthenticateWithCredential(authCredential);
+                              resutlt.user.updatePassword(newPassClone.text);
+                              oldPass.clear();
+                              newPass.clear();
+                              newPassClone.clear();
+                              loading = false;
+                              handleState();
+                              controllers.utils.snackbar(
+                                  'Password Changed sucessfully changed');
+                            } catch (e) {
+                              loading = false;
+                              handleState();
+                              controllers.utils.snackbar('Wrong Password !');
+                            }
                           } else {
-                            controllers.utils.snackbar('Not a valid Password');
+                            if (newPass.text != newPassClone.text) {
+                              controllers.utils
+                                  .snackbar('New Passwords does\'t match');
+                            } else {
+                              controllers.utils
+                                  .snackbar('Not a valid Password');
+                            }
                           }
-                        }
-                      })
-                    ],
-                  ),
-                ],
+                        })
+                      ],
+                    ),
+                  ],
+                ),
               ),
       );
 

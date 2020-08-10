@@ -19,7 +19,7 @@ class Specifications extends StatelessWidget {
           itemBuilder: (context, index) => controllers.utils.listTile(
             title: items[index],
             onTap: () =>
-                Get.toNamed('/specifications_data', arguments: items[index]),
+                Get.toNamed('specifications_data', arguments: items[index]),
           ),
         ),
       );

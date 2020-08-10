@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/route_manager.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -43,9 +44,9 @@ class _PushDataState extends State<PushData> {
 
   @override
   void initState() {
-    categoryMap = controllers.categories.value.data;
-    locationsMap = controllers.locations.value.data;
-    specificationsMap = controllers.specifications.value.data;
+    categoryMap = controllers.categories.value?.data;
+    locationsMap = controllers.locations.value?.data;
+    specificationsMap = controllers.specifications.value?.data;
     super.initState();
   }
 
@@ -72,81 +73,98 @@ class _PushDataState extends State<PushData> {
       child: loading
           ? controllers.utils.loading()
           : ListView(
+              padding: EdgeInsets.symmetric(vertical: 9, horizontal: 18),
               children: <Widget>[
-                SizedBox(height: 9),
                 GridView.count(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   crossAxisCount: 3,
                   children: List.generate(images.length + 1, (index) {
                     if (index == images.length) {
-                      return Container(
-                        margin: EdgeInsets.all(9),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(9),
-                          color: Colors.grey.shade100,
-                        ),
-                        child: images.length >= 5
-                            ? Container()
-                            : IconButton(
-                                onPressed: () async {
-                                  dynamic source;
-                                  await controllers.utils.getSimpleDialouge(
-                                      title: 'Select an option',
-                                      yesText: 'Select from gallery',
-                                      noText: 'Take a picture',
-                                      yesPressed: () {
-                                        Navigator.of(context).pop();
-                                        return source = ImageSource.gallery;
-                                      },
-                                      noPressed: () {
-                                        Navigator.of(context).pop();
-                                        return source = ImageSource.camera;
-                                      });
+                      return images.length >= 5
+                          ? Container()
+                          : IconButton(
+                              onPressed: () async {
+                                dynamic source;
 
-                                  try {
-                                    final pickedFile = await ImagePicker()
-                                        .getImage(
-                                            source: source, imageQuality: 75);
-                                    if (pickedFile != null) {
-                                      File croppedFile =
-                                          await ImageCropper.cropImage(
-                                        sourcePath: pickedFile.path,
-                                        aspectRatioPresets: [
-                                          CropAspectRatioPreset.square,
-                                          CropAspectRatioPreset.ratio3x2,
-                                          CropAspectRatioPreset.original,
-                                          CropAspectRatioPreset.ratio4x3,
-                                          CropAspectRatioPreset.ratio16x9
+                                await Get.bottomSheet(
+                                  Container(
+                                      height: 90,
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          IconButton(
+                                              icon: Icon(
+                                                OMIcons.camera,
+                                                size: 36,
+                                                color: Colors.redAccent,
+                                              ),
+                                              onPressed: () {
+                                                Get.back();
+                                                return source =
+                                                    ImageSource.camera;
+                                              }),
+                                          IconButton(
+                                            icon: Icon(
+                                              OMIcons.image,
+                                              size: 36,
+                                              color: Colors.redAccent,
+                                            ),
+                                            onPressed: () {
+                                              Get.back();
+                                              return source =
+                                                  ImageSource.gallery;
+                                            },
+                                          )
                                         ],
-                                        androidUiSettings: AndroidUiSettings(
-                                          toolbarTitle: 'Crop Image',
-                                          toolbarColor:
-                                              Theme.of(context).accentColor,
-                                          toolbarWidgetColor: Colors.white,
-                                          initAspectRatio:
-                                              CropAspectRatioPreset.original,
-                                          lockAspectRatio: false,
-                                        ),
-                                      );
-                                      if (croppedFile == null) {
-                                        return;
-                                      }
+                                      )),
+                                  backgroundColor: Colors.white,
+                                );
 
-                                      images.add(croppedFile);
+                                try {
+                                  final pickedFile = await ImagePicker()
+                                      .getImage(
+                                          source: source, imageQuality: 75);
+                                  if (pickedFile != null) {
+                                    File croppedFile =
+                                        await ImageCropper.cropImage(
+                                      sourcePath: pickedFile.path,
+                                      aspectRatioPresets: [
+                                        CropAspectRatioPreset.square,
+                                        CropAspectRatioPreset.ratio3x2,
+                                        CropAspectRatioPreset.original,
+                                        CropAspectRatioPreset.ratio4x3,
+                                        CropAspectRatioPreset.ratio16x9
+                                      ],
+                                      androidUiSettings: AndroidUiSettings(
+                                        toolbarTitle: 'Crop Image',
+                                        toolbarColor:
+                                            Theme.of(context).accentColor,
+                                        toolbarWidgetColor: Colors.white,
+                                        initAspectRatio:
+                                            CropAspectRatioPreset.original,
+                                        lockAspectRatio: false,
+                                      ),
+                                    );
+                                    if (croppedFile == null) {
+                                      return;
                                     }
-                                  } catch (e) {
-                                    print(e.toString());
-                                  }
 
-                                  handleSetState();
-                                },
-                                icon: Icon(
-                                  OMIcons.plusOne,
-                                  color: Colors.red.shade300,
-                                ),
+                                    images.add(croppedFile);
+                                  }
+                                } catch (e) {
+                                  print(e.toString());
+                                }
+
+                                handleSetState();
+                              },
+                              icon: Icon(
+                                OMIcons.plusOne,
+                                color: Colors.red.shade300,
                               ),
-                      );
+                            );
                     }
                     return Padding(
                       padding: EdgeInsets.all(9),
@@ -190,12 +208,15 @@ class _PushDataState extends State<PushData> {
                 ),
                 Form(
                   key: globalKey,
-                  child: Column(
+                  child: Wrap(
+                    spacing: 18,
+                    runSpacing: 18,
                     children: <Widget>[
                       controllers.utils.productInputDropDown(
                           label: 'Category',
                           value: selectedCategory,
-                          items: categoryMap.keys.toList(),
+                          items: categoryMap?.keys?.toList(),
+                          onTap: () => print('called'),
                           onChanged: (value) {
                             selectedCategory = value;
                             selectedSubCategory = null;
@@ -207,29 +228,27 @@ class _PushDataState extends State<PushData> {
 
                             handleSetState();
                           }),
-                      GestureDetector(
-                        onTap: () {
-                          if (selectedCategory == null) {
-                            controllers.utils
-                                .snackbar('Please select category first');
-                          } else if (subCategory.length == 0) {
-                            controllers.utils.snackbar(
-                                'No subcategories in $selectedCategory');
-                          }
-                        },
-                        child: controllers.utils.productInputDropDown(
-                            label: 'Sub-Category',
-                            value: selectedSubCategory,
-                            items: subCategory,
-                            onChanged: (value) {
-                              selectedSubCategory = value;
-                              handleSetState();
-                            }),
-                      ),
+                      controllers.utils.productInputDropDown(
+                          label: 'Sub-Category',
+                          value: selectedSubCategory,
+                          items: subCategory,
+                          onChanged: (value) {
+                            selectedSubCategory = value;
+                            handleSetState();
+                          },
+                          onTap: () {
+                            if (selectedCategory == null) {
+                              controllers.utils
+                                  .snackbar('Please select category first');
+                            } else if (subCategory.length == 0) {
+                              controllers.utils.snackbar(
+                                  'No subcategories in $selectedCategory');
+                            }
+                          }),
                       controllers.utils.productInputDropDown(
                           label: 'State',
                           value: selectedState,
-                          items: locationsMap.keys.toList(),
+                          items: locationsMap?.keys?.toList(),
                           onChanged: (value) {
                             selectedState = value;
                             selectedArea = null;
@@ -328,7 +347,8 @@ class _PushDataState extends State<PushData> {
                       if (specificationsList.length > 0) ...[
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('Add Specifications'),
+                          child: Text('Add Specifications',
+                              style: Get.textTheme.headline4),
                         ),
                         ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
@@ -339,23 +359,16 @@ class _PushDataState extends State<PushData> {
                               label: specificationsList[index],
                               onChanged: (value) {
                                 inputSpecifications[specificationsList[index]] =
-                                    value;
+                                    value.trim().toLowerCase();
                               },
                             );
                           },
                         ),
-                      ]
+                      ],
+                      controllers.utils.raisedButton('Add Product', onPressed),
                     ],
                   ),
                 ),
-                SizedBox(height: 18),
-                Center(
-                  child: RaisedButton(
-                    child: Text('Add Product'),
-                    onPressed: onPressed,
-                  ),
-                ),
-                SizedBox(height: 30),
               ],
             ),
     );
@@ -368,18 +381,18 @@ class _PushDataState extends State<PushData> {
       handleSetState();
       await PushProduct().uploadProduct(
         images: images,
-        category: selectedCategory.trim().toLowerCase(),
-        subCategory: selectedSubCategory.trim().toLowerCase(),
-        state: selectedState.trim().toLowerCase(),
-        area: selectedArea.trim().toLowerCase(),
-        adressID: addressID.trim().toLowerCase(),
+        category: selectedCategory,
+        subCategory: selectedSubCategory,
+        state: selectedState,
+        area: selectedArea,
+        adressID: addressID,
         price:
             double.parse(price.text.trim().toLowerCase().replaceAll(',', '')),
         title: title.text.toLowerCase().trim().toLowerCase(),
         description: description.text.trim().toLowerCase(),
         specifications: inputSpecifications,
-        authored: !controllers.isSuperuser.value,
-        uid: controllers.firebaseUser.value.uid.trim().toLowerCase(),
+        authored: controllers.isSuperuser.value,
+        uid: controllers.firebaseUser.value.uid,
       );
       clearAllData();
       loading = false;

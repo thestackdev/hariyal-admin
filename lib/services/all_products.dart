@@ -22,7 +22,7 @@ class AllProducts extends StatelessWidget {
               'searchField': FieldPath.documentId,
               'type': 'product'
             };
-            Get.toNamed('/search', arguments: map);
+            Get.toNamed('search', arguments: map);
           },
         )
       ],

@@ -29,9 +29,9 @@ class AllCustomers extends StatelessWidget {
           try {
             return controllers.utils.listTile(
               leading: CircleAvatar(
-                backgroundImage: CachedNetworkImageProvider(
-                  snapshot['image'],
-                ),
+                backgroundImage: snapshot['image'] != 'default'
+                    ? CachedNetworkImageProvider(snapshot['image'])
+                    : AssetImage('assets/avatar-default-circle.png'),
               ),
               title: '${snapshot['name']}',
               onTap: () => Get.toNamed('customer_deatils', arguments: snapshot),

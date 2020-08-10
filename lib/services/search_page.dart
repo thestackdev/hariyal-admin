@@ -37,24 +37,23 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SearchBar<DocumentSnapshot>(
+            icon: Icon(OMIcons.search, color: Colors.red, size: 25),
             searchBarStyle: SearchBarStyle(
+              backgroundColor: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(9),
             ),
             loader: controllers.utils.loading(),
             hintText: 'Search...',
-            onError: (error) => Center(
-                  child: Text('Something went wrong', style: textStyle),
-                ),
-            searchBarPadding: EdgeInsets.symmetric(horizontal: 9),
-            headerPadding: EdgeInsets.symmetric(horizontal: 9),
-            listPadding: EdgeInsets.symmetric(horizontal: 9),
+            onError: (error) =>
+                Center(child: Text('Something went wrong', style: textStyle)),
+            searchBarPadding: EdgeInsets.symmetric(horizontal: 5),
+            headerPadding: EdgeInsets.symmetric(horizontal: 5),
+            listPadding: EdgeInsets.symmetric(horizontal: 5),
             onSearch: onSearch,
             searchBarController: controller,
             placeHolder: Center(),
             cancellationWidget: Icon(OMIcons.close),
-            emptyWidget: Center(
-              child: Text('Nothing found', style: textStyle),
-            ),
+            emptyWidget: controllers.utils.error('No Data Found'),
             onCancelled: () {},
             mainAxisSpacing: 1,
             crossAxisSpacing: 1,
@@ -92,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
                       subtitle:
                           'Since ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp']))}',
                       onTap: () => Get.offNamed(
-                        '/admin_extras',
+                        'admin_extras',
                         arguments: snapshot.documentID,
                       ),
                     );

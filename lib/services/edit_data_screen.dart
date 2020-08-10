@@ -67,8 +67,11 @@ class _EditDataScreenState extends State<EditDataScreen> {
         .then((value) {
       showroomList.addAll(value.documents);
       for (var doc in value.documents) {
+        print(addressID);
+        print(doc.documentID);
         if (doc.documentID == addressID) {
           selectedShowroom = doc.data['name'];
+
           showroomAddressController.text = doc.data['address'];
         }
       }
@@ -164,76 +167,90 @@ class _EditDataScreenState extends State<EditDataScreen> {
                     crossAxisCount: 3,
                     children: List.generate(newImages.length + 1, (index) {
                       if (index == newImages.length) {
-                        return Container(
-                          margin: EdgeInsets.all(9),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(9),
-                            color: Colors.grey.shade100,
-                          ),
-                          child: (existingImages.length + newImages.length) >= 5
-                              ? Container(
-                                  height: 0,
-                                  width: 0,
-                                )
-                              : IconButton(
-                                  onPressed: () async {
-                                    dynamic source;
-                                    await controllers.utils.getSimpleDialouge(
-                                        title: 'Select an option',
-                                        yesText: 'Select from gallery',
-                                        noText: 'Take a picture',
-                                        yesPressed: () {
-                                          Navigator.of(context).pop();
-                                          return source = ImageSource.gallery;
-                                        },
-                                        noPressed: () {
-                                          Navigator.of(context).pop();
-                                          return source = ImageSource.camera;
-                                        });
+                        return newImages.length >= 5
+                            ? Container()
+                            : IconButton(
+                                onPressed: () async {
+                                  dynamic source;
 
-                                    try {
-                                      final pickedFile = await ImagePicker()
-                                          .getImage(
-                                              source: source, imageQuality: 75);
-                                      if (pickedFile != null) {
-                                        File croppedFile =
-                                            await ImageCropper.cropImage(
-                                          sourcePath: pickedFile.path,
-                                          aspectRatioPresets: [
-                                            CropAspectRatioPreset.square,
-                                            CropAspectRatioPreset.ratio3x2,
-                                            CropAspectRatioPreset.original,
-                                            CropAspectRatioPreset.ratio4x3,
-                                            CropAspectRatioPreset.ratio16x9
+                                  await Get.bottomSheet(
+                                    Container(
+                                        height: 90,
+                                        alignment: Alignment.center,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: <Widget>[
+                                            IconButton(
+                                                icon: Icon(
+                                                  OMIcons.camera,
+                                                  size: 36,
+                                                  color: Colors.redAccent,
+                                                ),
+                                                onPressed: () {
+                                                  Get.back();
+                                                  return source =
+                                                      ImageSource.camera;
+                                                }),
+                                            IconButton(
+                                              icon: Icon(
+                                                OMIcons.image,
+                                                size: 36,
+                                                color: Colors.redAccent,
+                                              ),
+                                              onPressed: () {
+                                                Get.back();
+                                                return source =
+                                                    ImageSource.gallery;
+                                              },
+                                            )
                                           ],
-                                          androidUiSettings: AndroidUiSettings(
-                                              toolbarTitle: 'Crop Image',
-                                              toolbarColor:
-                                                  Theme.of(context).accentColor,
-                                              toolbarWidgetColor: Colors.white,
-                                              initAspectRatio:
-                                                  CropAspectRatioPreset
-                                                      .original,
-                                              lockAspectRatio: false),
-                                        );
-                                        if (croppedFile == null) {
-                                          return;
-                                        }
+                                        )),
+                                    backgroundColor: Colors.white,
+                                  );
 
-                                        newImages.add(croppedFile);
+                                  try {
+                                    final pickedFile = await ImagePicker()
+                                        .getImage(
+                                            source: source, imageQuality: 75);
+                                    if (pickedFile != null) {
+                                      File croppedFile =
+                                          await ImageCropper.cropImage(
+                                        sourcePath: pickedFile.path,
+                                        aspectRatioPresets: [
+                                          CropAspectRatioPreset.square,
+                                          CropAspectRatioPreset.ratio3x2,
+                                          CropAspectRatioPreset.original,
+                                          CropAspectRatioPreset.ratio4x3,
+                                          CropAspectRatioPreset.ratio16x9
+                                        ],
+                                        androidUiSettings: AndroidUiSettings(
+                                          toolbarTitle: 'Crop Image',
+                                          toolbarColor:
+                                              Theme.of(context).accentColor,
+                                          toolbarWidgetColor: Colors.white,
+                                          initAspectRatio:
+                                              CropAspectRatioPreset.original,
+                                          lockAspectRatio: false,
+                                        ),
+                                      );
+                                      if (croppedFile == null) {
+                                        return;
                                       }
-                                    } catch (e) {
-                                      print(e.toString());
-                                    }
 
-                                    handleSetState();
-                                  },
-                                  icon: Icon(
-                                    OMIcons.plusOne,
-                                    color: Colors.red.shade300,
-                                  ),
+                                      newImages.add(croppedFile);
+                                    }
+                                  } catch (e) {
+                                    print(e.toString());
+                                  }
+
+                                  handleSetState();
+                                },
+                                icon: Icon(
+                                  OMIcons.plusOne,
+                                  color: Colors.red.shade300,
                                 ),
-                        );
+                              );
                       }
                       return Padding(
                         padding: EdgeInsets.all(9),
@@ -277,17 +294,18 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       );
                     }),
                   ),
-                  SizedBox(
-                    height: 18,
-                  ),
+                  SizedBox(height: 18),
                   Form(
                     key: globalKey,
-                    child: Column(
+                    child: Wrap(
+                      spacing: 18,
+                      runSpacing: 18,
                       children: <Widget>[
                         controllers.utils.productInputDropDown(
                             label: 'Category',
                             value: selectedCategory,
-                            items: categoryMap.keys.toList(),
+                            items: categoryMap?.keys?.toList(),
+                            onTap: () => print('called'),
                             onChanged: (value) {
                               selectedCategory = value;
                               selectedSubCategory = null;
@@ -299,29 +317,27 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
                               handleSetState();
                             }),
-                        GestureDetector(
-                          onTap: () {
-                            if (selectedCategory == null) {
-                              controllers.utils
-                                  .snackbar('Please select category first');
-                            } else if (subCategory.length == 0) {
-                              controllers.utils.snackbar(
-                                  'No subcategories in $selectedCategory');
-                            }
-                          },
-                          child: controllers.utils.productInputDropDown(
-                              label: 'Sub-Category',
-                              value: selectedSubCategory,
-                              items: subCategory,
-                              onChanged: (value) {
-                                selectedSubCategory = value;
-                                handleSetState();
-                              }),
-                        ),
+                        controllers.utils.productInputDropDown(
+                            label: 'Sub-Category',
+                            value: selectedSubCategory,
+                            items: subCategory,
+                            onChanged: (value) {
+                              selectedSubCategory = value;
+                              handleSetState();
+                            },
+                            onTap: () {
+                              if (selectedCategory == null) {
+                                controllers.utils
+                                    .snackbar('Please select category first');
+                              } else if (subCategory.length == 0) {
+                                controllers.utils.snackbar(
+                                    'No subcategories in $selectedCategory');
+                              }
+                            }),
                         controllers.utils.productInputDropDown(
                             label: 'State',
                             value: selectedState,
-                            items: locationsMap.keys.toList(),
+                            items: locationsMap?.keys?.toList(),
                             onChanged: (value) {
                               selectedState = value;
                               selectedArea = null;
@@ -405,7 +421,9 @@ class _EditDataScreenState extends State<EditDataScreen> {
                             ThousandsFormatter(),
                           ],
                           textInputType: TextInputType.numberWithOptions(
-                              decimal: true, signed: true),
+                            decimal: true,
+                            signed: true,
+                          ),
                         ),
                         controllers.utils.inputTextField(
                           label: 'Title',
@@ -418,7 +436,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
                         if (specificationsList.length > 0) ...[
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text('Edit Specifications'),
+                            child: Text('Add Specifications',
+                                style: Get.textTheme.headline4),
                           ),
                           ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
@@ -426,9 +445,9 @@ class _EditDataScreenState extends State<EditDataScreen> {
                             itemCount: specificationsList.length,
                             itemBuilder: (context, index) {
                               return controllers.utils.inputTextField(
+                                label: specificationsList[index],
                                 initialValue: inputSpecifications[
                                     specificationsList[index]],
-                                label: specificationsList[index],
                                 onChanged: (value) {
                                   inputSpecifications[
                                       specificationsList[index]] = value;
@@ -436,13 +455,12 @@ class _EditDataScreenState extends State<EditDataScreen> {
                               );
                             },
                           ),
-                        ]
+                        ],
+                        controllers.utils
+                            .raisedButton('Update Data', onPressed),
                       ],
                     ),
                   ),
-                  SizedBox(height: 18),
-                  controllers.utils.raisedButton('Update Data', onPressed),
-                  SizedBox(height: 50),
                 ],
               ),
             ),

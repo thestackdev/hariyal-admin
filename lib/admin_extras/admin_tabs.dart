@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
@@ -12,58 +10,54 @@ class AdminExtras extends StatelessWidget {
   final controllers = Controllers.to;
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: controllers.utils.root(
-        label: 'Admin Extras',
-        bottom: TabBar(
-          indicatorColor: Colors.transparent,
-          tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Details')],
+  Widget build(BuildContext context) => DefaultTabController(
+        length: 2,
+        child: controllers.utils.root(
+          label: 'Admin Extras',
+          bottom: TabBar(
+            tabs: <Widget>[Tab(text: 'Products'), Tab(text: 'Details')],
+          ),
+          child: TabBarView(
+            children: <Widget>[
+              controllers.utils.paginator(
+                  query: controllers.products
+                      .orderBy('timestamp', descending: true)
+                      .where('author', isEqualTo: adminUid),
+                  itemBuilder: (index, context, snapshot) {
+                    try {
+                      return controllers.utils.card(
+                        title: snapshot.data['title'],
+                        description: snapshot.data['description'],
+                        imageUrl: snapshot.data['images'][0],
+                        onTap: () => Get.to(
+                          ProductDetails(),
+                          arguments: snapshot.documentID,
+                        ),
+                      );
+                    } catch (e) {
+                      return controllers.utils.error(e.toString());
+                    }
+                  }),
+              getPrivilages(),
+            ],
+          ),
         ),
-        child: TabBarView(
-          children: <Widget>[
-            controllers.utils.paginator(
-                query: controllers.products
-                    .orderBy('timestamp', descending: true)
-                    .where('author', isEqualTo: adminUid),
-                itemBuilder: (index, context, snapshot) {
-                  try {
-                    return controllers.utils.card(
-                      title: snapshot.data['title'],
-                      description: snapshot.data['description'],
-                      imageUrl: snapshot.data['images'][0],
-                      onTap: () => Get.to(
-                        ProductDetails(),
-                        arguments: snapshot.documentID,
-                      ),
-                    );
-                  } catch (e) {
-                    return controllers.utils.error(e.toString());
-                  }
-                }),
-            getPrivilages(),
-          ],
-        ),
-      ),
-    );
-  }
+      );
 
-  getPrivilages() {
-    return DataStreamBuilder<DocumentSnapshot>(
-      stream: controllers.admin.document(adminUid).snapshots(),
-      builder: (context, snapshot) {
-        return ListView(
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                if (snapshot.data['imageUrl'] != null) {
-                  Get.to(HariyalImageView(imageUrls: [snapshot['imageUrl']]));
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(18),
-                margin: EdgeInsets.all(18),
+  getPrivilages() => controllers.utils.streamBuilder(
+        stream: controllers.admin.document(adminUid).snapshots(),
+        builder: (context, snapshot) => Padding(
+          padding: const EdgeInsets.all(9),
+          child: Wrap(
+            spacing: 18,
+            runSpacing: 18,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  if (snapshot.data['imageUrl'] != null) {
+                    Get.to(HariyalImageView(imageUrls: [snapshot['imageUrl']]));
+                  }
+                },
                 child: Center(
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
@@ -77,14 +71,7 @@ class AdminExtras extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
-              ),
-              child: SwitchListTile(
+              SwitchListTile(
                 title: Text('Admin'),
                 onChanged: controllers.firebaseUser.value.uid == adminUid ||
                         snapshot.data['isSuperuser'] == true
@@ -96,14 +83,7 @@ class AdminExtras extends StatelessWidget {
                       },
                 value: snapshot.data['isAdmin'],
               ),
-            ),
-            Container(
-              margin: EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(9),
-                color: Colors.grey.shade100,
-              ),
-              child: SwitchListTile(
+              SwitchListTile(
                 title: Text('Superuser'),
                 onChanged: controllers.firebaseUser.value.uid == adminUid ||
                         snapshot.data['isAdmin'] == false
@@ -115,10 +95,8 @@ class AdminExtras extends StatelessWidget {
                       },
                 value: snapshot.data['isSuperuser'],
               ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+            ],
+          ),
+        ),
+      );
 }

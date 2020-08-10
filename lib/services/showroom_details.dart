@@ -10,28 +10,25 @@ class ShowroomDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return controllers.utils.root(
       label: 'Showroom Details',
-      child: ListView(
-        padding: EdgeInsets.all(12),
-        children: <Widget>[
-          SizedBox(height: 18),
-          buildWidget('Name : ', snapshot['name']),
-          SizedBox(height: 18),
-          buildWidget('Address : ', snapshot['address']),
-          SizedBox(height: 18),
-          buildWidget('Latitute : ', snapshot['latitude']),
-          SizedBox(height: 18),
-          buildWidget('Longitude : ', snapshot['longitude']),
-          SizedBox(height: 18),
-          buildWidget('State : ', snapshot['state']),
-          SizedBox(height: 18),
-          buildWidget('Area : ', snapshot['area']),
-          SizedBox(height: 18),
-          buildWidget(
-            'Created At : ',
-            DateFormat.yMMMd().format(
-                DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp'])),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Wrap(
+          spacing: 18,
+          runSpacing: 18,
+          children: <Widget>[
+            buildWidget('Name : ', snapshot['name']),
+            buildWidget('Address : ', snapshot['address']),
+            buildWidget('Latitute : ', snapshot['latitude']),
+            buildWidget('Longitude : ', snapshot['longitude']),
+            buildWidget('State : ', snapshot['state']),
+            buildWidget('Area : ', snapshot['area']),
+            buildWidget(
+              'Created At : ',
+              DateFormat.yMMMd().format(
+                  DateTime.fromMillisecondsSinceEpoch(snapshot['timestamp'])),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -40,21 +37,13 @@ class ShowroomDetails extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          key,
-          style: TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            fontSize: 21,
-          ),
-        ),
+        Text(key,
+            style: Get.textTheme.headline3
+                .apply(fontSizeFactor: 1.2, color: Colors.redAccent)),
         Flexible(
           child: Text(
-            value,
-            style: TextStyle(
-              color: Colors.grey.shade700,
-              fontSize: 18,
-            ),
+            GetUtils.capitalizeFirst(value),
+            style: Get.textTheme.headline3,
           ),
         ),
       ],

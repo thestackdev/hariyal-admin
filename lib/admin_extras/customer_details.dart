@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
@@ -14,174 +13,135 @@ class Customerdetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void makeAPhone(String url) async {
-      try {
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          controllers.utils.snackbar('Something went wrong');
-        }
-      } catch (e) {
-        controllers.utils.snackbar(e.toString());
-      }
-    }
+    detailsPage() => Padding(
+          padding: EdgeInsets.symmetric(horizontal: 9, vertical: 18),
+          child: Wrap(
+            spacing: 18,
+            runSpacing: 18,
+            children: <Widget>[
+              buildDetails(snapshot['name'], 'Name'),
+              buildDetailsWithActions(
+                  snapshot['phone'], 'Phone', OMIcons.phone, false),
+              buildDetailsWithActions(snapshot['alternatePhoneNumber'],
+                  'Alternate Phone', OMIcons.phone, false),
+              buildDetailsWithActions(
+                  snapshot['email'], 'Email', OMIcons.email, true),
+              buildDetails(snapshot['gender'], 'Gender'),
+              buildDetails(snapshot['permanentAddress'], 'Permanent Address'),
+              buildDetails(
+                  snapshot['location']['cityDistrict'], 'City/District'),
+              buildDetails(snapshot['location']['state'], 'State'),
+            ],
+          ),
+        );
 
-    void writeAnEmail(String email) async {
-      final Uri _emailLaunchUri = Uri(
-          scheme: 'mailto',
-          path: email,
-          queryParameters: {'subject': 'Hariyal'});
-      try {
-        if (await canLaunch(_emailLaunchUri.toString())) {
-          await launch(_emailLaunchUri.toString());
-        } else {
-          controllers.utils.snackbar('Something went wrong');
-        }
-      } catch (e) {
-        controllers.utils.snackbar(e.toString());
-      }
-    }
-
-    detailsPage() {
-      return ListView(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-        children: <Widget>[
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: GetUtils.capitalizeFirst(
-              snapshot['name'] ?? 'Something went wrong !',
-            ),
-            readOnly: true,
-            decoration: InputDecoration(labelText: 'Name'),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: snapshot['phone'] ?? 'Something went wrong !',
-            readOnly: true,
-            decoration: InputDecoration(
-              labelText: 'Phone',
-              suffixIcon: IconButton(
-                icon: Icon(OMIcons.phone),
-                onPressed: () => makeAPhone('tel: ${snapshot['phone']}'),
-              ),
-            ),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: snapshot['email'] ?? 'Something went wrong !',
-            readOnly: true,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              suffixIcon: IconButton(
-                  icon: Icon(OMIcons.email),
-                  onPressed: () {
-                    if (snapshot['email'] != 'default') {
-                      writeAnEmail(
-                        snapshot['email'],
-                      );
-                    } else {
-                      controllers.utils.snackbar('Invalid Email Address');
-                    }
-                  }),
-            ),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: snapshot['gender'] ?? 'Something went wrong !',
-            readOnly: true,
-            decoration: InputDecoration(labelText: 'Gender'),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue:
-                snapshot['alternatePhoneNumber'] ?? 'Something went wrong !',
-            readOnly: true,
-            decoration: InputDecoration(
-              labelText: 'Alternate Phone',
-              suffixIcon: IconButton(
-                icon: Icon(OMIcons.phone),
-                onPressed: () {
-                  if (snapshot['alternatePhoneNumber'] != 'default') {
-                    makeAPhone('tel: ${snapshot['alternatePhoneNumber']}');
-                  } else {
-                    controllers.utils.snackbar('No Phone Number');
-                  }
-                },
-              ),
-            ),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue:
-                snapshot['permanentAddress'] ?? 'Something went wrong !',
-            readOnly: true,
-            decoration: InputDecoration(labelText: 'Permanent Address'),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: GetUtils.capitalize(
-              snapshot['location']['cityDistrict'] ?? 'Something went wrong !',
-            ),
-            readOnly: true,
-            decoration: InputDecoration(labelText: 'City/District'),
-          ),
-          SizedBox(height: 18),
-          TextFormField(
-            initialValue: GetUtils.capitalize(
-              snapshot['location']['state'] ?? 'Something went wrong !',
-            ),
-            readOnly: true,
-            decoration: InputDecoration(labelText: 'State'),
-          ),
-        ],
-      );
-    }
+    interests() => controllers.utils.streamBuilder<QuerySnapshot>(
+        stream: controllers.interests
+            .orderBy('timestamp', descending: true)
+            .where('author', isEqualTo: snapshot.documentID)
+            .snapshots(),
+        builder: (context, product) {
+          print(product.documents.length);
+          if (product.documents.length == 0)
+            return controllers.utils.error('No Interests Found !');
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: product.documents.length,
+              itemBuilder: (context, index) {
+                try {
+                  return controllers.utils.listTile(
+                    title: product.documents[index]['title'],
+                    leading: SizedBox(
+                      width: 70,
+                      child: PNetworkImage(
+                        product.documents[index]['images'][0],
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                    onTap: () => Get.to(
+                      ProductDetails(),
+                      arguments: product.documents[index].documentID,
+                    ),
+                  );
+                } catch (e) {
+                  return controllers.utils
+                      .error('Oops , Something went wrong !');
+                }
+              });
+        });
 
     return DefaultTabController(
       length: 2,
       child: controllers.utils.root(
         label: 'Customer Console',
         bottom: TabBar(
-          indicatorColor: Colors.transparent,
           tabs: <Widget>[Tab(text: 'Details'), Tab(text: 'Interests')],
         ),
         child: TabBarView(children: <Widget>[
           detailsPage(),
-          controllers.utils.paginator(
-            query: controllers.interests
-                .orderBy('timestamp', descending: true)
-                .where('author', isEqualTo: snapshot.documentID),
-            itemBuilder: (index, context, snapshot) {
-              return DataStreamBuilder<DocumentSnapshot>(
-                stream: controllers.products
-                    .document(snapshot['productId'])
-                    .snapshots(),
-                builder: (context, product) {
-                  try {
-                    return controllers.utils.listTile(
-                      title: '${product.data['title']}',
-                      leading: SizedBox(
-                        width: 70,
-                        child: PNetworkImage(
-                          product.data['images'][0],
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
-                      onTap: () => Get.to(
-                        ProductDetails(),
-                        arguments: product.documentID,
-                      ),
-                    );
-                  } catch (e) {
-                    return controllers.utils
-                        .error('Oops , Something went wrong !');
-                  }
-                },
-              );
-            },
-          ),
+          interests(),
         ]),
       ),
     );
+  }
+
+  Widget buildDetails(String label, String data) => TextFormField(
+        initialValue: GetUtils.capitalizeFirst(label),
+        style: Get.textTheme.headline2,
+        readOnly: true,
+        decoration: InputDecoration(labelText: data),
+      );
+  Widget buildDetailsWithActions(
+          String label, String data, IconData iconData, bool email) =>
+      TextFormField(
+        initialValue: GetUtils.capitalizeFirst(label),
+        readOnly: true,
+        style: Get.textTheme.headline2,
+        decoration: InputDecoration(
+          labelText: data,
+          suffixIcon: IconButton(
+              icon: Icon(iconData),
+              onPressed: () {
+                if (email) {
+                  if (label != 'default') {
+                    writeAnEmail(label);
+                  } else {
+                    controllers.utils.snackbar('Invalid Email Address');
+                  }
+                } else {
+                  if (label != 'default') {
+                    makeAPhone('tel: $label');
+                  } else {
+                    controllers.utils.snackbar('No Phone Number');
+                  }
+                }
+              }),
+        ),
+      );
+
+  void makeAPhone(String url) async {
+    try {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        controllers.utils.snackbar('Something went wrong');
+      }
+    } catch (e) {
+      controllers.utils.snackbar(e.toString());
+    }
+  }
+
+  void writeAnEmail(String email) async {
+    final Uri _emailLaunchUri = Uri(
+        scheme: 'mailto', path: email, queryParameters: {'subject': 'Hariyal'});
+    try {
+      if (await canLaunch(_emailLaunchUri.toString())) {
+        await launch(_emailLaunchUri.toString());
+      } else {
+        controllers.utils.snackbar('Something went wrong');
+      }
+    } catch (e) {
+      controllers.utils.snackbar(e.toString());
+    }
   }
 }

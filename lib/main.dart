@@ -68,6 +68,11 @@ final theme = ThemeData(
     border: InputBorder.none,
     fillColor: Colors.grey.shade50,
     filled: true,
+    labelStyle: GoogleFonts.aBeeZee(
+      fontSize: 16,
+      letterSpacing: 1,
+      color: Colors.redAccent,
+    ),
   ),
   cardTheme: CardTheme(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
@@ -76,8 +81,13 @@ final theme = ThemeData(
     shadowColor: Colors.red.shade50,
   ),
   tabBarTheme: TabBarTheme(
-      //TODO
-      ),
+    labelStyle: GoogleFonts.aBeeZee(
+      letterSpacing: 1,
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    ),
+  ),
   buttonTheme: ButtonThemeData(
     textTheme: ButtonTextTheme.primary,
     padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),

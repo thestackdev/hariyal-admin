@@ -13,8 +13,10 @@ class SpecificationData extends StatelessWidget {
     List items = [];
     return Obx(() {
       final DocumentSnapshot snapshot = Controllers.to.specifications.value;
-      if (snapshot.data[category] != null) {
-        items = snapshot.data[category];
+      if (snapshot?.data != null) {
+        if (snapshot?.data[category] != null) {
+          items = snapshot.data[category];
+        }
       }
 
       String text = '';
@@ -72,7 +74,7 @@ class SpecificationData extends StatelessWidget {
         label: category,
         actions: [
           IconButton(
-              icon: Icon(OMIcons.plusOne),
+              icon: const Icon(OMIcons.add),
               onPressed: () {
                 controllers.utils.getSimpleDialouge(
                   title: 'Add Specifications in $category',

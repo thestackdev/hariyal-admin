@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -75,13 +74,12 @@ class Settings extends StatelessWidget {
             controllers.utils.listTile(
               title: 'Logout',
               leading: Icon(OMIcons.exitToApp, color: Colors.redAccent),
-              onTap: () => controllers.utils.getSimpleDialouge(
-                title: 'Confirm',
-                content: Text('Logout ?'),
+              onTap: () => controllers.utils.getSimpleDialougeForNoContent(
+                title: 'Logout ?',
                 yesPressed: () => {
                   controllers.changeScreen(0),
                   Get.back(),
-                  FirebaseAuth.instance.signOut(),
+                  controllers.firebaseAuth.signOut(),
                 },
                 noPressed: () => Get.back(),
               ),

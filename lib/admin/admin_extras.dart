@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -45,23 +44,16 @@ class AdminExtras extends StatelessWidget {
           ),
           controllers.utils.listTile(
             title: 'Logout',
-            leading: Icon(OMIcons.cloudOff, color: Colors.red),
-            onTap: () async {
-              showDialog(
-                context: context,
-                child: controllers.utils.alertDialog(
-                  content: 'Signout ?',
-                  yesPressed: () => {
-                    Get.back(),
-                    controllers.changeScreen(0),
-                    FirebaseAuth.instance.signOut(),
-                  },
-                  noPressed: () {
-                    Get.back();
-                  },
-                ),
-              );
-            },
+            leading: Icon(OMIcons.exitToApp, color: Colors.redAccent),
+            onTap: () => controllers.utils.getSimpleDialougeForNoContent(
+              title: 'Logout ?',
+              yesPressed: () => {
+                controllers.changeScreen(0),
+                Get.back(),
+                controllers.firebaseAuth.signOut(),
+              },
+              noPressed: () => Get.back(),
+            ),
           ),
         ],
       ),
