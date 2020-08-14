@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 
@@ -17,6 +18,7 @@ class _AddShowroomState extends State<AddShowroom> {
   final addressController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
+  final phoneController = TextEditingController();
 
   List states = [];
   List areas = [];
@@ -55,6 +57,7 @@ class _AddShowroomState extends State<AddShowroom> {
     return controllers.utils.root(
       label: docSnap == null ? 'Add Showroom' : 'Edit Showroom',
       child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Wrap(
@@ -87,16 +90,23 @@ class _AddShowroomState extends State<AddShowroom> {
                 controller: addressController,
               ),
               controllers.utils.inputTextField(
-                label: 'latitude',
+                label: 'Latitude',
                 controller: latitudeController,
                 textInputType: TextInputType.numberWithOptions(
                     signed: true, decimal: true),
               ),
               controllers.utils.inputTextField(
-                label: 'longitude',
+                label: 'Longitude',
                 controller: longitudeController,
                 textInputType: TextInputType.numberWithOptions(
                     signed: true, decimal: true),
+              ),
+              controllers.utils.inputTextField(
+                label: 'Contact number',
+                controller: phoneController,
+                inputFormatters: <TextInputFormatter>[
+                  WhitelistingTextInputFormatter.digitsOnly
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -110,7 +120,8 @@ class _AddShowroomState extends State<AddShowroom> {
                           latitudeController.text.length > 0 &&
                           longitudeController.text.length > 0 &&
                           selectedArea != null &&
-                          selectedState != null) {
+                          selectedState != null &&
+                          phoneController.text.trim().length == 10) {
                         if (docSnap == null) {
                           controllers.showrooms.document().setData({
                             'name': titleController.text.trim().toLowerCase(),
@@ -124,6 +135,7 @@ class _AddShowroomState extends State<AddShowroom> {
                                 longitudeController.text.trim().toLowerCase(),
                             'timestamp': DateTime.now().millisecondsSinceEpoch,
                             'active': true,
+                            'contactNumber': phoneController.text.trim()
                           });
                         } else {
                           controllers.showrooms
@@ -131,13 +143,13 @@ class _AddShowroomState extends State<AddShowroom> {
                               .updateData({
                             'name': titleController.text.trim().toLowerCase(),
                             'address':
-                                addressController.text.trim().toLowerCase(),
+                            addressController.text.trim().toLowerCase(),
                             'state': selectedState.trim().toLowerCase(),
                             'area': selectedArea.trim().toLowerCase(),
                             'latitude':
-                                latitudeController.text.trim().toLowerCase(),
+                            latitudeController.text.trim().toLowerCase(),
                             'longitude':
-                                longitudeController.text.trim().toLowerCase(),
+                            longitudeController.text.trim().toLowerCase(),
                           });
                         }
                         Get.back();

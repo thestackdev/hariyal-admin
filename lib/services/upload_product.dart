@@ -50,21 +50,20 @@ class PushProduct {
     });
   }
 
-  updateProduct({
-    List newImages,
-    docID,
-    List oldImages,
-    category,
-    state,
-    area,
-    price,
-    title,
-    description,
-    adressID,
-    subCategory,
-    specifications,
-    List<String> searchList
-  }) async {
+  updateProduct(
+      {List newImages,
+      docID,
+      List oldImages,
+      category,
+      state,
+      area,
+      price,
+      title,
+      description,
+      adressID,
+      subCategory,
+      specifications,
+      List<String> searchList}) async {
     imageUrls.clear();
     if (oldImages == null || oldImages.length <= 0) {
       await Future.forEach(newImages, (element) async {
@@ -79,8 +78,9 @@ class PushProduct {
       }
     }
 
-    await controllers.products.document(docID).updateData(
-        {'searchList': FieldValue.delete()});
+    await controllers.products
+        .document(docID)
+        .updateData({'searchList': FieldValue.delete()});
 
     await controllers.products.document(docID).updateData({
       'title': title,
