@@ -7,7 +7,6 @@ import '../utils.dart';
 class Controllers extends GetxController {
   static Controllers to = Get.find();
 
-  RxInt currentScreen = 0.obs;
   RxBool shouldUpdateScreen = true.obs;
   RxBool isSuperuser = false.obs;
 
@@ -34,8 +33,6 @@ class Controllers extends GetxController {
   Rx<DocumentSnapshot> locations = Rx<DocumentSnapshot>();
   Rx<DocumentSnapshot> specifications = Rx<DocumentSnapshot>();
   Rx<DocumentSnapshot> userData = Rx<DocumentSnapshot>();
-
-  void changeScreen(int num) => currentScreen.value = num;
 
   @override
   void onInit() {

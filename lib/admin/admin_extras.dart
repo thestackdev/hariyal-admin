@@ -43,7 +43,6 @@ class AdminExtras extends StatelessWidget {
             onTap: () => controllers.utils.getSimpleDialougeForNoContent(
               title: 'Logout ?',
               yesPressed: () => {
-                controllers.changeScreen(0),
                 Get.back(),
                 controllers.firebaseAuth.signOut(),
               },
