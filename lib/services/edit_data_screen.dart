@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:superuser/full_screen.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/upload_product.dart';
-import 'package:superuser/widgets/network_image.dart';
 
 class EditDataScreen extends StatefulWidget {
   @override
@@ -152,8 +152,8 @@ class _EditDataScreenState extends State<EditDataScreen> {
                             tag: existingImages[index],
                             child: Padding(
                               padding: EdgeInsets.all(9),
-                              child: PNetworkImage(
-                                existingImages[index],
+                              child: CachedNetworkImage(
+                                imageUrl: existingImages[index],
                                 fit: BoxFit.contain,
                                 width: 270,
                                 height: 270,

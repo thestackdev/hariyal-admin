@@ -3,9 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:photo_view/photo_view.dart';
-
 import 'dot_indicator.dart';
-import 'network_image.dart';
 
 class ImageSliderWidget extends StatefulWidget {
   final List<dynamic> imageUrls;
@@ -142,8 +140,8 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
           borderRadius: widget.imageBorderRadius == null
               ? BorderRadius.circular(8.0)
               : widget.imageBorderRadius,
-          child: PNetworkImage(
-            imgUrl,
+          child: CachedNetworkImage(
+            imageUrl: imgUrl,
             fit: widget.fit == null ? BoxFit.contain : widget.fit,
           ),
         ),

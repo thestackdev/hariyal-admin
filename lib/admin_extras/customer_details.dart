@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/product_details.dart';
-import 'package:superuser/widgets/network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Customerdetails extends StatelessWidget {
@@ -36,39 +35,41 @@ class Customerdetails extends StatelessWidget {
         );
 
     interests() => controllers.utils.streamBuilder<QuerySnapshot>(
-        stream: controllers.interests
-            .orderBy('timestamp', descending: true)
-            .where('author', isEqualTo: snapshot.documentID)
-            .snapshots(),
-        builder: (context, product) {
-          print(product.documents.length);
-          if (product.documents.length == 0)
-            return controllers.utils.error('No Interests Found !');
-          return ListView.builder(
-              shrinkWrap: true,
-              itemCount: product.documents.length,
-              itemBuilder: (context, index) {
-                try {
-                  return controllers.utils.listTile(
-                    title: product.documents[index]['title'],
-                    leading: SizedBox(
-                      width: 70,
-                      child: PNetworkImage(
-                        product.documents[index]['images'][0],
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                    onTap: () => Get.to(
-                      ProductDetails(),
-                      arguments: product.documents[index].documentID,
-                    ),
-                  );
-                } catch (e) {
-                  return controllers.utils
-                      .error('Oops , Something went wrong !');
-                }
-              });
-        });
+          stream: controllers.interests
+              .orderBy('timestamp', descending: true)
+              .where('author', isEqualTo: snapshot.documentID)
+              .snapshots(),
+          builder: (context, product) => (product.documents.length == 0)
+              ? controllers.utils.error('No Interests Found !')
+              : ListView.builder(
+                  itemCount: product.documents.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return controllers.utils.streamBuilder(
+                        stream: controllers.products
+                            .document(product.documents[index]['productId'])
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          try {
+                            return controllers.utils.listTile(
+                              title: snapshot['title'],
+                              leading: SizedBox(
+                                width: 70,
+                                child: controllers.utils
+                                    .circleImage(snapshot['images'][0], 30),
+                              ),
+                              onTap: () => Get.to(
+                                ProductDetails(),
+                                arguments: snapshot.documentID,
+                              ),
+                            );
+                          } catch (e) {
+                            return controllers.utils
+                                .error('Oops , Something went wrong !');
+                          }
+                        });
+                  },
+                ),
+        );
 
     return DefaultTabController(
       length: 2,
@@ -141,7 +142,7 @@ class Customerdetails extends StatelessWidget {
         controllers.utils.snackbar('Something went wrong');
       }
     } catch (e) {
-      controllers.utils.snackbar(e.toString());
+      controllers.utils.snackbar('Something went wrong');
     }
   }
 }

@@ -30,12 +30,10 @@ class _HariyalImageViewState extends State<HariyalImageView> {
         backgroundColor: Colors.transparent,
       ),
       body: PhotoViewGallery.builder(
-        gaplessPlayback: true,
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
           return PhotoViewGalleryPageOptions(
             imageProvider: CachedNetworkImageProvider(widget.imageUrls[index]),
-            initialScale: PhotoViewComputedScale.contained,
             minScale: PhotoViewComputedScale.contained,
           );
         },

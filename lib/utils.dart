@@ -221,7 +221,9 @@ class Utils {
     if (Get.isSnackbarOpen) Get.back();
     Get.snackbar(
       null,
-      message,
+      null,
+      messageText: Text(message,
+          style: Get.textTheme.headline4.apply(color: Colors.white)),
       margin: EdgeInsets.zero,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
@@ -263,13 +265,17 @@ class Utils {
     }
   }
 
+  Widget circleImage(String imageUrl, double raduis) => CircleAvatar(
+        radius: raduis,
+        backgroundColor: Colors.grey.shade100,
+        backgroundImage: CachedNetworkImageProvider(imageUrl ?? ''),
+      );
+
   Widget error(String text) => Scaffold(
         backgroundColor: Colors.white,
         body: Center(
-          child: Text(
-            text,
-            style: Get.textTheme.headline4.apply(fontSizeFactor: 1.5),
-          ),
+          child: Text(text,
+              style: Get.textTheme.headline4.apply(fontSizeFactor: 1.5)),
         ),
       );
 
@@ -308,7 +314,7 @@ class Utils {
               ),
         onTap: onTap,
         title: Text(
-          GetUtils.capitalizeFirst(title.trim()),
+          GetUtils.capitalizeFirst(title?.trim() ?? ' '),
           style: Get.textTheme.headline2.apply(color: Colors.redAccent),
           textScaleFactor: textscalefactor ?? 1.2,
         ),

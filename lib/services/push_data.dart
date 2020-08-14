@@ -350,7 +350,9 @@ class _PushDataState extends State<PushData> {
                           child: Text('Add Specifications',
                               style: Get.textTheme.headline4),
                         ),
-                        ListView.builder(
+                        ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 12),
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: specificationsList.length,

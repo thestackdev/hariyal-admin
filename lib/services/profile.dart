@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,23 +75,14 @@ class _ProfileState extends State<Profile> {
                     if (snapshot.data['imageUrl'] != null) {
                       Get.to(
                           HariyalImageView(imageUrls: [snapshot['imageUrl']]));
-                    }
+                    } else
+                      controllers.utils.snackbar('No Image');
                   },
                   child: Container(
-                    padding: EdgeInsets.all(18),
+                    alignment: Alignment.center,
                     margin: EdgeInsets.all(18),
-                    child: Center(
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        maxRadius: 90,
-                        minRadius: 90,
-                        backgroundImage: snapshot.data['imageUrl'] == null
-                            ? AssetImage('assets/avatar-default-circle.png')
-                            : CachedNetworkImageProvider(
-                                snapshot['imageUrl'],
-                              ),
-                      ),
-                    ),
+                    child:
+                        controllers.utils.circleImage(snapshot['imageUrl'], 90),
                   ),
                 ),
                 Padding(

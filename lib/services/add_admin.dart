@@ -44,6 +44,7 @@ class _AddAdminState extends State<AddAdmin> {
           'name': name.text.toLowerCase(),
           'isSuperuser': false,
           'isAdmin': true,
+          'imageUrl': null,
         });
         email.clear();
         password.clear();

@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "the-hariyal"
+    "default": "the-hariyal",
+    "the-hariyal": "the-hariyal"
   }
 }

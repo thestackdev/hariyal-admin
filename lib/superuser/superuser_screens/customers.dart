@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
@@ -28,11 +27,7 @@ class AllCustomers extends StatelessWidget {
         itemBuilder: (index, context, snapshot) {
           try {
             return controllers.utils.listTile(
-              leading: CircleAvatar(
-                backgroundImage: snapshot['image'] != 'default'
-                    ? CachedNetworkImageProvider(snapshot['image'])
-                    : AssetImage('assets/avatar-default-circle.png'),
-              ),
+              leading: controllers.utils.circleImage(snapshot['image'], 30),
               title: '${snapshot['name']}',
               onTap: () => Get.toNamed('customer_deatils', arguments: snapshot),
             );

@@ -1,10 +1,8 @@
 import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
-
-import 'widgets/network_image.dart';
 
 class FullScreen extends StatelessWidget {
   final image, index;
@@ -53,8 +51,8 @@ class FullScreen extends StatelessWidget {
                                 Icon(Icons.error_outline),
                             filterQuality: FilterQuality.medium,
                           )
-                        : PNetworkImage(
-                            imageLink,
+                        : CachedNetworkImage(
+                            imageUrl: imageLink,
                             fit: BoxFit.contain,
                             width: 270,
                             height: 270,
