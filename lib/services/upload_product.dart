@@ -1,24 +1,26 @@
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:superuser/get/controllers.dart';
 
 class PushProduct {
   final controllers = Controllers.to;
   List imageUrls = [];
 
-  uploadProduct({
-    List<File> images,
-    String category,
-    String subCategory,
-    String state,
-    String area,
-    String adressID,
-    double price,
-    String title,
-    String description,
-    Map specifications,
-    String uid,
-    bool authored,
-  }) async {
+  uploadProduct(
+      {List<File> images,
+      String category,
+      String subCategory,
+      String state,
+      String area,
+      String adressID,
+      double price,
+      String title,
+      String description,
+      Map specifications,
+      String uid,
+      bool authored,
+      List<String> searchList}) async {
     imageUrls.clear();
     await Future.forEach(images, (element) async {
       imageUrls.add(await uploadProductImages(element));
@@ -44,6 +46,7 @@ class PushProduct {
       'sold_timestamp': null,
       'rejected': false,
       'reject_reason': null,
+      'searchList': searchList
     });
   }
 
@@ -60,6 +63,7 @@ class PushProduct {
     adressID,
     subCategory,
     specifications,
+    List<String> searchList
   }) async {
     imageUrls.clear();
     if (oldImages == null || oldImages.length <= 0) {
@@ -75,6 +79,9 @@ class PushProduct {
       }
     }
 
+    await controllers.products.document(docID).updateData(
+        {'searchList': FieldValue.delete()});
+
     await controllers.products.document(docID).updateData({
       'title': title,
       'description': description,
@@ -84,6 +91,7 @@ class PushProduct {
       'adress': adressID,
       'price': price,
       'specifications': specifications,
+      'searchList': searchList
     });
   }
 

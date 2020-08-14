@@ -491,19 +491,20 @@ class _EditDataScreenState extends State<EditDataScreen> {
             .updateData({'images': existingImages});
 
         await PushProduct().updateProduct(
-          newImages: newImages,
-          category: selectedCategory,
-          docID: docsnap.documentID,
-          oldImages: existingImages,
-          subCategory: selectedSubCategory,
-          state: selectedState,
-          area: selectedArea,
-          adressID: addressID,
-          price: double.parse(price.text.replaceAll(',', '')),
-          title: title.text.trim().toLowerCase(),
-          description: description.text.trim().toLowerCase(),
-          specifications: inputSpecifications,
-        );
+            newImages: newImages,
+            category: selectedCategory,
+            docID: docsnap.documentID,
+            oldImages: existingImages,
+            subCategory: selectedSubCategory,
+            state: selectedState,
+            area: selectedArea,
+            adressID: addressID,
+            price: double.parse(price.text.replaceAll(',', '')),
+            title: title.text.trim().toLowerCase(),
+            description: description.text.trim().toLowerCase(),
+            specifications: inputSpecifications,
+            searchList: controllers.utils
+                .getProductSearchList(title.text.trim().toLowerCase()));
 
         loading = false;
         handleSetState();
