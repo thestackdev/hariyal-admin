@@ -18,7 +18,7 @@ class _AllProductsState extends State<AllProducts> {
 
   @override
   void initState() {
-    if (!controllers.isSuperuser.value) {
+    if (controllers.isSuperuser.value) {
       queryList = [
         controllers.products
             .orderBy('timestamp', descending: true)

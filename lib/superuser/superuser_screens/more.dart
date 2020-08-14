@@ -8,7 +8,7 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => controllers.utils.root(
-        label: 'Console',
+        label: 'More',
         child: ListView(
           children: <Widget>[
             controllers.utils.listTile(

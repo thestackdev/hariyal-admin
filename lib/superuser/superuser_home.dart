@@ -18,7 +18,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
     BottomNavyBarItem(
       icon: Icon(OMIcons.shoppingBasket),
       title: Text('Orders'),
-      activeColor: Colors.purpleAccent,
+      activeColor: Colors.red,
       textAlign: TextAlign.center,
     ),
     BottomNavyBarItem(

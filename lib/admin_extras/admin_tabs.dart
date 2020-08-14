@@ -54,9 +54,8 @@ class AdminExtras extends StatelessWidget {
             children: <Widget>[
               GestureDetector(
                 onTap: () {
-                  if (snapshot.data['imageUrl'] != null) {
+                  if (snapshot.data['imageUrl'] != null)
                     Get.to(HariyalImageView(imageUrls: [snapshot['imageUrl']]));
-                  }
                 },
                 child: Center(
                   child: CircleAvatar(
@@ -65,9 +64,7 @@ class AdminExtras extends StatelessWidget {
                     minRadius: 90,
                     backgroundImage: snapshot.data['imageUrl'] == null
                         ? AssetImage('assets/avatar-default-circle.png')
-                        : CachedNetworkImageProvider(
-                            snapshot['imageUrl'],
-                          ),
+                        : CachedNetworkImageProvider(snapshot['imageUrl']),
                   ),
                 ),
               ),
@@ -76,11 +73,8 @@ class AdminExtras extends StatelessWidget {
                 onChanged: controllers.firebaseUser.value.uid == adminUid ||
                         snapshot.data['isSuperuser'] == true
                     ? null
-                    : (value) {
-                        snapshot.reference.updateData({
-                          'isAdmin': !snapshot.data['isAdmin'],
-                        });
-                      },
+                    : (value) => snapshot.reference
+                        .updateData({'isAdmin': !snapshot.data['isAdmin']}),
                 value: snapshot.data['isAdmin'],
               ),
               SwitchListTile(
@@ -88,11 +82,8 @@ class AdminExtras extends StatelessWidget {
                 onChanged: controllers.firebaseUser.value.uid == adminUid ||
                         snapshot.data['isAdmin'] == false
                     ? null
-                    : (value) {
-                        snapshot.reference.updateData({
-                          'isSuperuser': !snapshot.data['isSuperuser'],
-                        });
-                      },
+                    : (value) => snapshot.reference.updateData(
+                        {'isSuperuser': !snapshot.data['isSuperuser']}),
                 value: snapshot.data['isSuperuser'],
               ),
             ],

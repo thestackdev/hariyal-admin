@@ -19,25 +19,25 @@ class _AdminHomeState extends State<AdminHome> {
     BottomNavyBarItem(
       icon: Icon(OMIcons.shoppingBasket),
       title: Text('Orders'),
-      activeColor: Colors.purpleAccent,
+      activeColor: Colors.redAccent,
       textAlign: TextAlign.center,
     ),
     BottomNavyBarItem(
       icon: Icon(Icons.add_shopping_cart),
       title: Text('Pending'),
-      activeColor: Colors.pink,
+      activeColor: Colors.redAccent,
       textAlign: TextAlign.center,
     ),
     BottomNavyBarItem(
       icon: Icon(OMIcons.closedCaption),
       title: Text('Rejected'),
-      activeColor: Colors.red,
+      activeColor: Colors.redAccent,
       textAlign: TextAlign.center,
     ),
     BottomNavyBarItem(
       icon: Icon(Icons.more_horiz),
       title: Text('More'),
-      activeColor: Colors.red,
+      activeColor: Colors.redAccent,
       textAlign: TextAlign.center,
     ),
   ];
@@ -55,34 +55,32 @@ class _AdminHomeState extends State<AdminHome> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: currentIndex,
-        onItemSelected: (value) => setState(() {
-          currentIndex = value;
-          pageController.jumpToPage(value);
-        }),
-        items: items,
-      ),
-      body: WillPopScope(
-        onWillPop: () async {
-          if (currentIndex == 0) {
-            return true;
-          } else {
-            setState(() {
-              currentIndex = 0;
-              pageController.jumpToPage(0);
-            });
-            return false;
-          }
-        },
-        child: PageView(
-          controller: pageController,
-          onPageChanged: (value) => setState(() => currentIndex = value),
-          children: [Orders(), Pending(), Rejected(), AdminExtras()],
+  Widget build(BuildContext context) => Scaffold(
+        bottomNavigationBar: BottomNavyBar(
+          selectedIndex: currentIndex,
+          onItemSelected: (value) => setState(() {
+            currentIndex = value;
+            pageController.jumpToPage(value);
+          }),
+          items: items,
         ),
-      ),
-    );
-  }
+        body: WillPopScope(
+          onWillPop: () async {
+            if (currentIndex == 0) {
+              return true;
+            } else {
+              setState(() {
+                currentIndex = 0;
+                pageController.jumpToPage(0);
+              });
+              return false;
+            }
+          },
+          child: PageView(
+            controller: pageController,
+            onPageChanged: (value) => setState(() => currentIndex = value),
+            children: [Orders(), Pending(), Rejected(), AdminExtras()],
+          ),
+        ),
+      );
 }
