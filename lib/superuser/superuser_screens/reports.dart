@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 
 class Reports extends StatelessWidget {
@@ -7,21 +8,11 @@ class Reports extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controllers.utils.root(
-        label: 'Reports',
-        child: controllers.utils.streamBuilder(
-          stream: controllers.reports.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.documents.length == 0) {
-              return controllers.utils.error('No Reports Found !');
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.documents.length,
-                itemBuilder: (context, index) {
-                  return;
-                },
-              );
-            }
-          },
-        ));
+      label: 'Reports',
+      child: Center(
+        child: Text('Work in Progress',
+            style: Get.textTheme.headline4.apply(fontSizeFactor: 1.5)),
+      ),
+    );
   }
 }

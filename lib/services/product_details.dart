@@ -179,12 +179,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     'reject_reason': null,
                                   }),
                                 ),
-                                buildButton(
-                                  3,
-                                  'Edit',
-                                  Colors.grey.shade500,
-                                  () => editProduct(snapshot),
-                                ),
+                                buildButton(3, 'Edit', Colors.grey.shade500,
+                                    () => editProduct(snapshot)),
                                 buildButton(
                                   3,
                                   'Reject',
@@ -208,12 +204,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                 ),
                               ] else if (!snapshot.data['isSold']) ...[
-                                buildButton(
-                                  2,
-                                  'Edit',
-                                  Colors.grey.shade500,
-                                  () => editProduct(snapshot),
-                                ),
+                                buildButton(2, 'Edit', Colors.grey.shade500,
+                                    () => editProduct(snapshot)),
                                 buildButton(
                                   2,
                                   'Delete',
@@ -228,12 +220,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ]
                             ] else if (!snapshot.data['authored']) ...[
                               if (snapshot.data['rejected']) ...[
-                                buildButton(
-                                  3,
-                                  'Edit',
-                                  Colors.grey.shade500,
-                                  () => editProduct(snapshot),
-                                ),
+                                buildButton(3, 'Edit', Colors.grey.shade500,
+                                    () => editProduct(snapshot)),
                                 buildButton(
                                   3,
                                   'Delete',
@@ -266,12 +254,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     noPressed: () => Get.back(),
                                   ),
                                 ),
-                                buildButton(
-                                  2,
-                                  'Edit',
-                                  Colors.grey.shade500,
-                                  () => editProduct(snapshot),
-                                )
+                                buildButton(2, 'Edit', Colors.grey.shade500,
+                                    () => editProduct(snapshot))
                               ],
                             ],
                           ],
@@ -283,17 +267,22 @@ class _ProductDetailsState extends State<ProductDetails> {
       );
 
   Widget buildDetails(String key, String value) {
-    return SelectableText.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-              text: '$key : ',
-              style: Get.textTheme.headline3
-                  .apply(fontSizeFactor: 1.2, color: Colors.redAccent)),
-          TextSpan(text: value, style: Get.textTheme.headline3),
-        ],
-      ),
-    );
+    try {
+      return SelectableText.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+                text: '$key : ',
+                style: Get.textTheme.headline3
+                    .apply(fontSizeFactor: 1.2, color: Colors.redAccent)),
+            TextSpan(text: value, style: Get.textTheme.headline3),
+          ],
+        ),
+      );
+    } catch (e) {
+      Get.offNamed('errorPage');
+      return null;
+    }
   }
 
   deletePremanently(DocumentSnapshot snapshot) {

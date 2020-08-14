@@ -23,12 +23,10 @@ class Utils {
       PaginateFirestore(
         emptyDisplay: error('No Data Found !'),
         initialLoader: loading(),
-        bottomLoader: Padding(
-          padding: EdgeInsets.all(9),
-          child: loading(),
-        ),
+        bottomLoader: Padding(padding: EdgeInsets.all(9), child: loading()),
         itemsPerPage: 10,
         itemBuilder: itemBuilder,
+        shrinkWrap: true,
         query: query,
         itemBuilderType: PaginateBuilderType.listView,
       );
@@ -212,8 +210,12 @@ class Utils {
           onTap: onTap,
           leading:
               CachedNetworkImage(imageUrl: imageUrl, height: 90, width: 90),
-          title: Text(GetUtils.capitalize(title)),
-          subtitle: Text(description),
+          title:
+              Text(GetUtils.capitalize(title), style: Get.textTheme.headline4),
+          subtitle: Text(
+            description,
+            style: Get.textTheme.headline4.apply(fontSizeFactor: 0.9),
+          ),
         ),
       );
 

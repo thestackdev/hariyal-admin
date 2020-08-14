@@ -30,6 +30,7 @@ dependencies:
   pattern_formatter:
   outline_material_icons:
   google_fonts:
+  bottom_navy_bar:  
 
 dev_dependencies:
   flutter_test:

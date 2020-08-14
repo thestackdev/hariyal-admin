@@ -1,63 +1,81 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:superuser/get/controllers.dart';
 import 'package:superuser/superuser/superuser_screens/more.dart';
 import '../services/orders.dart';
-import '../services/sold_items.dart';
-import 'superuser_screens/reports.dart';
 import 'superuser_screens/requests.dart';
 
-class SuperuserHome extends StatelessWidget {
-  final controllers = Controllers.to;
+class SuperuserHome extends StatefulWidget {
+  @override
+  _SuperuserHomeState createState() => _SuperuserHomeState();
+}
+
+class _SuperuserHomeState extends State<SuperuserHome> {
+  PageController pageController;
+  int currentIndex = 0;
+
+  final items = [
+    BottomNavyBarItem(
+      icon: Icon(OMIcons.shoppingBasket),
+      title: Text('Orders'),
+      activeColor: Colors.purpleAccent,
+      textAlign: TextAlign.center,
+    ),
+    BottomNavyBarItem(
+      icon: Icon(OMIcons.moneyOff),
+      title: Text('Requests'),
+      activeColor: Colors.pink,
+      textAlign: TextAlign.center,
+    ),
+    BottomNavyBarItem(
+      icon: Icon(Icons.more_horiz),
+      title: Text('More'),
+      activeColor: Colors.red,
+      textAlign: TextAlign.center,
+    ),
+  ];
+
+  @override
+  void initState() {
+    pageController = PageController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      bottomNavigationBar('Orders', OMIcons.addShoppingCart),
-      bottomNavigationBar('Requests', OMIcons.moneyOff),
-      bottomNavigationBar('Sold Items', OMIcons.attachMoney),
-      bottomNavigationBar('Reports', OMIcons.receipt),
-      bottomNavigationBar('More', OMIcons.moreHoriz),
-    ];
-    final screenList = [
-      Orders(),
-      Requests(),
-      SoldItems(
-        query: controllers.products
-            .orderBy('sold_timestamp', descending: true)
-            .where('isSold', isEqualTo: true),
+    return Scaffold(
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: currentIndex,
+        onItemSelected: (value) => setState(() {
+          currentIndex = value;
+          pageController.jumpToPage(value);
+        }),
+        items: items,
       ),
-      Reports(),
-      Settings(),
-    ];
-    return Obx(() {
-      return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) => controllers.changeScreen(index),
-          currentIndex: controllers.currentScreen.value,
-          elevation: 9,
-          type: BottomNavigationBarType.fixed,
-          items: items,
+      body: WillPopScope(
+        onWillPop: () async {
+          if (currentIndex == 0) {
+            return true;
+          } else {
+            setState(() {
+              currentIndex = 0;
+              pageController.jumpToPage(0);
+            });
+            return false;
+          }
+        },
+        child: PageView(
+          controller: pageController,
+          onPageChanged: (value) => setState(() => currentIndex = value),
+          children: [Orders(), Requests(), Settings()],
         ),
-        body: WillPopScope(
-          child: screenList[controllers.currentScreen.value],
-          onWillPop: () async {
-            if (controllers.currentScreen.value == 0) {
-              return true;
-            } else {
-              controllers.changeScreen(0);
-              return false;
-            }
-          },
-        ),
-      );
-    });
+      ),
+    );
   }
-
-  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) =>
-      BottomNavigationBarItem(
-        icon: Icon(icon),
-        title: Text(title),
-      );
 }

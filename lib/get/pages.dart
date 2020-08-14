@@ -3,6 +3,7 @@ import 'package:superuser/admin/admin_home.dart';
 import 'package:superuser/admin_extras/admin_tabs.dart';
 import 'package:superuser/admin_extras/customer_details.dart';
 import 'package:superuser/authenticate.dart';
+import 'package:superuser/errorPage.dart';
 import 'package:superuser/initial_page.dart';
 import 'package:superuser/services/add_admin.dart';
 import 'package:superuser/services/all_products.dart';
@@ -17,6 +18,7 @@ import 'package:superuser/superuser/superuser_home.dart';
 import 'package:superuser/superuser/superuser_screens/admins.dart';
 import 'package:superuser/superuser/superuser_screens/customers.dart';
 import 'package:superuser/superuser/superuser_screens/more.dart';
+import 'package:superuser/superuser/superuser_screens/reports.dart';
 import 'package:superuser/superuser/utilities/add_showroom.dart';
 import 'package:superuser/superuser/utilities/categories.dart';
 import 'package:superuser/superuser/utilities/showrooms.dart';
@@ -50,7 +52,7 @@ class Pages {
     GetPage(name: '/specifications', page: () => Specifications()),
     GetPage(name: '/states', page: () => States()),
     GetPage(name: '/showrooms', page: () => Showrooms()),
-    GetPage(name: '/all_products', page: () => AllProducts()),
+    GetPage(name: '/allProducts', page: () => AllProducts()),
     GetPage(name: '/all_customers', page: () => AllCustomers()),
     GetPage(name: '/admins', page: () => Admins()),
     GetPage(name: '/add_showroom', page: () => AddShowroom()),
@@ -62,5 +64,7 @@ class Pages {
     GetPage(name: 'add_product', page: () => PushData()),
     GetPage(name: 'forgotPassword', page: () => ForgotPassword()),
     GetPage(name: 'changePassword', page: () => ChangePassword()),
+    GetPage(name: 'reports', page: () => Reports()),
+    GetPage(name: 'errorPage', page: () => ErrorPage()),
   ];
 }

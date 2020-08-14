@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
-import 'package:superuser/services/all_products.dart';
 
 class Settings extends StatelessWidget {
   final controllers = Controllers.to;
@@ -33,13 +32,9 @@ class Settings extends StatelessWidget {
               onTap: () => Get.toNamed('interests'),
             ),
             controllers.utils.listTile(
-              title: 'My Products',
+              title: 'Products',
               leading: Icon(OMIcons.shoppingBasket, color: Colors.redAccent),
-              onTap: () => Get.to(AllProducts(
-                query: controllers.products
-                    .orderBy('timestamp', descending: true)
-                    .where('isDeleted', isEqualTo: false),
-              )),
+              onTap: () => Get.toNamed('allProducts'),
             ),
             controllers.utils.listTile(
               title: 'Customers',
@@ -70,6 +65,11 @@ class Settings extends StatelessWidget {
               title: 'Showrooms',
               leading: Icon(OMIcons.locationCity, color: Colors.redAccent),
               onTap: () => Get.toNamed('showrooms'),
+            ),
+            controllers.utils.listTile(
+              title: 'Generate Report',
+              leading: Icon(OMIcons.receipt, color: Colors.redAccent),
+              onTap: () => Get.toNamed('reports'),
             ),
             controllers.utils.listTile(
               title: 'Logout',

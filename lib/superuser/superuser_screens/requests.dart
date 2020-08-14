@@ -13,6 +13,7 @@ class Requests extends StatelessWidget {
           stream: controllers.products
               .orderBy('timestamp', descending: true)
               .where('authored', isEqualTo: false)
+              .where('rejected', isEqualTo: false)
               .snapshots(),
           builder: (context, snapshot) => (snapshot.documents.length == 0)
               ? controllers.utils.error('No Pending Requests !')

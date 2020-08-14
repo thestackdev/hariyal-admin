@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_data_stream_builder/flutter_data_stream_builder.dart';
 import 'package:get/get.dart';
 import 'package:superuser/get/controllers.dart';
 
@@ -10,15 +8,16 @@ class Rejected extends StatelessWidget {
   Widget build(BuildContext context) {
     return controllers.utils.root(
       label: 'Pending',
-      child: DataStreamBuilder<QuerySnapshot>(
+      child: controllers.utils.streamBuilder(
         stream: controllers.products
             .orderBy('timestamp', descending: true)
             .where('author', isEqualTo: controllers.firebaseUser.value.uid)
+            .where('authored', isEqualTo: false)
             .where('rejected', isEqualTo: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.documents.length == 0) {
-            return controllers.utils.error('No Products Found');
+            return controllers.utils.error('No Products Rejected !');
           }
           try {
             return ListView.builder(

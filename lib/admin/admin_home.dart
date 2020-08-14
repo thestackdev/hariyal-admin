@@ -1,64 +1,88 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/admin/pending.dart';
 import 'package:superuser/admin/rejected.dart';
-import 'package:superuser/get/controllers.dart';
 import 'package:superuser/services/orders.dart';
-import 'package:superuser/services/sold_items.dart';
 import 'admin_extras.dart';
 
-class AdminHome extends StatelessWidget {
-  final controllers = Controllers.to;
+class AdminHome extends StatefulWidget {
+  @override
+  _AdminHomeState createState() => _AdminHomeState();
+}
+
+class _AdminHomeState extends State<AdminHome> {
+  PageController pageController;
+  int currentIndex = 0;
+
+  final items = [
+    BottomNavyBarItem(
+      icon: Icon(OMIcons.shoppingBasket),
+      title: Text('Orders'),
+      activeColor: Colors.purpleAccent,
+      textAlign: TextAlign.center,
+    ),
+    BottomNavyBarItem(
+      icon: Icon(Icons.add_shopping_cart),
+      title: Text('Pending'),
+      activeColor: Colors.pink,
+      textAlign: TextAlign.center,
+    ),
+    BottomNavyBarItem(
+      icon: Icon(OMIcons.closedCaption),
+      title: Text('Rejected'),
+      activeColor: Colors.red,
+      textAlign: TextAlign.center,
+    ),
+    BottomNavyBarItem(
+      icon: Icon(Icons.more_horiz),
+      title: Text('More'),
+      activeColor: Colors.red,
+      textAlign: TextAlign.center,
+    ),
+  ];
+
+  @override
+  void initState() {
+    pageController = PageController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screenList = [
-      Orders(),
-      Pending(),
-      Rejected(),
-      SoldItems(
-        query: controllers.products
-            .where('author', isEqualTo: controllers.firebaseUser.value.uid)
-            .where('isSold', isEqualTo: true),
+    return Scaffold(
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: currentIndex,
+        onItemSelected: (value) => setState(() {
+          currentIndex = value;
+          pageController.jumpToPage(value);
+        }),
+        items: items,
       ),
-      AdminExtras(),
-    ];
-    final items = [
-      bottomNavigationBar('Orders', OMIcons.addShoppingCart),
-      bottomNavigationBar('Pending', OMIcons.addShoppingCart),
-      bottomNavigationBar('Rejected', OMIcons.exitToApp),
-      bottomNavigationBar('Sold Items', OMIcons.attachMoney),
-      bottomNavigationBar('Extras', OMIcons.more),
-    ];
-    return Obx(
-      () => Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) => controllers.changeScreen(index),
-          currentIndex: controllers.currentScreen.value,
-          elevation: 9,
-          type: BottomNavigationBarType.fixed,
-          items: items,
-        ),
-        body: WillPopScope(
-          child: screenList[controllers.currentScreen.value],
-          onWillPop: () async {
-            if (controllers.currentScreen.value == 0) {
-              return true;
-            } else {
-              controllers.changeScreen(0);
-              return false;
-            }
-          },
+      body: WillPopScope(
+        onWillPop: () async {
+          if (currentIndex == 0) {
+            return true;
+          } else {
+            setState(() {
+              currentIndex = 0;
+              pageController.jumpToPage(0);
+            });
+            return false;
+          }
+        },
+        child: PageView(
+          controller: pageController,
+          onPageChanged: (value) => setState(() => currentIndex = value),
+          children: [Orders(), Pending(), Rejected(), AdminExtras()],
         ),
       ),
-    );
-  }
-
-  BottomNavigationBarItem bottomNavigationBar(String title, IconData icon) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon),
-      title: Text(title),
     );
   }
 }
