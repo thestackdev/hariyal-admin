@@ -24,7 +24,7 @@ class _SuperuserHomeState extends State<SuperuserHome> {
     BottomNavyBarItem(
       icon: Icon(OMIcons.moneyOff),
       title: Text('Requests'),
-      activeColor: Colors.pink,
+      activeColor: Colors.red,
       textAlign: TextAlign.center,
     ),
     BottomNavyBarItem(

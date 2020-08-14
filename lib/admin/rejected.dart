@@ -7,7 +7,7 @@ class Rejected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controllers.utils.root(
-      label: 'Pending',
+      label: 'Rejected',
       child: controllers.utils.streamBuilder(
         stream: controllers.products
             .orderBy('timestamp', descending: true)
