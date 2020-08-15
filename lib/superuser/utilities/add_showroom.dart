@@ -143,13 +143,13 @@ class _AddShowroomState extends State<AddShowroom> {
                               .updateData({
                             'name': titleController.text.trim().toLowerCase(),
                             'address':
-                            addressController.text.trim().toLowerCase(),
+                                addressController.text.trim().toLowerCase(),
                             'state': selectedState.trim().toLowerCase(),
                             'area': selectedArea.trim().toLowerCase(),
                             'latitude':
-                            latitudeController.text.trim().toLowerCase(),
+                                latitudeController.text.trim().toLowerCase(),
                             'longitude':
-                            longitudeController.text.trim().toLowerCase(),
+                                longitudeController.text.trim().toLowerCase(),
                           });
                         }
                         Get.back();

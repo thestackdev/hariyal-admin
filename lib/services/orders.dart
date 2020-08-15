@@ -23,7 +23,7 @@ class Orders extends StatelessWidget {
                       ? controllers.utils.error('No Orders Yet')
                       : ListView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: BouncingScrollPhysics(),
                           itemCount: oSnap.documents.length,
                           itemBuilder: (listContext, index) {
                             return controllers.utils
