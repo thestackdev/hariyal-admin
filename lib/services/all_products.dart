@@ -11,7 +11,7 @@ class AllProducts extends StatefulWidget {
 
 class _AllProductsState extends State<AllProducts> {
   final controllers = Controllers.to;
-  final filters = ['All Products', 'Sold Items'];
+  final filters = ['Available', 'Sold'];
   List<Query> queryList = [];
   Query query;
   int selectedFilter = 0;
@@ -32,17 +32,16 @@ class _AllProductsState extends State<AllProducts> {
             .where('isSold', isEqualTo: true),
       ];
     } else {
-      final uid = controllers.firebaseUser.value.uid;
       queryList = [
         controllers.products
             .orderBy('timestamp', descending: true)
-            .where('author', isEqualTo: uid)
+            .where('author', isEqualTo: controllers.firebaseUser.value.uid)
             .where('isDeleted', isEqualTo: false)
             .where('authored', isEqualTo: true)
             .where('isSold', isEqualTo: false),
         controllers.products
             .orderBy('timestamp', descending: true)
-            .where('author', isEqualTo: uid)
+            .where('author', isEqualTo: controllers.firebaseUser.value.uid)
             .where('isDeleted', isEqualTo: false)
             .where('authored', isEqualTo: true)
             .where('isSold', isEqualTo: true),
@@ -128,6 +127,13 @@ class _AllProductsState extends State<AllProducts> {
               controllers.utils.streamBuilder<QuerySnapshot>(
                 stream: queryList[selectedFilter].snapshots(),
                 builder: (context, snapshot) {
+                  if (snapshot.documents.length == 0) {
+                    return Center(
+                      child: Text('No Data Found',
+                          style: Get.textTheme.headline4
+                              .apply(fontSizeFactor: 1.5)),
+                    );
+                  }
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),

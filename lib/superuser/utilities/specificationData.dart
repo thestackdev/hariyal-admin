@@ -4,146 +4,136 @@ import 'package:get/get.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:superuser/get/controllers.dart';
 
-class SpecificationData extends StatelessWidget {
+class SpecificationData extends StatefulWidget {
+  @override
+  _SpecificationDataState createState() => _SpecificationDataState();
+}
+
+class _SpecificationDataState extends State<SpecificationData> {
   final String category = Get.arguments;
   final controllers = Controllers.to;
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List items = [];
-    return Obx(() {
-      final DocumentSnapshot snapshot = Controllers.to.specifications.value;
-      if (snapshot?.data != null) {
-        if (snapshot?.data[category] != null) {
-          items = snapshot.data[category];
-        }
-      }
-
-      String text = '';
-
-      deleteSpecification(String data) {
-        /*  firestore
-        .collection('products')
-        .where('category.subCategory', isEqualTo: data)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({
-          'category.subCategory': null,
-          'isDeleted': true,
-        });
-      });
-    }); */
-      }
-
-      editSpecification(String oldData, String newData) {
-        /* firestore
-        .collection('products')
-        .where('category.subCategory', isEqualTo: oldData)
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        element.reference.updateData({'category.subCategory': newData});
-      });
-    }); */
-      }
-
-      addSpecification() {
-        if (controllers.utils.validateInputText(text) &&
-            !items.contains(text.toLowerCase())) {
-          if (snapshot == null) {
-            controllers.extras.document('specifications').setData({
-              category: FieldValue.arrayUnion([text.toLowerCase()])
-            });
-          } else {
+    return controllers.utils.streamBuilder<DocumentSnapshot>(
+      stream: controllers.specificationsStream,
+      builder: (context, snapshot) {
+        addSpecification(String text) {
+          if (snapshot.data[category] == null) {
             snapshot.reference.updateData({
-              category: FieldValue.arrayUnion([text.toLowerCase()])
+              category: FieldValue.arrayUnion([text])
             });
-          }
-
-          Get.back();
-          controllers.utils.snackbar('Specification Added');
-        } else {
-          Get.back();
-          controllers.utils.snackbar('Invalid entries');
-        }
-        text = '';
-      }
-
-      return controllers.utils.root(
-        label: category,
-        actions: [
-          IconButton(
-              icon: const Icon(OMIcons.add),
-              onPressed: () {
-                controllers.utils.getSimpleDialouge(
-                  title: 'Add Specifications in $category',
-                  content: controllers.utils.dialogInput(
-                      hintText: 'Type here',
-                      onChnaged: (value) {
-                        text = value.trim().toLowerCase();
-                      }),
-                  noPressed: () => Get.back(),
-                  yesPressed: () => addSpecification(),
-                );
-              }),
-        ],
-        child: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) => controllers.utils.dismissible(
-            key: UniqueKey(),
-            confirmDismiss: (direction) async {
-              if (direction == DismissDirection.startToEnd) {
-                return await controllers.utils.getSimpleDialouge(
-                  title: 'Confirm',
-                  content: Text('Delete this Specification ?'),
-                  yesPressed: () {
-                    deleteSpecification(items[index]);
-
-                    snapshot.reference.updateData({
-                      category: FieldValue.arrayRemove([items[index]])
-                    });
-                    Get.back();
-                  },
-                  noPressed: () => Get.back(),
-                );
+            Get.back();
+            controllers.utils.snackbar('Specification Added');
+          } else {
+            if (controllers.utils.validateInputText(text) &&
+                !snapshot.data[category].contains(text)) {
+              if (snapshot == null) {
+                controllers.extras.document('specifications').setData({
+                  category: FieldValue.arrayUnion([text])
+                });
               } else {
-                return await controllers.utils.getSimpleDialouge(
-                  title: 'Edit Specification',
-                  content: controllers.utils.dialogInput(
-                      hintText: 'Type here',
-                      initialValue: items[index],
-                      onChnaged: (value) {
-                        text = value.trim().toLowerCase();
-                      }),
-                  noPressed: () => Get.back(),
-                  yesPressed: () {
-                    Get.back();
-                    if (controllers.utils.validateInputText(text) &&
-                        text != items[index] &&
-                        !items.contains(text.toLowerCase())) {
-                      editSpecification(items[index], text);
-                      snapshot.reference.updateData({
-                        category: FieldValue.arrayRemove([items[index]]),
-                      });
-                      snapshot.reference.updateData({
-                        category: FieldValue.arrayUnion([text]),
-                      });
-                    } else {
-                      controllers.utils.snackbar('Invalid entries');
-                    }
-                    text = '';
-                  },
-                );
+                snapshot.reference.updateData({
+                  category: FieldValue.arrayUnion([text])
+                });
               }
-            },
-            child: controllers.utils.listTile(
-              title: items[index],
-              isTrailingNull: true,
-            ),
-          ),
-        ),
-      );
-    });
+
+              Get.back();
+              controllers.utils.snackbar('Specification Added');
+            } else {
+              Get.back();
+              controllers.utils.snackbar('Invalid entries');
+            }
+          }
+        }
+
+        return controllers.utils.root(
+          label: category,
+          actions: [
+            IconButton(
+                icon: const Icon(OMIcons.add),
+                onPressed: () {
+                  controllers.utils.getSimpleDialouge(
+                    title: 'Add Specifications in $category',
+                    content: controllers.utils.dialogInput(
+                      hintText: 'Type here',
+                      controller: textController,
+                    ),
+                    noPressed: () => Get.back(),
+                    yesPressed: () => addSpecification(
+                        textController.text.trim().toLowerCase()),
+                  );
+                }),
+          ],
+          child: (snapshot?.data[category] == null)
+              ? controllers.utils.error('No Specifications')
+              : ListView.builder(
+                  itemCount: snapshot?.data[category]?.length,
+                  itemBuilder: (context, index) =>
+                      controllers.utils.dismissible(
+                    key: UniqueKey(),
+                    confirmDismiss: (direction) async {
+                      if (direction == DismissDirection.startToEnd) {
+                        return await controllers.utils.getSimpleDialouge(
+                          title: 'Confirm',
+                          content: Text('Delete this Specification ?'),
+                          yesPressed: () {
+                            snapshot.reference.updateData({
+                              category: FieldValue.arrayRemove(
+                                  [snapshot.data[category][index]])
+                            });
+                            Get.back();
+                          },
+                          noPressed: () => Get.back(),
+                        );
+                      } else {
+                        return await controllers.utils.getSimpleDialouge(
+                          title: 'Edit Specification',
+                          content: controllers.utils.dialogInput(
+                            hintText: 'Type here',
+                            initialValue: snapshot.data[category][index],
+                            controller: textController,
+                          ),
+                          noPressed: () => Get.back(),
+                          yesPressed: () {
+                            Get.back();
+                            if (controllers.utils
+                                    .validateInputText(textController.text) &&
+                                textController.text !=
+                                    snapshot.data[category][index] &&
+                                !snapshot.data[category].contains(
+                                    textController.text.toLowerCase())) {
+                              snapshot.reference.updateData({
+                                category: FieldValue.arrayRemove(
+                                    [snapshot.data[category][index]]),
+                              });
+                              snapshot.reference.updateData({
+                                category: FieldValue.arrayUnion(
+                                    [textController.text.trim().toLowerCase()]),
+                              });
+                            } else {
+                              controllers.utils.snackbar('Invalid entries');
+                            }
+                            textController.clear();
+                          },
+                        );
+                      }
+                    },
+                    child: controllers.utils.listTile(
+                      title: snapshot?.data[category][index],
+                      isTrailingNull: true,
+                    ),
+                  ),
+                ),
+        );
+      },
+    );
   }
 }

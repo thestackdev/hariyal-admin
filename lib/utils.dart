@@ -21,7 +21,10 @@ class Utils {
     Widget Function(int, BuildContext, DocumentSnapshot) itemBuilder,
   }) =>
       PaginateFirestore(
-        emptyDisplay: error('No Data Found !'),
+        emptyDisplay: Center(
+          child: Text('No Data Found',
+              style: Get.textTheme.headline4.apply(fontSizeFactor: 1.5)),
+        ),
         initialLoader: loading(),
         bottomLoader: Padding(padding: EdgeInsets.all(9), child: loading()),
         itemsPerPage: 10,

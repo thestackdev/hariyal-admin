@@ -24,9 +24,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   final DocumentSnapshot docsnap = Get.arguments;
 
-  Map categoryMap = {};
-  Map locationsMap = {};
-  Map specificationsMap = {};
   Map inputSpecifications = {};
   List subCategory = [];
   String selectedSubCategory;
@@ -50,7 +47,7 @@ class _EditDataScreenState extends State<EditDataScreen> {
   final textstyle = TextStyle(color: Colors.grey, fontSize: 16);
   List shouldRemoveImages = [];
 
-  fetchPreviousData() async {
+  fetchPreviousData() {
     existingImages = docsnap.data['images'];
     selectedCategory = docsnap.data['category']['category'];
     selectedSubCategory = docsnap.data['category']['subCategory'];
@@ -62,23 +59,19 @@ class _EditDataScreenState extends State<EditDataScreen> {
     description.text = docsnap.data['description'];
     inputSpecifications = docsnap.data['specifications'];
 
-    await controllers.showrooms
+    print(inputSpecifications);
+
+    controllers.showrooms
         .where('area', isEqualTo: selectedArea)
         .getDocuments()
         .then((value) {
       showroomList.addAll(value.documents);
       for (var doc in value.documents) {
-        print(addressID);
-        print(doc.documentID);
         if (doc.documentID == addressID) {
           selectedShowroom = doc.data['name'];
 
           showroomAddressController.text = doc.data['address'];
         }
-      }
-
-      if (specificationsMap[selectedCategory] != null) {
-        specificationsList.addAll(specificationsMap[selectedCategory]);
       }
 
       handleSetState();
@@ -88,9 +81,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
   @override
   void initState() {
     fetchPreviousData();
-    categoryMap = controllers.categories.value.data;
-    locationsMap = controllers.locations.value.data;
-    specificationsMap = controllers.specifications.value.data;
     super.initState();
   }
 
@@ -105,12 +95,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedCategory != null) {
-      subCategory = categoryMap[selectedCategory];
-    }
-    if (selectedState != null) {
-      areasList = locationsMap[selectedState];
-    }
     return controllers.utils.root(
       label: 'Edit Product',
       child: loading
@@ -302,21 +286,23 @@ class _EditDataScreenState extends State<EditDataScreen> {
                       spacing: 18,
                       runSpacing: 18,
                       children: <Widget>[
-                        controllers.utils.productInputDropDown(
-                            label: 'Category',
-                            value: selectedCategory,
-                            items: categoryMap?.keys?.toList(),
-                            onTap: () => print('called'),
-                            onChanged: (value) {
-                              selectedCategory = value;
-                              selectedSubCategory = null;
-                              specificationsList.clear();
-                              if (specificationsMap[value] != null) {
-                                specificationsList
-                                    .addAll(specificationsMap[value]);
-                              }
+                        controllers.utils.streamBuilder<DocumentSnapshot>(
+                            stream: controllers.categoryStream,
+                            builder: (context, snapshot) {
+                              subCategory = snapshot.data[selectedCategory];
+                              return controllers.utils.productInputDropDown(
+                                  label: 'Category',
+                                  value: selectedCategory,
+                                  items: snapshot?.data?.keys?.toList(),
+                                  onChanged: (value) {
+                                    selectedCategory = value;
+                                    selectedSubCategory = null;
+                                    specificationsList.clear();
+                                    subCategory =
+                                        snapshot.data[selectedCategory];
 
-                              handleSetState();
+                                    handleSetState();
+                                  });
                             }),
                         controllers.utils.productInputDropDown(
                             label: 'Sub-Category',
@@ -335,17 +321,23 @@ class _EditDataScreenState extends State<EditDataScreen> {
                                     'No subcategories in $selectedCategory');
                               }
                             }),
-                        controllers.utils.productInputDropDown(
-                            label: 'State',
-                            value: selectedState,
-                            items: locationsMap?.keys?.toList(),
-                            onChanged: (value) {
-                              selectedState = value;
-                              selectedArea = null;
-                              selectedShowroom = null;
-                              showroomAddressController.clear();
-                              showroomList.clear();
-                              handleSetState();
+                        controllers.utils.streamBuilder<DocumentSnapshot>(
+                            stream: controllers.locationsStream,
+                            builder: (context, snapshot) {
+                              areasList = snapshot.data[selectedState];
+                              return controllers.utils.productInputDropDown(
+                                  label: 'State',
+                                  value: selectedState,
+                                  items: snapshot?.data?.keys?.toList(),
+                                  onChanged: (value) {
+                                    selectedState = value;
+                                    selectedArea = null;
+                                    selectedShowroom = null;
+                                    areasList = snapshot.data[selectedState];
+                                    showroomAddressController.clear();
+                                    showroomList.clear();
+                                    handleSetState();
+                                  });
                             }),
                         GestureDetector(
                           onTap: () {
@@ -434,31 +426,46 @@ class _EditDataScreenState extends State<EditDataScreen> {
                           label: 'Description',
                           controller: description,
                         ),
-                        if (specificationsList.length > 0) ...[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Add Specifications',
-                                style: Get.textTheme.headline4),
-                          ),
-                          ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: specificationsList.length,
-                            itemBuilder: (context, index) {
-                              return controllers.utils.inputTextField(
-                                label: specificationsList[index],
-                                initialValue: inputSpecifications[
-                                    specificationsList[index]],
-                                onChanged: (value) {
-                                  inputSpecifications[
-                                      specificationsList[index]] = value;
-                                },
+                        controllers.utils.streamBuilder<DocumentSnapshot>(
+                          stream: controllers.specificationsStream,
+                          builder: (context, snapsot) {
+                            if (snapsot.data[selectedCategory] != null) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('Update Specifications',
+                                        style: Get.textTheme.headline4),
+                                  ),
+                                  ListView.separated(
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(height: 12),
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        snapsot.data[selectedCategory].length,
+                                    itemBuilder: (context, index) {
+                                      return controllers.utils.inputTextField(
+                                        label: snapsot.data[selectedCategory]
+                                            [index],
+                                        initialValue: inputSpecifications[
+                                            snapsot.data[selectedCategory]
+                                                [index]],
+                                        onChanged: (value) =>
+                                            inputSpecifications[
+                                                snapsot.data[selectedCategory]
+                                                    [index]] = value,
+                                      );
+                                    },
+                                  ),
+                                ],
                               );
-                            },
-                          ),
-                        ],
+                            }
+                            return Container();
+                          },
+                        ),
                         controllers.utils
-                            .raisedButton('Update Data', onPressed),
+                            .raisedButton('Update Product', onPressed),
                       ],
                     ),
                   ),
@@ -517,3 +524,6 @@ class _EditDataScreenState extends State<EditDataScreen> {
 
   handleSetState() => (mounted) ? setState(() => null) : null;
 }
+
+/* initialValue: inputSpecifications[
+                                    specificationsList[index]], */

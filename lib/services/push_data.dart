@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
@@ -30,9 +31,7 @@ class _PushDataState extends State<PushData> {
   List specificationsList = [];
   String addressID;
   bool loading = false;
-  Map categoryMap = {};
-  Map locationsMap = {};
-  Map specificationsMap = {};
+
   Map inputSpecifications = {};
 
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
@@ -41,14 +40,6 @@ class _PushDataState extends State<PushData> {
   final title = TextEditingController();
   final description = TextEditingController();
   final showroomAddressController = TextEditingController();
-
-  @override
-  void initState() {
-    categoryMap = controllers.categories.value?.data;
-    locationsMap = controllers.locations.value?.data;
-    specificationsMap = controllers.specifications.value?.data;
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -61,13 +52,6 @@ class _PushDataState extends State<PushData> {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedCategory != null) {
-      subCategory = categoryMap[selectedCategory];
-    }
-    if (selectedState != null) {
-      areasList = locationsMap[selectedState];
-    }
-
     return controllers.utils.root(
       label: 'Add Product',
       child: loading
@@ -212,21 +196,21 @@ class _PushDataState extends State<PushData> {
                     spacing: 18,
                     runSpacing: 18,
                     children: <Widget>[
-                      controllers.utils.productInputDropDown(
-                          label: 'Category',
-                          value: selectedCategory,
-                          items: categoryMap?.keys?.toList(),
-                          onTap: () => print('called'),
-                          onChanged: (value) {
-                            selectedCategory = value;
-                            selectedSubCategory = null;
-                            specificationsList.clear();
-                            if (specificationsMap[value] != null) {
-                              specificationsList
-                                  .addAll(specificationsMap[value]);
-                            }
+                      controllers.utils.streamBuilder<DocumentSnapshot>(
+                          stream: controllers.categoryStream,
+                          builder: (context, snapshot) {
+                            return controllers.utils.productInputDropDown(
+                                label: 'Category',
+                                value: selectedCategory,
+                                items: snapshot?.data?.keys?.toList(),
+                                onChanged: (value) {
+                                  selectedCategory = value;
+                                  selectedSubCategory = null;
+                                  specificationsList.clear();
+                                  subCategory = snapshot.data[selectedCategory];
 
-                            handleSetState();
+                                  handleSetState();
+                                });
                           }),
                       controllers.utils.productInputDropDown(
                           label: 'Sub-Category',
@@ -245,18 +229,23 @@ class _PushDataState extends State<PushData> {
                                   'No subcategories in $selectedCategory');
                             }
                           }),
-                      controllers.utils.productInputDropDown(
-                          label: 'State',
-                          value: selectedState,
-                          items: locationsMap?.keys?.toList(),
-                          onChanged: (value) {
-                            selectedState = value;
-                            selectedArea = null;
-                            selectedShowroom = null;
-                            showroomAddressController.clear();
-                            showroomList.clear();
-                            handleSetState();
-                          }),
+                      controllers.utils.streamBuilder<DocumentSnapshot>(
+                        stream: controllers.locationsStream,
+                        builder: (context, snapshot) =>
+                            controllers.utils.productInputDropDown(
+                                label: 'State',
+                                value: selectedState,
+                                items: snapshot?.data?.keys?.toList(),
+                                onChanged: (value) {
+                                  selectedState = value;
+                                  selectedArea = null;
+                                  selectedShowroom = null;
+                                  areasList = snapshot.data[selectedState];
+                                  showroomAddressController.clear();
+                                  showroomList.clear();
+                                  handleSetState();
+                                }),
+                      ),
                       GestureDetector(
                         onTap: () {
                           if (selectedState == null) {
@@ -344,29 +333,40 @@ class _PushDataState extends State<PushData> {
                         label: 'Description',
                         controller: description,
                       ),
-                      if (specificationsList.length > 0) ...[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Add Specifications',
-                              style: Get.textTheme.headline4),
-                        ),
-                        ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 12),
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: specificationsList.length,
-                          itemBuilder: (context, index) {
-                            return controllers.utils.inputTextField(
-                              label: specificationsList[index],
-                              onChanged: (value) {
-                                inputSpecifications[specificationsList[index]] =
-                                    value.trim().toLowerCase();
-                              },
+                      controllers.utils.streamBuilder<DocumentSnapshot>(
+                        stream: controllers.specificationsStream,
+                        builder: (context, snapsot) {
+                          if (snapsot.data[selectedCategory] != null) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Add Specifications',
+                                      style: Get.textTheme.headline4),
+                                ),
+                                ListView.separated(
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(height: 12),
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount:
+                                      snapsot.data[selectedCategory].length,
+                                  itemBuilder: (context, index) {
+                                    return controllers.utils.inputTextField(
+                                      label: snapsot.data[selectedCategory]
+                                          [index],
+                                      onChanged: (value) => inputSpecifications[
+                                          snapsot.data[selectedCategory]
+                                              [index]] = value,
+                                    );
+                                  },
+                                ),
+                              ],
                             );
-                          },
-                        ),
-                      ],
+                          }
+                          return Container();
+                        },
+                      ),
                       controllers.utils.raisedButton('Add Product', onPressed),
                     ],
                   ),

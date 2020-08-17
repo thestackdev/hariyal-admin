@@ -12,7 +12,6 @@ class AddShowroom extends StatefulWidget {
 class _AddShowroomState extends State<AddShowroom> {
   final controllers = Controllers.to;
   final DocumentSnapshot docSnap = Get.arguments;
-  Map locationsMap = {};
 
   final titleController = TextEditingController();
   final addressController = TextEditingController();
@@ -27,7 +26,6 @@ class _AddShowroomState extends State<AddShowroom> {
 
   @override
   void initState() {
-    locationsMap = controllers.locations.value.data;
     if (docSnap != null) {
       titleController.text = docSnap['name'];
       addressController.text = docSnap['address'];
@@ -50,10 +48,6 @@ class _AddShowroomState extends State<AddShowroom> {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedState != null) {
-      areas = locationsMap[selectedState];
-    }
-
     return controllers.utils.root(
       label: docSnap == null ? 'Add Showroom' : 'Edit Showroom',
       child: SingleChildScrollView(
@@ -64,15 +58,19 @@ class _AddShowroomState extends State<AddShowroom> {
             spacing: 18,
             runSpacing: 18,
             children: <Widget>[
-              controllers.utils.productInputDropDown(
-                  label: 'State',
-                  value: selectedState,
-                  items: locationsMap.keys.toList(),
-                  onChanged: (value) {
-                    selectedState = value;
-                    selectedArea = null;
-                    handleSetState();
-                  }),
+              controllers.utils.streamBuilder<DocumentSnapshot>(
+                stream: controllers.locationsStream,
+                builder: (context, snapshot) =>
+                    controllers.utils.productInputDropDown(
+                        label: 'State',
+                        value: selectedState,
+                        items: snapshot?.data?.keys?.toList(),
+                        onChanged: (value) {
+                          selectedState = value;
+                          selectedArea = null;
+                          handleSetState();
+                        }),
+              ),
               controllers.utils.productInputDropDown(
                   label: 'Area',
                   value: selectedArea,

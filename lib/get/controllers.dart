@@ -27,11 +27,9 @@ class Controllers extends GetxController {
 
   Stream<DocumentSnapshot> categoryStream;
   Stream<DocumentSnapshot> locationsStream;
+  Stream<DocumentSnapshot> specificationsStream;
 
   Rx<FirebaseUser> firebaseUser = Rx<FirebaseUser>();
-  Rx<DocumentSnapshot> categories = Rx<DocumentSnapshot>();
-  Rx<DocumentSnapshot> locations = Rx<DocumentSnapshot>();
-  Rx<DocumentSnapshot> specifications = Rx<DocumentSnapshot>();
   Rx<DocumentSnapshot> userData = Rx<DocumentSnapshot>();
 
   @override
@@ -58,19 +56,9 @@ class Controllers extends GetxController {
     } else {
       categoryStream = extras.document('category').snapshots();
       locationsStream = extras.document('locations').snapshots();
+      specificationsStream = extras.document('specifications').snapshots();
 
       admin.document(firebaseUser.uid).obs.value.snapshots().listen((event) {
-        extras.snapshots().obs.value.listen((event) {
-          event.documents.forEach((element) {
-            if (element.documentID == 'category') {
-              categories.value = element;
-            } else if (element.documentID == 'locations') {
-              locations.value = element;
-            } else if (element.documentID == 'specifications') {
-              specifications.value = element;
-            }
-          });
-        });
         userData.value = event;
 
         if (shouldUpdateScreen.value) {
@@ -78,6 +66,7 @@ class Controllers extends GetxController {
             isSuperuser.value = true;
             Get.offAllNamed('superuser_home');
           } else if (event.data['isAdmin']) {
+            isSuperuser.value = false;
             Get.offAllNamed('admin_home');
           } else {
             firebaseAuth.signOut();
